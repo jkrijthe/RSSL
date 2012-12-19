@@ -1,0 +1,14 @@
+Package: rssl
+Version: 0.1
+Date: 2012-10-24
+Title: Implementations for common semi-supervised learning approaches to classification and regression
+Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
+                    email = "jkrijthe@gmail.com"))
+Author: Jesse Krijthe
+Maintainer: Jesse Krijthe <jkrijthe@gmail.com>
+  Depends: R (>= 1.8.0), nlme
+Suggests: MASS
+Description: Implementations for common semi-supervsied learning appraoches to classification and regression. Serves as benchmarks to new approaches and contains examples of the authors own methods.
+License: GPL (>= 2)
+URL: http://www.r-project.org
+BugReports: http://www.github.com/jkrijthe/rssl
