@@ -1,0 +1,6 @@
+.Rproj*
+.Rhistory
+.RData
+.DS_Store*
+*.Rproj
+Rprof.out
