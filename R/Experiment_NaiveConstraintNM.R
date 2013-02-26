@@ -21,12 +21,11 @@ D_pop<-data.frame(mlbench.threenorm(10000,1))
 
 for (i in 1:repeats) {
   
-  i_train<-strata(D_pop,classname,c(10,10),method="srswor")$ID_unit
+  i_train<-strata(D_pop,classname,c(4,4),method="srswor")$ID_unit
   D_train<-D_pop[i_train,]
   i_l <- createDataPartition(D_train[,classname], p = .5, list = FALSE, times = 1)
   D_l <- D_train[i_l,]
   D_u <- D_train[-i_l,]
-  
   
   D_u[,classname]<-rep(NA,nrow(D_u))
   D_train<-rbind(D_l,D_u)

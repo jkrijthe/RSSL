@@ -2,13 +2,13 @@
 
 # Formal class definition
 
-setClass("MCNearestMeanClassifier",
+setClass("MCLinearDiscriminantClassifier",
          representation(),
-         prototype(name="Moment Constrained Nearest Mean Classifier through ad hoc mean shifting"),
-         contains="NearestMeanClassifier")
+         prototype(name="Moment Constrained Linear Discriminant Classifier through ad hoc mean shifting"),
+         contains="LinearDiscriminantClassifier")
 
 # Constructor method: XY
-MCNearestMeanClassifierXY <- function(X, y, Xu, method="closedform",scale=TRUE, ...) {
+MCLinearDiscriminantClassifierXY <- function(X, Y, Xu, method="closedform",scale=TRUE) {
   if (scale) {
     library(pls)
     scaling<-stdize(rbind(X,Xu), center = TRUE, scale = TRUE)
@@ -16,10 +16,8 @@ MCNearestMeanClassifierXY <- function(X, y, Xu, method="closedform",scale=TRUE, 
     Xu<-predict(scaling,Xu)
   } else {scaling=NULL}
   
-  Y <- model.matrix(~y-1)
-  
   if (method=="closedform") {
-    
+    browser()
     means<-t((t(X) %*% Y))/(colSums(Y))
     sigma<-mean((X-(Y %*% means))^2)
     
@@ -28,21 +26,19 @@ MCNearestMeanClassifierXY <- function(X, y, Xu, method="closedform",scale=TRUE, 
     
     means <- means + matrix(1,nrow(means),1) %*% (m_t-m_t_l) # Apply Loog's mean correction
     
-    #Update sigma or not
-    sigma<-mean((X-(Y %*% means))^2)
-    
+    #Update sigma or not?
     
   } else if (method=="ml") {
     
   }
-  new("MCNearestMeanClassifier", means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
+  new("MCLinearDiscriminantClassifier", means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
 }
 
-MCNearestMeanClassifier <- function(model, D, method="closedform",scale=TRUE) {
+MCLinearDiscriminantClassifier <- function(model, D, method="closedform",scale=TRUE) {
   list2env(SSLDataFrameToMatrices(model,D,intercept=FALSE),env=environment())
   
   # Fit model
-  trained<-MCNearestMeanClassifierXY(X, y, X_u, method=method,scale=scale)
+  trained<-MCLinearDiscriminantClassifierXY(X, Y, X_u, method=method,scale=scale)
   trained@modelform<-model
   trained@classnames<-classnames
   return(trained)

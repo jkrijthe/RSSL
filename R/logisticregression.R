@@ -1,70 +1,117 @@
+# Generics TODO: MOVE
+setGeneric("logLikelihood",
+           function(object, x, ...) standardGeneric("logLikelihood")
+)
+
 # Formal class definition
-setClass("LogisticRegression", representation(theta="matrix"), prototype(name="LogisticRegression"), contains="Classifier")
+setClass("LogisticRegression", 
+         representation(theta="numeric",X="matrix",y="integer"), 
+         prototype(name="LogisticRegression"), 
+         contains="Classifier")
 
-# Constructor Method
-LogisticRegression<-function(modelform,D) {
-  classname<-all.vars(modelform)[1]
+#' Constructor Method
+#' Note: the first class is the reference class
+LogisticRegression<-function(modelform, D, init=NA,lambda=0.0) {
+  D_trans <- model.frame(modelform, D)
+  X<-model.matrix(modelform, D)
+  y<-as.integer(D_trans[,1])
+  classnames <- levels(D_trans[,1])
   
-  y<-as.numeric(data.matrix(D[,classname]))-1
-  X<-data.matrix(cbind(rep(1,nrow(D)),D[,!(colnames(D) %in% c(classname)), drop=FALSE]))
+  opt_func <- function(theta, X, y) {
+    
+    object<-new("LogisticRegression", modelform=modelform, classnames=classnames, D=D, y=y, X=X, theta=theta)
+    return(logLikelihood(object,X,y) + lambda * object@theta %*% object@theta)
+  }
   
-  theta <- c(0.0,0.0,0.0)
-  object <- new("LogisticRegression", modelform=modelform,D_l=D_l,D_u=D_u, theta=theta)
-  opt_result<-optim(theta,logLik.LogisticRegression,gr=NULL,X,y,control=list(fnscale=-1))
+  opt_grad <- function(theta, X,y) {
+    
+    theta <- matrix(theta,nrow=ncol(X))
+    
+    # Two-class
+    #t(y-(1-1/(1+exp(X %*% theta)))) %*% X
+    
+    # Multi-class
+    expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates    
+    
+    for (c in 2:length(classnames)) {
+      theta[,c-1] <- matrix(colSums(X[y==c,,drop=FALSE]), ncol(X),1) - (t(X) %*% (exp(expscore[,c]) / rowSums(exp(expscore))))
+    }
+    as.vector(theta)
+  }
+
+  if (is.na(init[1])) {
+    theta <- rep(0.0,ncol(X)*(length(classnames)-1))
+  } else {
+    theta<-init
+  }
+
+  opt_result <- optim(theta, opt_func, gr=opt_grad, X, y, method="BFGS", control=list(fnscale=-1))
   theta<-opt_result$par
-  return(object)
+  return(new("LogisticRegression", modelform=modelform, classnames=classnames, D=D, theta=theta))
 }
 
-setMethod("logLik", signature(object="LogisticRegression", D="data.frame"), function(object, D) {
-  theta<-object@theta
-  X<-
-  y<-
+# Train the Logistic Regression using R's standard glm function
+LogisticRegressionFast<-function(modelform,D) {
+  object<-glm(formula = modelform, family = binomial("logit"), data = D)
+  return(new("LogisticRegression", modelform=modelform, D=D, theta=object$coefficients))
+}
+
+# Log likelihood on a new data matrix X and outcome vector y
+setMethod("logLikelihood", signature(object="LogisticRegression", x="matrix"), function(object, x, y) {
+  X <- x
+  theta <- matrix(object@theta,nrow=ncol(X))
   
-  sum(y*(X %*% theta) - log(1+exp(X%*%theta)))
-}
+  # Multiclass:
+  expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates
+  
+  ll <- sum(-log(rowSums(exp(expscore)))) # Denominators of the probability estimates, summed
+  
+  for (c in 1:length(object@classnames)) {
+    ll <- ll + sum(expscore[y==c,c]) # Sum the numerators for each class
+  }
+  return(ll)
+})
+          
+#' Log likelihood on a new data set                                                                                                 
+setMethod("logLikelihood", signature(object="LogisticRegression", x="data.frame"), function(object, x) {
+  theta <- matrix(object@theta,nrow=ncol(x))
+  D_trans <- model.frame(object@modelform, x)
+  X <- model.matrix(object@modelform, x)
+  y <- as.integer(D_trans[,1])
+  
+  # Multiclass:
+  expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates
+  
+  ll <- sum(-log(rowSums(exp(expscore)))) # Denominators of the probability estimates, summed
+  
+  for (c in 1:length(object@classnames)) {
+    ll <- ll + sum(expscore[y==c,c]) # Sum the numerators for each class
+  }
+  return(ll)
+})                                                                              
 
-setMethod("logLik", signature(object="LogisticRegression", X="matrix"), function(object, X,y) { {
-  sum(y*(X %*% objects@theta) - log(1+exp(X %*% object@theta)))
-}
-                                                                                                
-library(sampling)
-library(caret)
+#' Log likelihood on the training set                                                                              
+setMethod("logLikelihood", signature(object="LogisticRegression",x="missing"), function(object) {
+  logLikelihood(object,object@D)
+})   
 
-distance<-0.5
-D_test<-data.frame(mlbench.2dnormals(1000,2,distance))
-D_pop<-data.frame(mlbench.2dnormals(10000,2,distance))
-#D_test<-generateBananaSet(10000,2,2)
-#D_pop<-generateBananaSet(10000,2,2)
+#' Log likelihood on the training set                                                                              
+setMethod("logLik", signature(object="LogisticRegression"), function(object) {
+  logLikelihood(object,object@D)
+})
 
-i_train<-strata(D_pop,classname,c(10,10),method="srswor")$ID_unit
-D_train<-D_pop[i_train,]
-i_l <- createDataPartition(D_train[,classname], p = .5, list = FALSE, times = 1)
-D_l <- D_train[i_l,]
-D_u <- D_train[-i_l,]
-D_u[,classname]<-rep(NA,nrow(D_u))
-D_train<-rbind(D_l,D_u)
-
-
-logLik(lr(modelform,D_l))
-print(LogisticRegression(modelform,D_l))
-ImplicitlyConstrainedLogisticRegression(modelform,D_train)
-
-D_train<-Class.Gaussian(20,3)
-i_l <- createDataPartition(D_train[,class], p = .5, list = FALSE, times = 1)
-D_l <- D_train[i_l,]
-D_u <- D_train[-i_l,]
-D_u[,classname]<-rep(NA,nrow(D_u))
-D_train<-rbind(D_l,D_u)
-
-g_impconstrained <- icnm(modelform, D_train)
-g_impconstrained$parameters.allowed
-
-
-
-Class.Gaussian<-function(n,distance) {
-  library(mvtnorm)
-  data.frame(X1=rbind(rmvnorm(n,-distance/2),rmvnorm(n,distance/2)), class=c(rep(0,n),rep(1,n)))
-}
-
-Class.TwoMoons <- function() {}
-Class.Checkerboard <- function() {}
+#' Predict
+setMethod("predict", signature(object="LogisticRegression"), function(object, D, probs=FALSE) {
+  
+  D[,object@classname] <- 1
+  X<-model.matrix(modelform,D)
+  theta <- matrix(object@theta, nrow=ncol(X))
+  expscore <- exp(cbind(rep(0,nrow(X)), X %*% theta))
+  probabilities <- expscore/rowSums(expscore)
+  # If we need to return classes
+  classes <- factor(apply(probabilities,1,which.max),levels=1:length(object@classnames), labels=object@classnames)
+  if (probs)
+ {
+    return(probabilities)
+  } else return(classes)
+})
