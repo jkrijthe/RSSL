@@ -7,11 +7,15 @@ setClass("Classifier",
          prototype(modelform=NULL, classname=NULL, classnames=NULL,scaling=NULL)
 )
 
+
+
 #' Basic print method
 setMethod("show", signature(object="Classifier"), function(object) {
   print(object@name)
   print(object@classnames)
 })
+
+setGeneric("loss",function(object, ...) {standardGeneric("loss")})
 
 setClass("SemiSupervisedClassifier",contains="Classifier")
 
@@ -40,7 +44,7 @@ SSLDataFrameToMatrices <- function(model,D,intercept=TRUE) {
     X <- X[, selected.columns] # Remove intercept
     if (nrow(D_u)>0) X_u <- X_u[, selected.columns,drop=FALSE]
   }
-  
+  y<-as.integer(y)
   
   return(list(X=X, y=y, X_u=X_u, classnames=classnames))
   

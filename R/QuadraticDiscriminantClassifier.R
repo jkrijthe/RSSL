@@ -1,11 +1,11 @@
 # Formal Class Definition
-setClass("LinearDiscriminantClassifier",
+setClass("QuadraticDiscriminantClassifier",
          representation(means="matrix",sigma="list",prior="matrix"),
-         prototype(name="Nearest Mean Classifier"),
+         prototype(name="Quadratic Discriminant Classifier"),
          contains="NormalBasedClassifier")
 
 # Constructor method: XY
-LinearDiscriminantClassifierXY <- function(X, y, method="closedform",prior=NULL, scale=FALSE,  ...) {
+QuadraticDiscriminantClassifierXY <- function(X, y, method="closedform",prior=NULL, scale=FALSE,  ...) {
   if (scale) {
     library(pls)
     scaling<-stdize(X, center = TRUE, scale = TRUE)
@@ -23,19 +23,14 @@ LinearDiscriminantClassifierXY <- function(X, y, method="closedform",prior=NULL,
     means<-t((t(X) %*% Y))/(colSums(Y))
     
     #Set sigma to be the average within scatter matrix
-    browser()
-    sigma.classes<-lapply(1:ncol(Y),function(c,X){cov(X[Y[,c]==1, ,drop=FALSE])},X)
+    sigma<-lapply(1:ncol(Y),function(c,X){cov(X[Y[,c]==1,,drop=FALSE])},X)
     
-    sigma<-sigma.classes[[1]]*prior[1]
-    for (i in 2:length(sigma.classes)) {
-      sigma<-sigma+sigma.classes[[i]]*prior[i]
-    }
-    sigma<-lapply(1:ncol(Y),function(c){sigma})
   } else if (method=="ml") {
-    
     opt_func<-function(theta, X, y) {
       means<-matrix(theta[1:(ncol(Y)*ncol(X))],ncol(Y),ncol(X))
       sigma<-matrix(theta[((ncol(Y)*ncol(X))+1):length(theta)],ncol(X),ncol(X))
+      
+      
       sigma<-lapply(1:ncol(Y),function(c){sigma})
       
       model<-new("LinearDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
@@ -43,7 +38,7 @@ LinearDiscriminantClassifierXY <- function(X, y, method="closedform",prior=NULL,
       loss(model,X,y)
     }
     
-    theta<-rep(0.01,3)
+    theta<-rep(0.01,ncol(Y)*ncol(X)+2 * (ncol(X)^2))
     opt_result <- optim(theta, opt_func, gr=NULL, X, y, method="L-BFGS-B", lower=c(-Inf,-Inf,0.000000001),control=list(trace=1,maxit=1000))
     theta<-opt_result$par
     
@@ -52,16 +47,16 @@ LinearDiscriminantClassifierXY <- function(X, y, method="closedform",prior=NULL,
     sigma<-diag(ncol(X))*sigma
     sigma<-lapply(1:ncol(Y),function(c){sigma})
   }
-  new("LinearDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
+  new("QuadraticDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
 }
 
 # Constructor method: formula
 # Removes intercept
-LinearDiscriminantClassifier <- function(model, D, method="closedform", prior=NULL, scale=FALSE) {  
+QuadraticDiscriminantClassifier <- function(model, D, method="closedform", prior=NULL, scale=FALSE) {  
   list2env(SSLDataFrameToMatrices(model,D,intercept=FALSE),environment())
   
   # Fit model
-  trained<-LinearDiscriminantClassifierXY(X, y, method=method, prior=prior, scale=scale)
+  trained<-QuadraticDiscriminantClassifierXY(X, y, method=method,prior=prior,scale=scale)
   trained@modelform<-model
   trained@classnames<-classnames
   return(trained)

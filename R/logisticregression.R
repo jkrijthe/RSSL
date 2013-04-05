@@ -5,22 +5,15 @@ setGeneric("logLikelihood",
 
 # Formal class definition
 setClass("LogisticRegression", 
-         representation(theta="numeric",X="matrix",y="integer"), 
+         representation(theta="numeric"), 
          prototype(name="LogisticRegression"), 
          contains="Classifier")
 
-#' Constructor Method
-#' Note: the first class is the reference class
-LogisticRegression<-function(modelform, D, init=NA,lambda=0.0) {
-  D_trans <- model.frame(modelform, D)
-  X<-model.matrix(modelform, D)
-  y<-as.integer(D_trans[,1])
-  classnames <- levels(D_trans[,1])
-  
+LogisticRegressionXY<-function(X,y, init=NA, lambda=0.0) {
+  classnames<-1:length(unique(y))
   opt_func <- function(theta, X, y) {
-    
-    object<-new("LogisticRegression", modelform=modelform, classnames=classnames, D=D, y=y, X=X, theta=theta)
-    return(logLikelihood(object,X,y) + lambda * object@theta %*% object@theta)
+    object<-new("LogisticRegression", theta=theta)
+    return(loss(object,X,y) + lambda * object@theta %*% object@theta)
   }
   
   opt_grad <- function(theta, X,y) {
@@ -38,16 +31,28 @@ LogisticRegression<-function(modelform, D, init=NA,lambda=0.0) {
     }
     as.vector(theta)
   }
-
+  
   if (is.na(init[1])) {
     theta <- rep(0.0,ncol(X)*(length(classnames)-1))
   } else {
     theta<-init
   }
-
+  
   opt_result <- optim(theta, opt_func, gr=opt_grad, X, y, method="BFGS", control=list(fnscale=-1))
   theta<-opt_result$par
-  return(new("LogisticRegression", modelform=modelform, classnames=classnames, D=D, theta=theta))
+  return(new("LogisticRegression", classnames=classnames, theta=theta))
+  
+}
+
+#' Constructor Method
+#' Note: the first class is the reference class
+LogisticRegression<-function(modelform, D, init=NA,lambda=0.0) {
+  list2env(SSLDataFrameToMatrices(modelform,D,intercept=TRUE),environment())
+  
+  trained<-LogisticRegressionXY(X,y, init=init, lambda=lambda)
+  trained@modelform<-modelform
+  trained@classnames<-classnames
+  return(trained)
 }
 
 # Train the Logistic Regression using R's standard glm function
@@ -73,11 +78,18 @@ setMethod("logLikelihood", signature(object="LogisticRegression", x="matrix"), f
 })
           
 #' Log likelihood on a new data set                                                                                                 
-setMethod("logLikelihood", signature(object="LogisticRegression", x="data.frame"), function(object, x) {
-  theta <- matrix(object@theta,nrow=ncol(x))
-  D_trans <- model.frame(object@modelform, x)
-  X <- model.matrix(object@modelform, x)
-  y <- as.integer(D_trans[,1])
+setMethod("loss", signature(object="LogisticRegression"), function(object, newdata, y=NULL) {
+  if (!is.null(object@modelform)) {
+    list2env(SSLDataFrameToMatrices(object@modelform,newdata,intercept=TRUE),environment())
+    
+  } else {
+    if (!is.matrix(newdata)) { stop("Training data and Testing data don't match.")}
+    if (is.null(y)) { stop("No labels supplied.")}
+    X<-newdata
+  }
+  
+  
+  theta <- matrix(object@theta,nrow=ncol(X))
   
   # Multiclass:
   expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates
@@ -90,21 +102,22 @@ setMethod("logLikelihood", signature(object="LogisticRegression", x="data.frame"
   return(ll)
 })                                                                              
 
-#' Log likelihood on the training set                                                                              
-setMethod("logLikelihood", signature(object="LogisticRegression",x="missing"), function(object) {
-  logLikelihood(object,object@D)
-})   
 
 #' Log likelihood on the training set                                                                              
 setMethod("logLik", signature(object="LogisticRegression"), function(object) {
-  logLikelihood(object,object@D)
+  loss(object,object@D)
 })
 
 #' Predict
-setMethod("predict", signature(object="LogisticRegression"), function(object, D, probs=FALSE) {
+setMethod("predict", signature(object="LogisticRegression"), function(object, newdata,probs=FALSE) {
+  if (!is.null(object@modelform)) {
+    list2env(SSLDataFrameToMatrices(object@modelform,newdata,intercept=TRUE),environment())
+    
+  } else {
+    if (!is.matrix(newdata)) { stop("Training data and Testing data don't match.")}
+    X<-newdata
+  }
   
-  D[,object@classname] <- 1
-  X<-model.matrix(modelform,D)
   theta <- matrix(object@theta, nrow=ncol(X))
   expscore <- exp(cbind(rep(0,nrow(X)), X %*% theta))
   probabilities <- expscore/rowSums(expscore)

@@ -1,44 +1,64 @@
-# Nearest Mean using moment constraints. See Loog (2012)
-
-# Formal class definition
-
+# Formal Class Definition
 setClass("MCLinearDiscriminantClassifier",
-         representation(),
-         prototype(name="Moment Constrained Linear Discriminant Classifier through ad hoc mean shifting"),
-         contains="LinearDiscriminantClassifier")
+         representation(means="matrix",sigma="list",prior="matrix"),
+         prototype(name="Moment Constrained Linear Discriminant Classifier"),
+         contains="NormalBasedClassifier")
 
 # Constructor method: XY
-MCLinearDiscriminantClassifierXY <- function(X, Y, Xu, method="closedform",scale=TRUE) {
+MCLinearDiscriminantClassifierXY <- function(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...) {
   if (scale) {
     library(pls)
-    scaling<-stdize(rbind(X,Xu), center = TRUE, scale = TRUE)
+    scaling<-stdize(X, center = TRUE, scale = TRUE)
     X<-predict(scaling,X)
-    Xu<-predict(scaling,Xu)
   } else {scaling=NULL}
   
+  Y <- model.matrix(~as.factor(y)-1)
+  
   if (method=="closedform") {
-    browser()
+    
+    #Set priors if not set by user
+    if (is.null(prior)) prior<-matrix(colMeans(Y),2,1)
+    
+    #Calculate means for classes
     means<-t((t(X) %*% Y))/(colSums(Y))
-    sigma<-mean((X-(Y %*% means))^2)
     
-    m_t <- colMeans(rbind(X,Xu)) # Overal mean of all data
-    m_t_l <- colMeans(X) # Overal mean of labeled data
+    #Set sigma to be the average within scatter matrix
+    sigma.classes<-lapply(1:ncol(Y),function(c,X){cov(X[Y[,c]==1,])},X)
+    sigma<-sigma.classes[[1]]*prior[1]
+    for (i in 2:length(sigma.classes)) {
+      sigma<-sigma+sigma.classes[[i]]*prior[i]
+    }
     
-    means <- means + matrix(1,nrow(means),1) %*% (m_t-m_t_l) # Apply Loog's mean correction
     
-    #Update sigma or not?
+    T.labeled<-cov(X)
+    T.all<-cov(rbind(X,X_u))
+    m.labeled<-colMeans(X)
+    m.all<-colMeans(rbind(X,X_u))
+    
+    
+    matrixsqrt <- function(X) {
+      decomposition<-svd(X)
+      decomposition$u %*% diag(sqrt(decomposition$d)) %*% decomposition$v
+    }
+    
+    sigma <- matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled)) %*% sigma %*% matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled))
+    means <- matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled)) %*% (means-matrix(1,nrow(means),1) %*% m.labeled ) + matrix(1,nrow(means),1) %*% m.all 
+    
+    sigma<-lapply(1:ncol(Y),function(c){sigma})
     
   } else if (method=="ml") {
     
   }
-  new("MCLinearDiscriminantClassifier", means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
+  new("MCLinearDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
 }
 
-MCLinearDiscriminantClassifier <- function(model, D, method="closedform",scale=TRUE) {
-  list2env(SSLDataFrameToMatrices(model,D,intercept=FALSE),env=environment())
+# Constructor method: formula
+# Removes intercept
+MCLinearDiscriminantClassifier <- function(model, D, method="closedform", prior=NULL, scale=FALSE) {  
+  list2env(SSLDataFrameToMatrices(model,D,intercept=FALSE),environment())
   
   # Fit model
-  trained<-MCLinearDiscriminantClassifierXY(X, Y, X_u, method=method,scale=scale)
+  trained<-MCLinearDiscriminantClassifierXY(X, y, X_u, method=method,prior=prior,scale=scale)
   trained@modelform<-model
   trained@classnames<-classnames
   return(trained)

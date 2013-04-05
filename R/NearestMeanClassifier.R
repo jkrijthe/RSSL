@@ -1,107 +1,94 @@
 # Formal Class Definition
 setClass("NearestMeanClassifier",
-         representation(means="matrix",covariance="matrix",sigma="numeric"),
+         representation(means="matrix",sigma="list",prior="matrix"),
          prototype(name="Nearest Mean Classifier"),
-         contains="Classifier")
+         contains="NormalBasedClassifier")
 
 # Constructor method: XY
-NearestMeanClassifierXY <- function(X, y, method="closedform",scale=TRUE, ...) {
+NearestMeanClassifierXY <- function(X, y, method="closedform",prior=NULL, scale=FALSE,  ...) {
   if (scale) {
     library(pls)
     scaling<-stdize(X, center = TRUE, scale = TRUE)
     X<-predict(scaling,X)
   } else {scaling=NULL}
   
-  Y <- model.matrix(~y-1)
+  Y <- model.matrix(~as.factor(y)-1)
   
   if (method=="closedform") {
+    
+    if (is.null(prior)) prior<-matrix(colMeans(Y),2,1)
     means<-t((t(X) %*% Y))/(colSums(Y))
     sigma<-mean((X-(Y %*% means))^2)
+    sigma<-diag(ncol(X))*sigma
+    sigma<-lapply(1:ncol(Y),function(c){sigma})
   } else if (method=="ml") {
     
+    opt_func<-function(theta, X, y) {
+      means<-matrix(theta[1:(ncol(Y)*ncol(X))],ncol(Y),ncol(X))
+      sigma<-theta[(ncol(Y)*ncol(X))+1]
+      sigma<-diag(ncol(X))*sigma
+      sigma<-lapply(1:ncol(Y),function(c){sigma})
+      
+      model<-new("NearestMeanClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
+    
+      loss(model,X,y)
+    }
+    
+    theta<-rep(0.01,3)
+    opt_result <- optim(theta, opt_func, gr=NULL, X, y, method="L-BFGS-B", lower=c(-Inf,-Inf,0.000000001))
+    theta<-opt_result$par
+    
+    means<-matrix(theta[1:(ncol(Y)*ncol(X))],ncol(Y),ncol(X))
+    sigma<-theta[(ncol(Y)*ncol(X))+1]
+    sigma<-diag(ncol(X))*sigma
+    sigma<-lapply(1:ncol(Y),function(c){sigma})
   }
-  new("NearestMeanClassifier", means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
+  new("NearestMeanClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
 }
 
 # Constructor method: formula
 # Removes intercept
-NearestMeanClassifier <- function(model, D, method="closedform",scale=TRUE) {  
+NearestMeanClassifier <- function(model, D, method="closedform", prior=NULL, scale=FALSE) {  
   list2env(SSLDataFrameToMatrices(model,D,intercept=FALSE),environment())
   
   # Fit model
-  trained<-NearestMeanClassifierXY(X, y, method=method,scale=scale)
+  trained<-NearestMeanClassifierXY(X, y, method=method,prior=prior,scale=scale)
   trained@modelform<-model
   trained@classnames<-classnames
   return(trained)
 }
 
-# Show method
-setMethod("show", signature(object="NearestMeanClassifier"), function(object) {
-  print(object@name)
-  print(object@means)
-})
-
-# Predict method
-setMethod("predict", signature(object="NearestMeanClassifier"), function(object,newdata) {
-  if (!is.null(object@modelform)) {
-    list2env(SSLDataFrameToMatrices(object@modelform,newdata,intercept=FALSE),environment())
-    X<-X
-  } else {
-    if (!is.matrix(newdata)) { stop("Training data and Testing data don't match.")}
-    X<-newdata
-  }
-  M<-object@means
-  knn(M, X, object@classnames)
-})
-
-
-# Loss: deterime the MINUS log likelihood
+# #OLD: S3 methods
 # 
-setMethod("loss", signature(object="NearestMeanClassifier"), function(object,newdata,y=NULL) {
-  if (!is.null(object@modelform)) {
-    list2env(SSLDataFrameToMatrices(object@modelform,newdata,intercept=FALSE),environment())
-    Y <- model.matrix(~y-1)
-  } else {
-    if (!is.matrix(newdata)) { stop("Training data and Testing data don't match.")}
-    if (is.null(y)) { stop("No labels supplied.")}
-    X<-newdata
-    Y <- model.matrix(~y-1)
-  }
-  #Scale the data
-  if (!is.null(object@scaling)) { X<-predict(object@scaling,X) }
-  
-  k<-ncol(X) # Number of features
-  m<-object@means # Parameters of the NM classifier
-  sigma<-diag(k)*object@sigma # Diagonal covariance matrix
-  ll<-0
-  for (c in 1:nrow(m)) {
-    Xc<-X[as.logical(Y[,c]), ,drop=FALSE]
-    ll<-ll+nrow(Xc)*-(k/2)*log(2*pi)-(1/2)*log(det(sigma))
-    ll<-ll+sum(-(1/2)*(Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma)%*%t(Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))
-  }
-  return(-ll/nrow(X))
-})
-
-# logLik method: deterime the log likelihood
+# nearestmean <- function(x, ...) UseMethod("nearestmean")
 # 
-setMethod("logLik", signature(object="NearestMeanClassifier"), function(object,newdata,...) {
-  if (!is.null(object@modelform)) {
-    list2env(SSLDataFrameToMatrices(object@modelform,newdata,intercept=FALSE),environment())
-  } else {
-    if (!is.matrix(X)) { stop("Training data and Testing data don't match.")}
-    X<-newdata
-  }
-  #Scale the data
-  if (!is.null(object@scaling)) { X<-predict(object@scaling,X) }
-  
-  k<-ncol(X) # Number of features
-  m<-object@means # Parameters of the NM classifier
-  sigma<-diag(k)*object@sigma # Diagonal covariance matrix
-  ll<-0
-  for (c in 1:nrow(m)) {
-    Xc<-X[as.logical(Y[,c]), ,drop=FALSE]
-    ll<-ll+nrow(Xc)*-(k/2)*log(2*pi)-(1/2)*log(det(sigma))
-    ll<-ll+sum(-(1/2)*(Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma)%*%t(Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))
-  }
-  return(ll)
-})
+# nearestmean.default<-function(modelform, D) {
+#   classname<-all.vars(modelform)[1]
+#   featurenames<-labels(terms(modelform,data=D))
+#   classes<-unique(D[,all.vars(modelform)[1]])
+#   m<-c()
+#   for (i in classes) {
+#     m<-rbind(m,sapply(D[D[classname]==i, featurenames, drop=FALSE],mean))
+#   }
+#   structure(list(m=m,classes=classes,featurenames=featurenames),class='nearestmean')
+# }
+# 
+# predict.nearestmean<-function(object,newdata) {
+#   if(!inherits(object, "nearestmean")) stop("Not a nearestmean object")
+#   M<-object$m
+#   knn(M,newdata[,object$featurenames,drop=FALSE],object$classes)
+# }
+# 
+# logLik.nearestmean<-function(object,newdata) {
+#   if(!inherits(object, "nearestmean")) stop("Not a nearestmean object")
+#   k<-ncol(newdata)-1 # Number of features
+#   m<-object$m # Parameters of the NM classifier
+#   sigma<-diag(k) # NOTE: FIXED covariance matrix
+#   ll<-0
+#   for (c in 1:nrow(m)) {
+#     X<-data.matrix(newdata[newdata$classes==object$classes[c],object$featurenames])
+#     ll<-ll+nrow(X)*-(k/2)*log(2*pi)-(1/2)*log(det(sigma))
+#     ll<-ll+sum(-(1/2)*(X-m[c,])%*%solve(sigma)%*%t(X-m[c,]))
+#   }
+#   return(ll)
+# }

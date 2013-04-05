@@ -5,27 +5,19 @@ setClass("EntropyRegularizedLogisticRegression",
          contains="LogisticRegression")
 
 # Constructor
-EntropyRegularizedLogisticRegression <- function(modelform,D,lambda2=1.0,lambda=0.0,init=NA) {
-  classname<-all.vars(modelform)[1] # determine the name of the dependent variable
-  
-  D_l <- D[!is.na(D[,classname]),] # labeled data
-  D_u <- D[is.na(D[,classname]),] # unlabeled data
-  
-  D_u[,classname] <- 1
-  X<-model.matrix(modelform, D_l)
-  X_u <- model.matrix(modelform, D_u)
-  y<-as.factor(data.matrix(D_l[,classname]))
-  classnames <- levels(y)
-  y<-as.integer(y)
+EntropyRegularizedLogisticRegressionXY <- function(X,y,X_u,lambda2=1.0,lambda=0.0,init=NA) {
+
+  classnames <- 1:length(unique(y))
   m<-ncol(X)
   
-  
-  opt_func <- function(theta) {
+  opt_func <- function(theta,X,y,X_u) {
+#     object<-new("LogisticRegression", theta=theta)
+#     return(loss(object,X,y) + lambda * object@theta %*% object@theta)
     theta <- matrix(theta,nrow=ncol(X))
     
     # Likelihood term
-    expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates
-    ll <- sum(-log(rowSums(exp(expscore)))) # Denominators of the probability estimates, summed
+    expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Denominator of the probability estimates
+    ll <- sum(-log(rowSums(exp(expscore)))) # Numerator of the probability estimates, summed
     
     for (c in 1:length(classnames)) {
       ll <- ll + sum(expscore[y==c,c]) # Sum the numerators for each class
@@ -36,8 +28,6 @@ EntropyRegularizedLogisticRegression <- function(modelform,D,lambda2=1.0,lambda=
     expscore <- cbind(rep(0,nrow(X_u)), X_u %*% theta)
     sum_exp<-rowSums(exp(expscore))
     
-    
-    
     ent<-0
     for (c in 1:length(classnames)) {
       ent <- ent + sum( (exp(expscore[,c])/sum_exp) * (expscore[,c]-log(sum_exp))) # Sum the numerators for each class
@@ -45,11 +35,14 @@ EntropyRegularizedLogisticRegression <- function(modelform,D,lambda2=1.0,lambda=
     #print(ll+ent)
     if (is.nan(ll+ent)) return(0.0)
     if (is.infinite(ll+ent)) return(0.0)
-    return(ll + lambda2*ent + lambda * matrix(theta,nrow=1) %*% t(matrix(theta,nrow=1)))
+    
+    return(ll/nrow(X) + lambda2*ent/nrow(X_u) + lambda * matrix(theta,nrow=1) %*% t(matrix(theta,nrow=1)))
+    
+    
   }
   
   opt_grad <- function(theta, X,y) {
-    # not correct for this function
+    
     theta <- matrix(theta,nrow=ncol(X))
     
     # Two-class
@@ -59,10 +52,8 @@ EntropyRegularizedLogisticRegression <- function(modelform,D,lambda2=1.0,lambda=
     expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates    
     
     for (c in 2:length(classnames)) {
-      theta[,c-1] <- matrix(colSums(X[y==c,,drop=FALSE]),ncol(X),1) - (t(X) %*% (exp(expscore[,c]) / rowSums(exp(expscore))))
+      theta[,c-1] <- matrix(colSums(X[y==c,,drop=FALSE]), ncol(X),1) - (t(X) %*% (exp(expscore[,c]) / rowSums(exp(expscore))))
     }
-    print()
-    print(theta)
     as.vector(theta)
   }
   
@@ -72,13 +63,20 @@ EntropyRegularizedLogisticRegression <- function(modelform,D,lambda2=1.0,lambda=
     theta<-init
   }
   
-  opt_result <- optim(theta, opt_func, gr=NULL, method="BFGS", control=list(fnscale=-1))
+  opt_result <- optim(theta, opt_func, gr=NULL, X, y, X_u, method="BFGS", control=list(fnscale=-1))
+  print(opt_result$par)
   theta<-opt_result$par
   
   new("EntropyRegularizedLogisticRegression",
-      modelform=modelform,
-      classname=classname,
       classnames=classnames,
-      D=D,
       theta=theta)
+}
+
+EntropyRegularizedLogisticRegression<-function(modelform,D,lambda2=1.0,lambda=0.0,init=NA) {
+  list2env(SSLDataFrameToMatrices(modelform,D,intercept=TRUE),environment())
+  
+  trained<-EntropyRegularizedLogisticRegressionXY(X,y, init=init, lambda2=lambda2, lambda=lambda)
+  trained@modelform<-modelform
+  trained@classnames<-classnames
+  return(trained)
 }

@@ -4,6 +4,10 @@ setClass("TransductiveSVM",
          contains="Classifier")
 
 TransductiveSVM<-function(modelform, D) {
+  
+}
+
+TransductiveSVM<-function(modelform, D) {
   classname<-all.vars(modelform)[1] # determine the name of the dependent variable
   
   D_l <- D[!is.na(D[,classname]),] # labeled data
