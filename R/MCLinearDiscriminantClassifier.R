@@ -1,16 +1,32 @@
-# Formal Class Definition
+#' @include LinearDiscriminantClassifier.R
 setClass("MCLinearDiscriminantClassifier",
          representation(means="matrix",sigma="list",prior="matrix"),
          prototype(name="Moment Constrained Linear Discriminant Classifier"),
-         contains="NormalBasedClassifier")
+         contains="LinearDiscriminantClassifier")
 
-# Constructor method: XY
-MCLinearDiscriminantClassifierXY <- function(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...) {
-  if (scale) {
-    library(pls)
-    scaling<-stdize(X, center = TRUE, scale = TRUE)
-    X<-predict(scaling,X)
-  } else {scaling=NULL}
+#' Moment constriant semi-supervised linear discriminant analysis
+#'
+#' <full description>
+#'
+#' @usage MCLinearDiscriminantClassifier(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...)
+#'
+#' @param X <what param does>
+#' @param y <what param does>
+#' @param X_u <what param does>
+#' @param method <what param does>
+#' @param prior <what param does>
+#' @param scale <what param does>
+#' @param ... <what param does>
+#' @export
+MCLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...) {
+  ## Preprocessing to correct datastructures and scaling  
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
+  X<-ModelVariables$X
+  X_u<-ModelVariables$X_u
+  y<-ModelVariables$y
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  modelform<-ModelVariables$modelform
   
   Y <- model.matrix(~as.factor(y)-1)
   
@@ -40,26 +56,15 @@ MCLinearDiscriminantClassifierXY <- function(X, y, X_u, method="closedform",prio
       decomposition<-svd(X)
       decomposition$u %*% diag(sqrt(decomposition$d)) %*% decomposition$v
     }
+
     
     sigma <- matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled)) %*% sigma %*% matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled))
-    means <- matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled)) %*% (means-matrix(1,nrow(means),1) %*% m.labeled ) + matrix(1,nrow(means),1) %*% m.all 
+    means <- t(matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled)) %*% t(means-matrix(1,nrow(means),1) %*% m.labeled ) + t(matrix(1,nrow(means),1) %*% m.all)) 
     
     sigma<-lapply(1:ncol(Y),function(c){sigma})
     
   } else if (method=="ml") {
     
   }
-  new("MCLinearDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
-}
-
-# Constructor method: formula
-# Removes intercept
-MCLinearDiscriminantClassifier <- function(model, D, method="closedform", prior=NULL, scale=FALSE) {  
-  list2env(SSLDataFrameToMatrices(model,D,intercept=FALSE),environment())
-  
-  # Fit model
-  trained<-MCLinearDiscriminantClassifierXY(X, y, X_u, method=method,prior=prior,scale=scale)
-  trained@modelform<-model
-  trained@classnames<-classnames
-  return(trained)
+  new("MCLinearDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=classnames,scaling=scaling, modelform=modelform)
 }

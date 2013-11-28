@@ -1,125 +1,128 @@
-# Generics TODO: MOVE
-setGeneric("logLikelihood",
-           function(object, x, ...) standardGeneric("logLikelihood")
-)
-
-# Formal class definition
+#' @include Classifier.R
 setClass("LogisticRegression", 
-         representation(theta="numeric"), 
+         representation(w="numeric",intercept="ANY",scaling="ANY"), 
          prototype(name="LogisticRegression"), 
          contains="Classifier")
 
-LogisticRegressionXY<-function(X,y, init=NA, lambda=0.0) {
-  classnames<-1:length(unique(y))
-  opt_func <- function(theta, X, y) {
-    object<-new("LogisticRegression", theta=theta)
-    return(loss(object,X,y) + lambda * object@theta %*% object@theta)
+LogisticRegression <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, init=NA,x_center=FALSE, ...) {
+  
+  ## Preprocessing to correct datastructures and scaling  
+  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
+  X<-ModelVariables$X
+  y<-ModelVariables$y
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  modelform<-ModelVariables$modelform
+  
+  if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
+
+  opt_func <- function(w, X, y) {
+    w <- matrix(w,nrow=ncol(X))
+  
+    # Multiclass:
+    expscore <- cbind(rep(0,nrow(X)), X %*% w) # Numerators of the probability estimates
+  
+    ll <- sum(-log(rowSums(exp(expscore)))) # Denominators of the probability estimates, summed
+  
+    for (c in 1:length(classnames)) {
+      ll <- ll + sum(expscore[y==c,c]) # Sum the numerators for each class
+    }
+
+    return(as.numeric(ll + lambda * w[-1] %*% w[-1]))
   }
   
-  opt_grad <- function(theta, X,y) {
+  opt_grad <- function(w, X, y) {
     
-    theta <- matrix(theta,nrow=ncol(X))
+    w <- matrix(w,nrow=ncol(X))
     
     # Two-class
-    #t(y-(1-1/(1+exp(X %*% theta)))) %*% X
+    #t(y-(1-1/(1+exp(X %*% w)))) %*% X
     
     # Multi-class
-    expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates    
+    expscore <- cbind(rep(0,nrow(X)), X %*% w) # Numerators of the probability estimates    
     
     for (c in 2:length(classnames)) {
-      theta[,c-1] <- matrix(colSums(X[y==c,,drop=FALSE]), ncol(X),1) - (t(X) %*% (exp(expscore[,c]) / rowSums(exp(expscore))))
+      w[,c-1] <- matrix(colSums(X[y==c,,drop=FALSE]), ncol(X),1) - (t(X) %*% (exp(expscore[,c]) / rowSums(exp(expscore))))
     }
-    as.vector(theta)
+    as.vector(w)
   }
   
   if (is.na(init[1])) {
-    theta <- rep(0.0,ncol(X)*(length(classnames)-1))
+    w <- rep(0.0,ncol(X)*(length(classnames)-1))
   } else {
-    theta<-init
+    w<-init
   }
   
-  opt_result <- optim(theta, opt_func, gr=opt_grad, X, y, method="BFGS", control=list(fnscale=-1))
-  theta<-opt_result$par
-  return(new("LogisticRegression", classnames=classnames, theta=theta))
+  opt_result <- optim(w, fn=opt_func,gr=opt_grad, X=X, y=y, method="BFGS", control=list(fnscale=-1))
+  # w<-as.numeric(opt_result[1,1:length(w)])
+  w<-opt_result$par
+  return(new("LogisticRegression", modelform=modelform, classnames=classnames, w=w,intercept=intercept,scaling=scaling))
   
-}
-
-#' Constructor Method
-#' Note: the first class is the reference class
-LogisticRegression<-function(modelform, D, init=NA,lambda=0.0) {
-  list2env(SSLDataFrameToMatrices(modelform,D,intercept=TRUE),environment())
-  
-  trained<-LogisticRegressionXY(X,y, init=init, lambda=lambda)
-  trained@modelform<-modelform
-  trained@classnames<-classnames
-  return(trained)
 }
 
 # Train the Logistic Regression using R's standard glm function
 LogisticRegressionFast<-function(modelform,D) {
   object<-glm(formula = modelform, family = binomial("logit"), data = D)
-  return(new("LogisticRegression", modelform=modelform, D=D, theta=object$coefficients))
+  return(new("LogisticRegression", modelform=modelform, D=D, w=object$coefficients))
 }
 
 # Log likelihood on a new data matrix X and outcome vector y
-setMethod("logLikelihood", signature(object="LogisticRegression", x="matrix"), function(object, x, y) {
-  X <- x
-  theta <- matrix(object@theta,nrow=ncol(X))
+# setMethod("logLikelihood", signature(object="LogisticRegression", x="matrix"), function(object, x, y) {
+#   X <- x
+#   w <- matrix(object@w,nrow=ncol(X))
   
-  # Multiclass:
-  expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates
+#   # Multiclass:
+#   expscore <- cbind(rep(0,nrow(X)), X %*% w) # Numerators of the probability estimates
   
-  ll <- sum(-log(rowSums(exp(expscore)))) # Denominators of the probability estimates, summed
+#   ll <- sum(-log(rowSums(exp(expscore)))) # Denominators of the probability estimates, summed
   
-  for (c in 1:length(object@classnames)) {
-    ll <- ll + sum(expscore[y==c,c]) # Sum the numerators for each class
-  }
-  return(ll)
-})
-          
-#' Log likelihood on a new data set                                                                                                 
+#   for (c in 1:length(object@classnames)) {
+#     ll <- ll + sum(expscore[y==c,c]) # Sum the numerators for each class
+#   }
+#   return(ll)
+# })
+
+#' Loss method for LogisticRegression
+#' MINUS Log likelihood on a new data set
+#'
+#' @rdname loss-methods
+#' @aliases loss,LogisticRegression-method                                                                                                   
 setMethod("loss", signature(object="LogisticRegression"), function(object, newdata, y=NULL) {
-  if (!is.null(object@modelform)) {
-    list2env(SSLDataFrameToMatrices(object@modelform,newdata,intercept=TRUE),environment())
-    
-  } else {
-    if (!is.matrix(newdata)) { stop("Training data and Testing data don't match.")}
-    if (is.null(y)) { stop("No labels supplied.")}
-    X<-newdata
-  }
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept)
+  X<-ModelVariables$X
+  y<-ModelVariables$y
+
+  if (is.null(y)) { stop("No labels supplied.")}
   
-  
-  theta <- matrix(object@theta,nrow=ncol(X))
+  w <- matrix(object@w,nrow=ncol(X))
   
   # Multiclass:
-  expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates
+  expscore <- cbind(rep(0,nrow(X)), X %*% w) # Numerators of the probability estimates
   
   ll <- sum(-log(rowSums(exp(expscore)))) # Denominators of the probability estimates, summed
   
   for (c in 1:length(object@classnames)) {
     ll <- ll + sum(expscore[y==c,c]) # Sum the numerators for each class
   }
-  return(ll)
+  return(-ll)
 })                                                                              
 
 
 #' Log likelihood on the training set                                                                              
-setMethod("logLik", signature(object="LogisticRegression"), function(object) {
-  loss(object,object@D)
-})
+# setMethod("logLik", signature(object="LogisticRegression"), function(object) {
+#   loss(object,object@D)
+# })
 
 #' Predict
+#' @rdname predict-methods
+#' @aliases predict,LogisticRegression-method  
 setMethod("predict", signature(object="LogisticRegression"), function(object, newdata,probs=FALSE) {
-  if (!is.null(object@modelform)) {
-    list2env(SSLDataFrameToMatrices(object@modelform,newdata,intercept=TRUE),environment())
-    
-  } else {
-    if (!is.matrix(newdata)) { stop("Training data and Testing data don't match.")}
-    X<-newdata
-  }
-  
-  theta <- matrix(object@theta, nrow=ncol(X))
-  expscore <- exp(cbind(rep(0,nrow(X)), X %*% theta))
+ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept)
+  X<-ModelVariables$X
+
+
+  w <- matrix(object@w, nrow=ncol(X))
+  expscore <- exp(cbind(rep(0,nrow(X)), X %*% w))
   probabilities <- expscore/rowSums(expscore)
   # If we need to return classes
   classes <- factor(apply(probabilities,1,which.max),levels=1:length(object@classnames), labels=object@classnames)
@@ -127,4 +130,11 @@ setMethod("predict", signature(object="LogisticRegression"), function(object, ne
  {
     return(probabilities)
   } else return(classes)
+})
+
+#' Boundary plot method for LogisticRegression
+#' @rdname boundaryplot-methods
+#' @aliases boundaryplot,LogisticRegression-method  
+setMethod("boundaryplot", signature(object="LogisticRegression"), function(object, p) {
+  p+geom_abline(intercept = (-(object@w[1])/object@w[3]), slope = (-object@w[2]/object@w[3]))
 })

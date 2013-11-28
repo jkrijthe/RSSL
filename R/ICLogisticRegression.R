@@ -1,4 +1,4 @@
-# Formal class definition
+#' @include LogisticRegression.R
 setClass("ImplicitlyConstrainedLogisticRegression",
          representation(theta="numeric",constrainedset="ANY"),
          prototype(name="Implicitly Constrained Logistic Regression"), 
@@ -50,7 +50,7 @@ ImplicitlyConstrainedLogisticRegressionFast<-function(modelform,D) {
     h_i <- LogisticRegression(modelform, D_i, init=init)
     init<-h_i@theta
     constrainedset[i,]<-h_i@theta
-    ll_i<-logLikelihood(h_i,X_l,y_l)
+    ll_i<-loss(h_i,X_l,y_l) #TODO: this was changed: check if it works
     
     if (!is.na(ll_i) && ll_i>ll) { 
       ll<-ll_i
@@ -63,8 +63,8 @@ ImplicitlyConstrainedLogisticRegressionFast<-function(modelform,D) {
   new("ImplicitlyConstrainedLogisticRegression",modelform=modelform,classnames=classnames,D=D,theta=h_trained@theta,constrainedset=constrainedset)
 }
 
-setMethod("plot", signature(x="ImplicitlyConstrainedLogisticRegression",y="missing"), function(x) {
-  print(x@constrainedset)
-  library(ggplot2)
-  qplot(x@constrainedset[,1],x@constrainedset[,2])
-})
+# setMethod("plot", signature(x="ImplicitlyConstrainedLogisticRegression",y="missing"), function(x) {
+#   print(x@constrainedset)
+#   library(ggplot2)
+#   qplot(x@constrainedset[,1],x@constrainedset[,2])
+# })

@@ -1,0 +1,39 @@
+\name{LeastSquaresClassifier}
+\alias{LeastSquaresClassifier}
+\title{Least Squares Classifier}
+\usage{
+  LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE,
+    scale=FALSE, ...)
+}
+\arguments{
+  \item{X}{Design matrix, intercept term is added within
+  the function}
+
+  \item{y}{Vector or factor with class assignments}
+
+  \item{lambda}{Regularization parameter of the l2 penalty
+  in regularized least squares}
+
+  \item{intercept}{TRUE if an intercept should be added to
+  the model}
+
+  \item{scale}{If TRUE, apply a z-transform to the design
+  matrix X before running the regression}
+
+  \item{...}{additional arguments}
+}
+\value{
+  S4 object of class LeastSquaresClassifier with the
+  following slots: \item{theta}{weight vector}
+  \item{classnames}{the names of the classes}
+  \item{modelform}{formula object of the model used in
+  regression} \item{scaling}{a scaling object containing
+  the paramters of the z-transforms applied to the data}
+}
+\description{
+  Use least squares regression using classes as targets (1
+  for one class, 2 for the other). Implemented using matrix
+  inversions, not the more stable Singular Value
+  Decomposition method.
+}
+

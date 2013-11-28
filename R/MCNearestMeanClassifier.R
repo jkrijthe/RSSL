@@ -1,20 +1,35 @@
-# Nearest Mean using moment constraints. See Loog (2012)
-
-# Formal class definition
-
+#' @include NearestMeanClassifier.R
 setClass("MCNearestMeanClassifier",
          representation(),
          prototype(name="Moment Constrained Nearest Mean Classifier through ad hoc mean shifting"),
          contains="NearestMeanClassifier")
 
-# Constructor method: XY
-MCNearestMeanClassifierXY <- function(X, y, X_u, method="closedform",scale=FALSE, ...) {
-  if (scale) {
-    library(pls)
-    scaling<-stdize(rbind(X,X_u), center = TRUE, scale = TRUE)
-    X<-predict(scaling,X)
-    X_u<-predict(scaling,X_u)
-  } else {scaling=NULL}
+#' Moment Constrained Nearest Mean Classifier (Semi-Supervised)
+#'
+#' To fit a true nearest mean classifier, set prior to equal class priors. Based on Loog (2010)
+#'
+#' @usage MCNearestMeanClassifier(X, y, X_u, method="closedform", scale=FALSE, ...)
+#'
+#' @param X Design matrix, intercept term is added within the function
+#' @param y Vector with class assignments
+#' @param X_u Design matrix of the unlabeled objects, intercept term is added within the function
+#' @param method Estimation procedure: c("closedform","ml")
+#' @param scale Whether the features should be scaled (default: FALSE)
+#' @param ... additional arguments
+#' @return S4  object; a list consisting of
+#' \item{means}{the approximation of piel}
+#' \item{prior}{the number of trials}
+#' \item{sigma}{the number of hits}
+#' @export
+MCNearestMeanClassifier <- function(X, y, X_u, method="closedform",scale=FALSE, ...) {
+  ## Preprocessing to correct datastructures and scaling  
+  ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=FALSE)
+  X<-ModelVariables$X
+  X_u<-ModelVariables$X_u
+  y<-ModelVariables$y
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  modelform<-ModelVariables$modelform
   
   Y <- model.matrix(~as.factor(y)-1)
   
@@ -39,15 +54,5 @@ MCNearestMeanClassifierXY <- function(X, y, X_u, method="closedform",scale=FALSE
   } else if (method=="ml") {
     
   }
-  new("MCNearestMeanClassifier", means=means, prior=prior, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
-}
-
-MCNearestMeanClassifier <- function(model, D, method="closedform",prior=NULL,scale=FALSE) {
-  list2env(SSLDataFrameToMatrices(model,D,intercept=FALSE),env=environment())
-  
-  # Fit model
-  trained<-MCNearestMeanClassifierXY(X, y, X_u, method=method, prior=prior, scale=scale)
-  trained@modelform<-model
-  trained@classnames<-classnames
-  return(trained)
+  new("MCNearestMeanClassifier", modelform=modelform, means=means, prior=prior, sigma=sigma,classnames=classnames,scaling=scaling)
 }

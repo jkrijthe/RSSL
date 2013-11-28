@@ -1,14 +1,75 @@
 Package: rssl
 Version: 0.1
-Date: 2012-10-24
-Title: Implementations for common semi-supervised learning approaches to classification and regression
+Date: 2013-07-30
+Title: Implementations of semi-supervised learning approaches to classification
+    and regression
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
-                    email = "jkrijthe@gmail.com"))
-Author: Jesse Krijthe
+    email = "jkrijthe@gmail.com"))
+Author: Jesse Krijthe <jkrijthe@gmail.com>
 Maintainer: Jesse Krijthe <jkrijthe@gmail.com>
-Depends: R (>= 1.8.0), nlme
-Suggests: MASS
-Description: Implementations for common semi-supervsied learning appraoches to classification and regression. Serves as benchmarks to new approaches and contains examples of the authors own methods.
+Depends:
+    R (>= 2.11.0),
+    class,
+    sampling,
+    MASS,
+    e1071,
+    foreign,
+    bootstrap,
+    methods,
+    plyr,
+    Matrix,
+    pls,
+    optimx
+Suggests:
+    MASS,
+    quadprog,
+    ggplot2
+Description: Implementations of semi-supervised learning approaches to
+    classification and regression. Serves as benchmarks to new approaches and
+    contains examples of the authors' own methods.
 License: GPL (>= 2)
 URL: http://www.github.com/jkrijthe/rssl
 BugReports: http://www.github.com/jkrijthe/rssl
+Collate:
+    'Generics.R'
+    'Classifier.R'
+    'HelperFunctions.R'
+    'NormalBasedClassifier.R'
+    'NearestMeanClassifier.R'
+    'LogisticRegression.R'
+    'LeastSquaresClassifier.R'
+    'LeastSquaresRegression.R'
+    'CoTraining.R'
+    'DensityAdaptiveRegression.R'
+    'DensitySensitiveRegression.R'
+    'LinearDiscriminantClassifier.R'
+    'EMLogisticRegression.R'
+    'EntropyRegularizedLogisticRegression.R'
+    'GRFHarmonicFunctionRegression.R'
+    'GenerateSSLData.R'
+    'ICLeastSquaresRegression.R'
+    'ICLogisticLossClassifier.R'
+    'ICLogisticRegression.R'
+    'ICNearestMeanClassifier.R'
+    'IWLogisticRegression.R'
+    'IWLeastSquaresClassifier.R'
+    'ImputedLeastSquaresClassifier.R'
+    'LogisticLossClassifier.R'
+    'MCLinearDiscriminantClassifier.R'
+    'MCNearestMeanClassifier.R'
+    'QuadraticDiscriminantClassifier.R'
+    'S3VM.R'
+    'S4VM.R'
+    'SGDSVM.R'
+    'SVM.R'
+    'SelfLearning.R'
+    'UCLeastSquaresClassifier.R'
+    'SGT.R'
+    'TSVM.R'
+    'TSVMbundle.R'
+    'TSVMlight.R'
+    'KNN.R'
+    'CrossValidation.R'
+    'ICLeastSquaresClassifier.R'
+    'MMLeastSquaresClassifier.R'
+    'ERLogisticLossClassifier.R'

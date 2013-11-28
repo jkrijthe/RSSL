@@ -1,0 +1,32 @@
+\name{LinearSVM}
+\alias{LinearSVM}
+\title{LinearSVM Class}
+\usage{
+  LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE,
+    intercept = TRUE)
+}
+\arguments{
+  \item{X}{Design matrix}
+
+  \item{y}{Labels of the observations}
+
+  \item{C}{Cost variable}
+
+  \item{method}{Estimation procedure
+  c("Dual","Primal","BGD","SGD","Pegasos")}
+
+  \item{scale}{Whether a z-transform should be applied
+  (default: TRUE)}
+
+  \item{intercept}{Whether an intercept should be added
+  (default: TRUE)}
+}
+\value{
+  S4 object of type LinearSVM
+}
+\description{
+  LinearSVM Class
+
+  Linear SVM Classifier
+}
+

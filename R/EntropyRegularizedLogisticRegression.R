@@ -1,13 +1,37 @@
-# Formal class definition
+#' @include LogisticRegression.R
 setClass("EntropyRegularizedLogisticRegression",
-         representation(theta="numeric"),
+         representation(w="numeric"),
          prototype(name="Entropy Regularized Logistic Regression"), 
          contains="LogisticRegression")
 
-# Constructor
-EntropyRegularizedLogisticRegressionXY <- function(X,y,X_u,lambda2=1.0,lambda=0.0,init=NA) {
+#' Entropy Regularized Logistic Regression
+#'
+#' Entropy regularized logistic regression as introduced by \cite{Grandvalet2005}.
+#'
+#' @usage EntropyRegularizedLogisticRegression(X, y, X_u=NULL,lambda_entropy=1.0,lambda=0.0,intercept=TRUE, init=NA)
+#'
+#' @param X Design matrix, intercept term is added within the function
+#' @param y Vector or factor with class assignments
+#' @param X_u Design matrix of the unlabeled data, intercept term is added within the function
+#' @param lambda_entropy Weight of the labeled observations compared to the unlabeled observations
+#' @param lambda l2 Regularization
+#' @param intercept Whether an intercept should be added to the model
+#' @param init Initial parameters for the gradient descent
+#' @return S4 object of class EntropyRegularizedLogisticRegression with the following slots:
+#' \item{theta}{weight vector}
+#' \item{classnames}{the names of the classes}
+#' @export
+EntropyRegularizedLogisticRegression <- function(X,y,X_u=NULL,lambda=0.0,lambda_entropy=1.0,intercept=TRUE, init=NA,scale=FALSE,x_center=FALSE) {
 
-  classnames <- 1:length(unique(y))
+  ## Preprocessing to correct datastructures and scaling  
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center)
+  X<-ModelVariables$X
+  X_u<-ModelVariables$X_u
+  y<-ModelVariables$y
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  modelform<-ModelVariables$modelform
+  
   m<-ncol(X)
   
   opt_func <- function(theta,X,y,X_u) {
@@ -30,15 +54,14 @@ EntropyRegularizedLogisticRegressionXY <- function(X,y,X_u,lambda2=1.0,lambda=0.
     
     ent<-0
     for (c in 1:length(classnames)) {
-      ent <- ent + sum( (exp(expscore[,c])/sum_exp) * (expscore[,c]-log(sum_exp))) # Sum the numerators for each class
+      #TODO: is the +1 correct?
+      ent <- ent + sum( (1+(exp(expscore[,c])/sum_exp)) * (expscore[,c]-log(sum_exp))) # Sum the numerators for each class
     }
     #print(ll+ent)
     if (is.nan(ll+ent)) return(0.0)
     if (is.infinite(ll+ent)) return(0.0)
     
-    return(ll/nrow(X) + lambda2*ent/nrow(X_u) + lambda * matrix(theta,nrow=1) %*% t(matrix(theta,nrow=1)))
-    
-    
+    return(ll/nrow(X) + lambda_entropy*ent/nrow(X_u) + lambda * matrix(theta,nrow=1) %*% t(matrix(theta,nrow=1)))
   }
   
   opt_grad <- function(theta, X,y) {
@@ -64,19 +87,13 @@ EntropyRegularizedLogisticRegressionXY <- function(X,y,X_u,lambda2=1.0,lambda=0.
   }
   
   opt_result <- optim(theta, opt_func, gr=NULL, X, y, X_u, method="BFGS", control=list(fnscale=-1))
-  print(opt_result$par)
+  #print(opt_result$par)
   theta<-opt_result$par
   
   new("EntropyRegularizedLogisticRegression",
-      classnames=classnames,
-      theta=theta)
-}
-
-EntropyRegularizedLogisticRegression<-function(modelform,D,lambda2=1.0,lambda=0.0,init=NA) {
-  list2env(SSLDataFrameToMatrices(modelform,D,intercept=TRUE),environment())
-  
-  trained<-EntropyRegularizedLogisticRegressionXY(X,y, init=init, lambda2=lambda2, lambda=lambda)
-  trained@modelform<-modelform
-  trained@classnames<-classnames
-  return(trained)
+      modelform=modelform, 
+      classnames=classnames, 
+      w=theta,
+      intercept=intercept,
+      scaling=NULL)
 }

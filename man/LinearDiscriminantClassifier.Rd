@@ -1,0 +1,43 @@
+\name{LinearDiscriminantClassifier}
+\alias{LinearDiscriminantClassifier}
+\title{Linear Discriminant Classifier}
+\usage{
+  LinearDiscriminantClassifier(X, y,
+    method="closedform",prior=NULL, scale=FALSE, ...)
+}
+\arguments{
+  \item{X}{Design matrix, intercept term is added within
+  the function}
+
+  \item{y}{Vector or factor with class assignments}
+
+  \item{method}{the method to use. Either "closedform" for
+  the fast closed form solution or "ml" for explicit
+  maximum likelihood maximization}
+
+  \item{prior}{A matrix with class prior probabilites. If
+  NULL, this will be estimated from the data}
+
+  \item{scale}{If TRUE, apply a z-transform to the design
+  matrix X before running the regression}
+
+  \item{...}{additional arguments}
+}
+\value{
+  S4 object of class LeastSquaresClassifier with the
+  following slots: \item{modelform}{weight vector}
+  \item{prior}{the prior probabilities of the classes}
+  \item{mean}{the estimates means of the classes}
+  \item{sigma}{The estimated covariance matrix}
+  \item{classnames}{a vector with the classnames for each
+  of the classes} \item{scaling}{scaling object used to
+  transform new observations}
+}
+\description{
+  Implementation of the linear discriminant classifier.
+  Classes are modeled as gaussians with equal covariance
+  matrices. The optimal covariance matrix and means for the
+  classes are found using maximum likelihood, which, in
+  this case, has a closed form solution.
+}
+

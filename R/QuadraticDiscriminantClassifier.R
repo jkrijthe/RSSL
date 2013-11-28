@@ -1,16 +1,36 @@
-# Formal Class Definition
+#' @include NormalBasedClassifier.R
 setClass("QuadraticDiscriminantClassifier",
          representation(means="matrix",sigma="list",prior="matrix"),
          prototype(name="Quadratic Discriminant Classifier"),
          contains="NormalBasedClassifier")
 
-# Constructor method: XY
-QuadraticDiscriminantClassifierXY <- function(X, y, method="closedform",prior=NULL, scale=FALSE,  ...) {
-  if (scale) {
-    library(pls)
-    scaling<-stdize(X, center = TRUE, scale = TRUE)
-    X<-predict(scaling,X)
-  } else {scaling=NULL}
+#' Quadratic Discriminant Classifier
+#'
+#' Implementation of the quadratic discriminant classifier. Classes are modeled as gaussians with different covariance matrices. The optimal covariance matrix and means for the classes are found using maximum likelihood, which, in this case, has a closed form solution.
+#'
+#' @usage QuadraticDiscriminantClassifier(X, y, method="closedform",prior=NULL, scale=FALSE, ...)
+#'
+#' @param X Design matrix, intercept term is added within the function
+#' @param y Vector or factor with class assignments
+#' @param method the method to use. Either "closedform" for the fast closed form solution or "ml" for explicit maximum likelihood maximization
+#' @param prior A matrix with class prior probabilites. If NULL, this will be estimated from the data
+#' @param scale If TRUE, apply a z-transform to the design matrix X before running the regression
+#' @param ... additional arguments
+#' @return S4 object of class LeastSquaresClassifier with the following slots:
+#' \item{modelform}{weight vector}
+#' \item{prior}{the prior probabilities of the classes}
+#' \item{mean}{the estimates means of the classes}
+#' \item{sigma}{The estimated covariance matrix}
+#' \item{classnames}{a vector with the classnames for each of the classes}
+#' \item{scaling}{scaling object used to transform new observations}
+#' @export
+QuadraticDiscriminantClassifier <- function(X, y, method="closedform", prior=NULL, scale=FALSE,  ...) {
+  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=FALSE)
+  X<-ModelVariables$X
+  y<-ModelVariables$y
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  modelform<-ModelVariables$modelform
   
   Y <- model.matrix(~as.factor(y)-1)
   
@@ -33,7 +53,7 @@ QuadraticDiscriminantClassifierXY <- function(X, y, method="closedform",prior=NU
       
       sigma<-lapply(1:ncol(Y),function(c){sigma})
       
-      model<-new("LinearDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
+      model<-new("QuadraticDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
       
       loss(model,X,y)
     }
@@ -47,17 +67,5 @@ QuadraticDiscriminantClassifierXY <- function(X, y, method="closedform",prior=NU
     sigma<-diag(ncol(X))*sigma
     sigma<-lapply(1:ncol(Y),function(c){sigma})
   }
-  new("QuadraticDiscriminantClassifier", prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
-}
-
-# Constructor method: formula
-# Removes intercept
-QuadraticDiscriminantClassifier <- function(model, D, method="closedform", prior=NULL, scale=FALSE) {  
-  list2env(SSLDataFrameToMatrices(model,D,intercept=FALSE),environment())
-  
-  # Fit model
-  trained<-QuadraticDiscriminantClassifierXY(X, y, method=method,prior=prior,scale=scale)
-  trained@modelform<-model
-  trained@classnames<-classnames
-  return(trained)
+  new("QuadraticDiscriminantClassifier", modelform=modelform, prior=prior, means=means, sigma=sigma,classnames=classnames,scaling=scaling)
 }

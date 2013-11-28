@@ -1,0 +1,134 @@
+#' LogisticLossClassifier
+#' @include Classifier.R
+setClass("LogisticLossClassifier", 
+         representation(w="numeric"), 
+         prototype(name="LogisticLossClassifier"), 
+         contains="Classifier")
+
+#' Logistic Loss Classifier
+#'
+#' Find the linear classifier which minimizing the logistic loss on the training set
+#'
+#' @usage LogisticLossClassifier(X, y, lambda=0, intercept=TRUE, scale=FALSE, init=NA, ...)
+#'
+#' @param X Design matrix, intercept term is added within the function
+#' @param y Vector with class assignments
+#' @param lambda Regularization parameter used for l2 regularization
+#' @param intercept TRUE if an intercept should be added to the model
+#' @param scale If TRUE, apply a z-transform to all observations in X and X_u before running the regression
+#' @param init Starting parameter vector for gradient descent
+#' @param ... additional arguments
+#' @return S4  object with the following slots
+#' \item{w}{the weight vector of the linear classification rule}
+#' \item{classnames}{vector with names of the classes}
+#' @export
+LogisticLossClassifier <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, init=NA, x_center=FALSE, ...) {
+  
+  ## Preprocessing to correct datastructures and scaling  
+  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
+  X<-ModelVariables$X
+  y<-ModelVariables$y
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  modelform<-ModelVariables$modelform
+  
+  if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
+  
+  y <- (y-1.5)*2
+  
+  opt_func <- function(w, X, y) {
+    
+    loss <- sum(log(matrix(1,nrow(X),1)+exp(- y * (X %*% w)))) + lambda * w[-1] %*% w[-1]
+    
+    return(as.numeric(loss))
+  }
+  
+  opt_grad <- function(w, X, y) {
+    w <- matrix(w,nrow=ncol(X))
+     # Numerators of the probability estimates    
+    weightings <- -y * (exp(- y * (X %*% w))/(matrix(1,nrow(X),1)+exp(- y * (X %*% w))))
+    as.vector(t(X) %*% weightings + lambda *c(0,w[-1]))
+  }
+  
+  if (is.na(init[1])) {
+    w <- rep(0.0,ncol(X)*(length(classnames)-1))
+  } else {
+    w<-init
+  }
+  
+#   iterations<-100000
+#   alpha<-0.1
+#   for (i in 1:iterations) {
+#     w <- w - alpha*opt_grad(w,X,y)
+#     #print(opt_func(w,X,y))
+#   }
+  
+  opt_result <- optim(w, fn=opt_func, gr=opt_grad, X=X, y=y, method="BFGS", control=list(fnscale=1), lower=-Inf, upper=Inf)
+  # w<-as.numeric(opt_result[1,1:length(w)])
+  w<-opt_result$par
+  #print(opt_func(w,X,y))
+  return(new("LogisticLossClassifier", modelform=modelform, classnames=classnames, w=w, scaling=scaling))
+}
+                                                                                        
+#' Loss method for LogisticLossClassifier
+#'
+#' Calculate the logistic loss of a classifier on a given dataset
+#'
+#' @usage loss(object, X, probs=FALSE)
+#' @usage loss(object, newdata, lambda=0, probs=FALSE)
+#'
+#' @param object Object of class LogisticLossClassifier
+#' @param X Design matrix of the test data, intercept term is added within the function
+#' @param y Vector with true classes of the test data
+#' @param newdata data.frame object with test data
+#' @return numeric of the total loss on the test data
+#' @rdname loss-methods
+#' @aliases loss,LogisticLossClassifier-method  
+setMethod("loss", signature(object="LogisticLossClassifier"), function(object, newdata, y=NULL) {
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=TRUE)
+  X<-ModelVariables$X
+  y<-ModelVariables$y
+  
+  if (is.null(y)) { stop("No labels supplied.")}
+  y<-(y-1.5)*2
+  sum(log(matrix(1,nrow(X),1)+exp(- y * (X %*% object@w))))
+})                                                                              
+
+#' Predict method for Logistic Loss Classifier
+#'
+#' Predict classes of new data based on trained least squares classifier
+#'
+#' @usage predict(object, X, probs=FALSE)
+#' @usage predict(object, newdata, lambda=0, probs=FALSE)
+#'
+#' @param object Object of class LogisticLossClassifier
+#' @param X Design matrix of the test data, intercept term is added within the function
+#' @param newdata data.frame object with test data
+#' @param probs whether class probabilities should be returned
+#' @return factor of predicted classes
+#' @rdname predict-methods
+#' @aliases predict,LogisticLossClassifier-method  
+setMethod("predict", signature(object="LogisticLossClassifier"), function(object, newdata,probs=FALSE) {
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=TRUE)
+  X<-ModelVariables$X
+  
+  w <- matrix(object@w, nrow=ncol(X))
+  expscore <- exp(cbind(rep(0,nrow(X)), X %*% w))
+  probabilities <- expscore/rowSums(expscore)
+  # If we need to return classes
+  classes <- factor(apply(probabilities,1,which.max),levels=1:length(object@classnames), labels=object@classnames)
+  if (probs)
+  {
+    return(probabilities)
+  } else return(classes)
+})
+
+#' Boundary plot method for LogisticLossClassifier
+#'
+#' @param object LogisticLossClassifier object
+#' @param p ggplot object of classification problem generated by clplot
+#' @rdname boundaryplot-methods
+#' @aliases boundaryplot,LogisticLossClassifier-method  
+setMethod("boundaryplot", signature(object="LogisticLossClassifier"), function(object, p) {
+  p+geom_abline(intercept = (-(object@w[1])/object@w[3]), slope = (-object@w[2]/object@w[3]))
+})

@@ -1,0 +1,31 @@
+\name{PreProcessingPredict}
+\alias{PreProcessingPredict}
+\title{Preprocess the input for a new set of test objects for classifier}
+\usage{
+  PreProcessingPredict(modelform,newdata,y=NULL,scaling=FALSE,intercept=FALSE)
+}
+\arguments{
+  \item{modelform}{Formula object with model}
+
+  \item{newdata}{data.frame object with objects}
+
+  \item{y}{Vector or factor with class assignments}
+
+  \item{scaling}{Apply a given z-transform to the design
+  matrix X}
+
+  \item{intercept}{Whether to include an intercept in the
+  design matrices}
+}
+\value{
+  list object with the following objects: \item{X}{design
+  matrix of the labeled data} \item{y}{integer vector
+  indicating the labels of the labeled data}
+}
+\description{
+  The following actions are carried out: 1. data.frames are
+  converted to matrix form and labels converted to integers
+  2. An intercept column is added if requested 3. centering
+  and scaling is applied if requested.
+}
+
