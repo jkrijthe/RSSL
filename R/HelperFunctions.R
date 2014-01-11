@@ -1,3 +1,8 @@
+#' Maximum Likelihood Covariance estimate
+#' @export
+cov_ml<-function(X) { ((nrow(X)-1)/nrow(X))*cov(X) }
+
+#' Standard Error of a vector
 #' @export
 stderror <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x))) # http://stackoverflow.com/questions/2676554/in-r-how-to-find-the-standard-error-of-the-mean
 
@@ -94,7 +99,7 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=TRUE) 
       classnames<-1:length(unique(y)) 
     }
   } else {
-    stop("No valid input, see help.")
+    stop("No valid input for X and y, see help.")
   }
   
   if (scale | x_center) {
@@ -142,7 +147,7 @@ if (!is.null(modelform)) {
   list2env(SSLDataFrameToMatrices(modelform,newdata,intercept=intercept),environment())
   X<-X
 } else {
-  if (!is.matrix(newdata)) { browser(); stop("Training data and Testing data don't match.")}
+  if (!is.matrix(newdata)) { stop("Training data and Testing data don't match.")}
   X<-newdata
   if (intercept) { X<-cbind(matrix(1,nrow(X),1),X) } # Add intercept term
 }

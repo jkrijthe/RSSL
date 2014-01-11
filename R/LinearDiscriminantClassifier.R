@@ -45,7 +45,7 @@ LinearDiscriminantClassifier<- function(X, y, method="closedform",prior=NULL, sc
     
     #Set sigma to be the average within scatter matrix
     
-    sigma.classes<-lapply(1:ncol(Y),function(c,X){cov(X[Y[,c]==1, ,drop=FALSE])},X)
+    sigma.classes<-lapply(1:ncol(Y),function(c,X){cov_ml(X[Y[,c]==1, ,drop=FALSE])},X)
     
     sigma<-sigma.classes[[1]]*prior[1]
     for (i in 2:length(sigma.classes)) {

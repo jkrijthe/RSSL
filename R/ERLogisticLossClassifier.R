@@ -1,4 +1,4 @@
-#' @include LogisticRegression.R
+#' @include LogisticLossClassifier.R
 setClass("ERLogisticLossClassifier",
          representation(w="numeric"),
          prototype(name="Entropy Regularized Logistic Loss Classifier"), 

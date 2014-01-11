@@ -1,8 +1,8 @@
-# #' TSVMuniversum
-# #' @include Classifier.R
-# setClass("TSVMuniversum", 
-#          representation(name="ANY"), 
-#          prototype(name="TSVMuniversum"))
+#' TSVMuniversum
+#' @include Classifier.R
+setClass("TSVMuniversum", 
+         representation(name="ANY"), 
+         prototype(name="TSVMuniversum"))
 
 # TSVMuniversum<-function(X, y, X_u=NULL, x_center=TRUE,scale=FALSE,binary_path=NULL,temp_path=NULL,,...) {
   

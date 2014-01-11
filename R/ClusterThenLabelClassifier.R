@@ -1,8 +1,8 @@
-# # Formal class definition
-# setClass("ClusterThenLabelClassifier",
-#          representation(theta="numeric"),
-#          prototype(name="Cluster then Label classifier"), 
-#          contains="Classifier")
+# Formal class definition
+setClass("ClusterThenLabelClassifier",
+         representation(theta="numeric"),
+         prototype(name="Cluster then Label classifier"), 
+         contains="Classifier")
 
 # ClusterThenLabelClassifier <- function(X,y,X_u,classifier,clustering,predict.clustering) {
   

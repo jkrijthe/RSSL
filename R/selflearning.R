@@ -16,12 +16,10 @@ setClass("SelfLearning",
 #' @param prob If TRUE, run algorithm with soft labels, instead of hard labels
 #' @param ... additional arguments to be passed to method
 #' @export
-SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, ...) {
-
-  #TODO: Use a threshold instead of labeling all points?
+SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, scale=FALSE, ...) {
 
   ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X,y,X_u,scale=FALSE,intercept=FALSE,x_center=FALSE)
+  ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=FALSE,x_center=FALSE)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
   y<-ModelVariables$y
@@ -45,7 +43,11 @@ SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, 
     
     model <- method(rbind(X, X_u), c(y, y_unlabelled_old))
     y_unlabelled <- predict(model,X_u)
-    i_labels<-c(i_labels,y_unlabelled)
+    if (!cautious) {
+      i_labels<-c(i_labels,y_unlabelled)
+    } else {
+      stop("Cautious algorithm not implemented yet")
+    }
   }
   
   i_labels <- matrix(i_labels,ncol=n_iter+1) # Return the imputed labels of each iteration
@@ -55,6 +57,7 @@ SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, 
                 name=paste("Self Learned ",model@name),
                 model=model,
                 n_iter=n_iter,
+                scaling=scaling,
                 i_labels=i_labels)
   return(object)
 }
@@ -64,7 +67,7 @@ SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, 
 #' @rdname predict-methods
 #' @aliases predict,SelfLearning-method
 setMethod("predict", signature(object="SelfLearning"), function(object,newdata,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=NULL,intercept=FALSE)
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE)
   X<-ModelVariables$X
 
   return(predict(object@model,X,...))
@@ -82,7 +85,7 @@ setMethod("predict", signature(object="SelfLearning"), function(object,newdata,.
 #' @rdname loss-methods
 #' @aliases loss,SelfLearning-method    
 setMethod("loss", signature(object="SelfLearning"), function(object,newdata,y=NULL,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=NULL,intercept=FALSE)
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE)
   X<-ModelVariables$X
   y<-ModelVariables$y
   return(loss(object@model,X,y,...))
@@ -97,6 +100,6 @@ setMethod("plot", signature(x="SelfLearning"), function(x, X, y, X_u) {
   library(animation)
   X_e<-rbind(X,X_u)
   saveGIF({
-    for (i in 1:x@n_iter) { print(qplot(X_e[,2],X_e[,3],color=factor(c(y,x@i_labels[,i])))) }
+    for (i in 1:x@n_iter) { print(qplot(X_e[,1],X_e[,2],color=factor(c(y,x@i_labels[,i])))) }
   })
 })

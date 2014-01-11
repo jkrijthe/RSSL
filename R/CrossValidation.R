@@ -4,9 +4,9 @@
 # Names of classifiers
 # Plot function
 # Different measurements on the data
-ErrorCurve<-function(X, y, classifiers, sizes=10:10:nrow(X),n_test=1000,repeats=100,verbose=TRUE) {
+ErrorCurve<-function(X, y, classifiers, with_replacement=FALSE, sizes=10:10:nrow(X),n_test=1000,repeats=100,verbose=TRUE) {
 
-  results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), 3))
+  results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), 4))
   dimnames(results)<-list(1:repeats,sizes,lapply(classifiers, function(c) {as.character(body(c))[[2]]}),c("Error", "Loss Test", "Loss Train"))
   sample.test<-sample(1:nrow(X), n_test, replace=TRUE)
   X_test<-X[sample.test,,drop=FALSE]
@@ -20,7 +20,12 @@ ErrorCurve<-function(X, y, classifiers, sizes=10:10:nrow(X),n_test=1000,repeats=
     if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
     
     sample.labeled<-strata(data.frame(strata=y),"strata",c(1,1),method="srswr")$ID_unit
-    sample.labeled<-c(sample.labeled, sample(1:nrow(X),max(sizes)-2,replace=TRUE))
+    if (with_replacement) {
+      sample.labeled<-c(sample.labeled, sample(1:nrow(X),max(sizes)-2,replace=TRUE))
+    } else {
+      stop("Without replacement not implemented yet.")
+    }
+    
 
     X_l<-X[sample.labeled,,drop=FALSE]
     y_l<-y[sample.labeled]
@@ -34,6 +39,7 @@ ErrorCurve<-function(X, y, classifiers, sizes=10:10:nrow(X),n_test=1000,repeats=
           results[i,s,c,1] <- 1-mean(y_test==predict(trained_classifier,X_test))
           results[i,s,c,2] <- loss(trained_classifier, X_test, y_test)
           results[i,s,c,3] <- loss(trained_classifier, X_l_s, y_l_s)
+          results[i,s,c,4] <- loss(trained_classifier, X_l_s, y_l_s) # Area under ROC curve
         })
         }
     }
@@ -42,52 +48,13 @@ ErrorCurve<-function(X, y, classifiers, sizes=10:10:nrow(X),n_test=1000,repeats=
   return(list(call="Not known",results=results,n_test=n_test,independent="Number of training objects"))
 }
 
-ErrorCurveParameters<-function(X,y,s=10^(-5:5)) {
-
+# Not implemented yet
+ErrorCurveParameters<-function(X,y,classifier,s=10^(-5:5)) {
+  #Do cross validation
 }
 
-ErrorCurveSSL<-function(X, y, classifiers, n_l, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE) {
-
-  results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), 3))
-  dimnames(results)<-list(1:repeats,sizes,lapply(classifiers, function(c) {as.character(body(c))[[2]]}),c("Error", "Loss Test", "Loss Train"))
-  sample.test<-sample(1:nrow(X), n_test, replace=TRUE)
-  X_test<-X[sample.test,,drop=FALSE]
-  y_test<-y[sample.test]
-  
-  if (verbose) cat("Number of features: ",ncol(X),"\n")
-  if (verbose) cat("Number of objects:  ",nrow(X),"\n")
-  if (verbose) pb<-txtProgressBar(0,repeats) # Display a text progress bar
-      
-  for (i in 1:repeats) {
-    if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
-    
-    sample.labeled<-strata(data.frame(strata=y),"strata",c(1,1),method="srswr")$ID_unit
-    sample.labeled<-c(sample.labeled, sample(1:nrow(X),n_l-2,replace=TRUE))
-    X_l<-X[sample.labeled,,drop=FALSE]
-    y_l<-y[sample.labeled]
-    
-    sample.unlabeled<-sample(1:nrow(X),max(sizes),replace=TRUE)
-    X_u<-X[sample.unlabeled,,drop=FALSE]
-    y_u<-y[sample.unlabeled]
-    
-    for (s in 1:length(sizes)) {
-      X_u_s <- X_u[1:sizes[s],,drop=FALSE]
-      y_u_s <- y_u[1:sizes[s]]
-      for (c in 1:length(classifiers)) {
-        try({
-          trained_classifier<-do.call(classifiers[[c]],list(X_l, y_l, X_u=X_u_s,y_u=y_u_s))        
-          results[i,s,c,1] <- 1-mean(y_test==predict(trained_classifier,X_test))
-          results[i,s,c,2] <- loss(trained_classifier, X_test, y_test)
-          results[i,s,c,3] <- loss(trained_classifier, X_l, y_l)
-        })
-        }
-    }
-  }
-  if (verbose) cat("\n")
-  return(list(call="Not known",n_l=n_l,results=results,n_test=n_test,independent="Number of unlabeled objects"))
-}
-
-ErrorCurveSSL2<-function(X, y, classifiers, n_l, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE) {
+#' Generate Semi-Supervised Learning error curve
+ErrorCurveSSL<-function(X, y, classifiers, n_l, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1) {
 
   results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), 3))
   dimnames(results)<-list(1:repeats,sizes,lapply(classifiers, function(c) {as.character(body(c))[[2]]}),c("Error", "Avg. Loss Test", "Avg. Loss Train"))
@@ -99,13 +66,17 @@ ErrorCurveSSL2<-function(X, y, classifiers, n_l, sizes=2^(1:8), n_test=1000,repe
   for (i in 1:repeats) {
     if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
     
-    sample.labeled<-strata(data.frame(strata=y),"strata",c(1,1),method="srswr")$ID_unit
-    sample.labeled<-c(sample.labeled, sample((1:nrow(X))[-sample.labeled],n_l-2,replace=FALSE))
+    sample.labeled<-strata(data.frame(strata=y),"strata",c(n_min,n_min),method="srswr")$ID_unit
+    sample.labeled<-c(sample.labeled, sample((1:nrow(X))[-sample.labeled],n_l-(n_min),replace=FALSE))
 
     X_l<-X[sample.labeled,,drop=FALSE]
     y_l<-y[sample.labeled]
     
-    sample.unlabeled<-sample((1:nrow(X))[-sample.labeled])
+    if (!with_replacement) {
+      sample.unlabeled<-sample((1:nrow(X))[-sample.labeled])
+    } else {
+      sample.unlabeled<-sample(1:nrow(X),max(sizes)+n_test,replace=TRUE)
+    }
     X_u<-X[sample.unlabeled,,drop=FALSE]
     y_u<-y[sample.unlabeled]
     
@@ -114,8 +85,13 @@ ErrorCurveSSL2<-function(X, y, classifiers, n_l, sizes=2^(1:8), n_test=1000,repe
 
       X_u_s <- X_u[1:sizes[s],,drop=FALSE]
       y_u_s <- y_u[1:sizes[s]]
-      X_test <- X_u[-(1:sizes[s]),,drop=FALSE]
-      y_test <- y_u[-(1:sizes[s])]
+      if (!with_replacement) {
+        X_test <- X_u[-(1:sizes[s]),,drop=FALSE]
+        y_test <- y_u[-(1:sizes[s])]
+      } else {
+        X_test <- X_u[-(1:max(sizes)),,drop=FALSE]
+        y_test <- y_u[-(1:max(sizes))]
+      }
 
       prX_l<-X_l
       prX_u_s<-X_u_s
@@ -131,12 +107,12 @@ ErrorCurveSSL2<-function(X, y, classifiers, n_l, sizes=2^(1:8), n_test=1000,repe
       # cat(nrow(X_test),nrow(X_u_s),nrow(X_l),"\n")
       for (c in 1:length(classifiers)) {
 
-        try({
+#         try({
           trained_classifier<-do.call(classifiers[[c]],list(prX_l, y_l, X_u=prX_u_s,y_u=y_u_s))        
           results[i,s,c,1] <- 1-mean(y_test==predict(trained_classifier,prX_test))
-          results[i,s,c,2] <- loss(trained_classifier, prX_test, y_test)/nrow(X_test)
-          results[i,s,c,3] <- loss(trained_classifier, prX_l, y_l)/nrow(X_l)
-        })
+          results[i,s,c,2] <- loss(trained_classifier, prX_test, y_test)
+          results[i,s,c,3] <- loss(trained_classifier, prX_l, y_l)
+#         })
         }
     }
   }
@@ -144,6 +120,7 @@ ErrorCurveSSL2<-function(X, y, classifiers, n_l, sizes=2^(1:8), n_test=1000,repe
   return(list(call="Not known",n_l=n_l,results=results,n_test=n_test,independent="Number of unlabeled objects"))
 }
 
+#' Plot errorcurve generated by the ErrorCurveSSL function
 plot.ErrorCurve<-function(data,measurement=1,legendsetting="right",datasetname="Unknown Dataset") {
   ## Visualize
   m<-measurement
@@ -183,7 +160,7 @@ plot.ErrorCurve<-function(data,measurement=1,legendsetting="right",datasetname="
             panel.border = element_blank() ,
             panel.background = element_blank(),
             legend.position = legendsetting,
-            legend.text = element_text(size=5),
+            legend.text = element_text(size=12),
             axis.ticks = element_line(colour = "black"),
             axis.title.x = element_text(size = 10, vjust = 0.5),
             axis.title.y = element_text(size = 10, angle = 90, vjust = 0.5),
@@ -255,6 +232,7 @@ createlegend.ErrorCurve<-function(data,measurement=1,legendsetting="right",datas
   return(legend)
 }
 
+#' Regular cross-validation on a set of classifiers
 CrossValidation<-function(X,y,classifiers,measures=c("predict","losstest"),groups=NULL,k=10,repeats=1,verbose=FALSE) {
   N<-nrow(X)
   results<-array(NA, dim=c(repeats, length(classifiers), 4))
@@ -303,6 +281,7 @@ CrossValidation<-function(X,y,classifiers,measures=c("predict","losstest"),group
   return(list(call="Not known",k=k,results=results))
 }
 
+#' Crossvalidation in the transductive setting
 CrossValidationTransductive<-function(X,y,classifiers,measures=c("predict","losstest"),groups=NULL,k=10,repeats=1,verbose=FALSE, dataset_name="Unknown Dataset") {
   N<-nrow(X)
   results<-array(NA, dim=c(repeats, length(classifiers), 4))
@@ -354,6 +333,7 @@ CrossValidationTransductive<-function(X,y,classifiers,measures=c("predict","loss
   return(list(call="Not known",k=k,results=results))
 }
 
+# Labeled samples form the fold
 CrossValidationSSL<-function(X,y,classifiers,n_labeled=100,measures=c("predict","losstest"),groups=NULL,k=2,repeats=1,verbose=FALSE,prop_unlabeled=0.5) {
 
   N<-nrow(X)
@@ -407,7 +387,8 @@ CrossValidationSSL<-function(X,y,classifiers,n_labeled=100,measures=c("predict",
   return(list(call="Not known",k=k,results=results))
 }
 
-CrossValidationSSL2<-function(X,y,classifiers,n_labeled=100,groups=NULL,k=2,repeats=1,verbose=FALSE,dataset_name="Unknown Dataset") {
+#Test samples forms the fold
+CrossValidationSSL2<-function(X,y,classifiers,n_labeled=100,groups=NULL,k=2,repeats=1,n_min=1,verbose=FALSE,dataset_name="Unknown Dataset") {
   N<-nrow(X)
   results<-array(NA, dim=c(repeats, length(classifiers), 4))
   dimnames(results)<-list(1:repeats,lapply(classifiers, function(c) {as.character(body(c))[[2]]}),c("Error", "Avg. Loss Test", "Avg. Loss Train","Time"))
@@ -421,7 +402,7 @@ CrossValidationSSL2<-function(X,y,classifiers,n_labeled=100,groups=NULL,k=2,repe
     results[i,,1] <- 0
     results[i,,2] <- 0 # Loss on test set
     results[i,,3] <- 0 # Loss on training set
-    sample.classguarantee<-strata(data.frame(strata=y),"strata",c(k,k),method="srswor")$ID_unit
+    sample.classguarantee<-strata(data.frame(strata=y),"strata",c(n_min*k,n_min*k),method="srswor")$ID_unit
     sample.random <- sample((1:N)[-sample.classguarantee])
     
     N_fold<-floor(N/k) # Number of objects per fold
@@ -432,18 +413,21 @@ CrossValidationSSL2<-function(X,y,classifiers,n_labeled=100,groups=NULL,k=2,repe
       if (verbose) setTxtProgressBar(pb, (i-1)*k+f)
 
       if (f<k) { # Check whether we are in the last fold
-        idx_test<-c(sample.classguarantee[c(f,f+k)], sample.random[1:(N_fold-2)])
-        sample.random<-sample.random[-(1:(N_fold-2))]
+        st<-((f-1)*n_min)
+        idx_test<-c(sample.classguarantee[c((st+1):(st+n_min),((st+n_min*k)+1):((st+n_min*k)+n_min))], sample.random[1:(N_fold-2*n_min)])
+        sample.random<-sample.random[-(1:(N_fold-2*n_min))]
       } else {
-        idx_test<-c(sample.classguarantee[c(f,f+k)], sample.random)
+        idx_test<-c(sample.classguarantee[c((st+1):(st+n_min),((st+n_min*k)+1):((st+n_min*k)+n_min))], sample.random)
+        
       }
+      
       idx_train<-(1:N)[-idx_test]
     
       X_train<-X[idx_train,]
       y_train<-y[idx_train]
 
-      sample.labeled.classguarantee<-strata(data.frame(strata=y_train),"strata",c(1,1),method="srswor")$ID_unit
-      sample.labeled.random <- sample((1:nrow(X_train))[-sample.labeled.classguarantee],n_labeled-2)
+      sample.labeled.classguarantee<-strata(data.frame(strata=y_train),"strata",c(n_min,n_min),method="srswor")$ID_unit
+      sample.labeled.random <- sample((1:nrow(X_train))[-sample.labeled.classguarantee],n_labeled-2*n_min)
       idx_train_labeled<-c(sample.labeled.classguarantee, sample.labeled.random)
 
       X_train_labeled<-X_train[idx_train_labeled,]
@@ -460,8 +444,8 @@ CrossValidationSSL2<-function(X,y,classifiers,n_labeled=100,groups=NULL,k=2,repe
             trained_classifier<-do.call(classifiers[[c]],list(X_train_labeled, y_train_labeled, X_u=X_train_unlabeled,y_u=y_train_unlabeled))
             results[i,c,1]<-results[i,c,1] + sum(predict(trained_classifier,X_test)==y_test)/nrow(X)
           
-            results[i,c,2] <- results[i,c,2]+loss(trained_classifier, X_test, y_test)/nrow(X_test) # Average Loss on test set
-            results[i,c,3] <- results[i,c,3]+loss(trained_classifier, X_train_labeled, y_train_labeled)/nrow(X_train_labeled) # Average Loss on training set          
+            results[i,c,2] <- results[i,c,2]+loss(trained_classifier, X_test, y_test)*nrow(X_test)/nrow(X) # Average Loss on test set
+            results[i,c,3] <- results[i,c,3]+loss(trained_classifier, X_train_labeled, y_train_labeled)*nrow(X_train_labeled) # Average Loss on training set          
           })
         }
     }
@@ -500,6 +484,7 @@ Resampling<-function(X,y,classifiers,prop_train=0.5,repeats=100,groups=NULL) {
   }
 }
 
+#' Generate table of cross-validation results
 table.CrossValidation<-function(object,caption="",classifier_names=NULL) {
   # overfolds<-apply(object$results,c(1,3:4),mean,na.rm=T)
   if (is.list(object)) {

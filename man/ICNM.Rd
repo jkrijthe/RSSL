@@ -1,0 +1,33 @@
+\name{ICNM}
+\alias{ICNM}
+\title{Implicitly Constrained Nearest Mean Classifier (Semi-Supervised)}
+\usage{
+  MCNearestMeanClassifier(X, y, X_u, method="closedform",
+    scale=FALSE, ...)
+}
+\arguments{
+  \item{X}{Design matrix, intercept term is added within
+  the function}
+
+  \item{y}{Vector with class assignments}
+
+  \item{X_u}{Design matrix of the unlabeled objects,
+  intercept term is added within the function}
+
+  \item{method}{Estimation procedure: c("closedform","ml")}
+
+  \item{scale}{Whether the features should be scaled
+  (default: FALSE)}
+
+  \item{...}{additional arguments}
+}
+\value{
+  S4 object; a list consisting of \item{means}{the
+  approximation of piel} \item{prior}{the number of trials}
+  \item{sigma}{the number of hits}
+}
+\description{
+  To fit a true nearest mean classifier, set prior to equal
+  class priors. Based on Loog (2010)
+}
+

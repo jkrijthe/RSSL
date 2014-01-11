@@ -3,7 +3,7 @@
 \title{Least Squares Classifier}
 \usage{
   LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE,
-    scale=FALSE, ...)
+    x_center, scale=FALSE, ...)
 }
 \arguments{
   \item{X}{Design matrix, intercept term is added within
@@ -16,6 +16,9 @@
 
   \item{intercept}{TRUE if an intercept should be added to
   the model}
+
+  \item{x_center}{TRUE, whether the dependent variables
+  (features) should be centered}
 
   \item{scale}{If TRUE, apply a z-transform to the design
   matrix X before running the regression}
@@ -31,9 +34,11 @@
   the paramters of the z-transforms applied to the data}
 }
 \description{
-  Use least squares regression using classes as targets (1
-  for one class, 2 for the other). Implemented using matrix
-  inversions, not the more stable Singular Value
-  Decomposition method.
+  Use least squares regression as a classification
+  technique using classes as targets (1 for one class, 2
+  for the other). Implemented using matrix inversions, not
+  the more numerically stable Singular Value Decomposition
+  method. Note this method minimizes quadratic loss, not
+  the truncated quadratic loss.
 }
 

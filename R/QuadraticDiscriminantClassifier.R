@@ -46,6 +46,7 @@ QuadraticDiscriminantClassifier <- function(X, y, method="closedform", prior=NUL
     sigma<-lapply(1:ncol(Y),function(c,X){cov(X[Y[,c]==1,,drop=FALSE])},X)
     
   } else if (method=="ml") {
+    stop("QDC: ML optimization not implemented yet.")
     opt_func<-function(theta, X, y) {
       means<-matrix(theta[1:(ncol(Y)*ncol(X))],ncol(Y),ncol(X))
       sigma<-matrix(theta[((ncol(Y)*ncol(X))+1):length(theta)],ncol(X),ncol(X))

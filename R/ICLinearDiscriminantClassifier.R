@@ -4,21 +4,24 @@ setClass("ICLinearDiscriminantClassifier",
          prototype(name="Implicitly Constrained Linear Discriminant Classifier"),
          contains="LinearDiscriminantClassifier")
 
-#' Moment constriant semi-supervised linear discriminant analysis
+#' Implicitly Constrained Semi-Supervised Linear Discriminant Classifier
 #'
-#' <full description>
+#' Semi-supervised version of Linear Discriminant Analysis using implicit constraints.
+#' This method finds the labeling of the unlabeled objects, whose resulting LDA solution gives the highest log-likelihood when evaluated on the labeled objects only.
 #'
-#' @usage MCLinearDiscriminantClassifier(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...)
+#' @usage ICLinearDiscriminantClassifier(X, y, X_u,prior=NULL, scale=FALSE,init=NULL, sup_prior=FALSE, factr=1e7,  ...)
 #'
-#' @param X <what param does>
-#' @param y <what param does>
-#' @param X_u <what param does>
-#' @param method <what param does>
+#' @param X design matrix of the labeled objects
+#' @param y vector with labels
+#' @param X_u design matrix of the labeled objects
 #' @param prior <what param does>
-#' @param scale <what param does>
-#' @param ... <what param does>
+#' @param scale Should the features be normalized? (default: FALSE)
+#' @param init not currently used
+#' @param sup_prior use the prior estimates based only on the labeled data, not the imputed labels (default: FALSE)
+#' @param factr change the precision requirement passed to the optim function (default: 1e7)
+#' @param ... Additional Parameters, Not used
 #' @export
-ICLDA <- ICLinearDiscriminantClassifier <- function(X, y, X_u, method="ml",prior=NULL, scale=FALSE,init=NULL,  ...) {
+ICLDA <- ICLinearDiscriminantClassifier <- function(X, y, X_u,prior=NULL, scale=FALSE,init=NULL, sup_prior=FALSE, factr=1e7,  ...) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
   X<-ModelVariables$X
@@ -29,56 +32,33 @@ ICLDA <- ICLinearDiscriminantClassifier <- function(X, y, X_u, method="ml",prior
   modelform<-ModelVariables$modelform
   
   Y <- model.matrix(~as.factor(y)-1)
+  k<-ncol(X) # Number of features
   
+  vec2vars<-function(w) {
+    prior<-matrix(NA,length(classnames),1)
+    prior[1,] <- w[1]
+    prior[2,] <- 1-w[1]
     
-    # #Set priors if not set by user
-    # if (is.null(prior)) prior<-matrix(colMeans(Y),2,1)
+    m<-matrix(NA,length(classnames),k)
+    m[1,] <- w[(1+1):(1+k)]
+    m[2,] <- w[(1+1+k):(1+2*k)]
+    sigmas<-list()
+    Sigma <- diag(k) 
+    Sigma[upper.tri(Sigma, diag=TRUE)] <- w[(1+2*k+1):length(w)] 
+    Sigma <- Sigma + t(Sigma) - diag(diag(Sigma),nrow(Sigma),ncol=ncol(Sigma))
     
-    # #Calculate means for classes
-    # means<-t((t(X) %*% Y))/(colSums(Y))
+    sigmas[[1]] <- Sigma
+    sigmas[[2]] <- Sigma
     
-    # #Set sigma to be the average within scatter matrix
-    # sigma.classes<-lapply(1:ncol(Y),function(c,X){cov(X[Y[,c]==1,])},X)
-    # sigma<-sigma.classes[[1]]*prior[1]
-    # for (i in 2:length(sigma.classes)) {
-    #   sigma<-sigma+sigma.classes[[i]]*prior[i]
-    # }
-    
-    
-    # T.labeled<-cov(X)
-    # T.all<-cov(rbind(X,X_u))
-    # m.labeled<-colMeans(X)
-    # m.all<-colMeans(rbind(X,X_u))
-    
-    
-    # matrixsqrt <- function(X) {
-    #   decomposition<-svd(X)
-    #   decomposition$u %*% diag(sqrt(decomposition$d)) %*% decomposition$v
-    # }
-    
-    # sigma <- matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled)) %*% sigma %*% matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled))
-    # means <- matrixsqrt(T.all) %*% ginv(matrixsqrt(T.labeled)) %*% (means-matrix(1,nrow(means),1) %*% m.labeled ) + matrix(1,nrow(means),1) %*% m.all 
-    
-    # sigma<-lapply(1:ncol(Y),function(c){sigma})
-    
-
-    L_sl <- function(w,X,Y,lambda) {
-      k<-ncol(X) # Number of features
-
-      prior<-matrix(NA,length(classnames),1)
-      prior[1,] <- w[1]
-      prior[2,] <- 1-w[1]
-      m<-matrix(NA,length(classnames),k)
-      m[1,] <- w[(1+1):(1+k)]
-      m[2,] <- w[(1+1+k):(1+2*k)]
-      sigmas<-list()
-      Sigma <- diag(k) 
-      Sigma[upper.tri(Sigma, diag=TRUE)] <- w[(1+2*k+1):length(w)] 
-      Sigma <- Sigma + t(Sigma) - diag(diag(Sigma))
-
-      sigmas[[1]] <- Sigma
-      sigmas[[2]] <- Sigma
-
+    return(list(m=m,prior=prior,sigmas=sigmas))
+  }
+  
+  L_sl <- function(w,X,Y) {
+      vars<-vec2vars(w)
+      m<-vars$m
+      prior<-vars$prior
+      sigmas<-vars$sigmas
+      
       ll<-0
       for (c in 1:nrow(m)) {
         sigma<-sigmas[[c]]
@@ -86,60 +66,35 @@ ICLDA <- ICLinearDiscriminantClassifier <- function(X, y, X_u, method="ml",prior
         ll<-ll + nrow(Xc) * ( log(prior[c,])-(k/2)*log(2*pi)-(1/2)*log(det(sigma)) ) #Add the constant part for each row in Xc
         ll<-ll+sum(-(1/2)*(Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma) * (Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])) #Add the dynamic contribution
       }
+      
       return(ll)
-    }
-  
-    grad_sl <- function(w, X, Y,lambda) {
-      k<-ncol(X)
-      prior<-matrix(NA,length(classnames),1)
-      prior[1,] <- w[1]
-      prior[2,] <- 1-w[1]
-      m<-matrix(NA,length(classnames),k)
-      m[1,] <- w[(1+1):(1+k)]
-      m[2,] <- w[(1+1+k):(1+2*k)]
-      sigmas<-list()
-
-      Sigma <- diag(k) 
-      Sigma[upper.tri(Sigma, diag=TRUE)] <- w[(1+2*k+1):length(w)] 
-      Sigma <- Sigma + t(Sigma) - diag(diag(Sigma))
-
-      sigmas[[1]] <- Sigma
-      sigmas[[2]] <- Sigma
-
-      X1<-X[as.logical(Y[,1]), ,drop=FALSE]
-      X2<-X[as.logical(Y[,2]), ,drop=FALSE]
-      counts<-colSums(Y)
-      grad_prior <- counts[1]*(1/prior[1])-counts[2]*(1/(1-prior[1]))
-      grad_mean1 <- (colSums(X1)-counts[1]*m[1,]) %*% solve(sigmas[[1]])
-      grad_mean2 <- (colSums(X2)-counts[2]*m[2,]) %*% solve(sigmas[[2]])
-      grad_sigma <- -0.5*(sum(counts))*solve(sigmas[[1]]) + 0.5 * (solve(sigmas[[1]]) %*% t(X1-matrix(1,counts[1],1) %*% m[1, ,drop=FALSE]) %*% (X1-matrix(1,counts[1],1) %*% m[1, ,drop=FALSE]) %*% solve(sigmas[[1]]) + solve(sigmas[[1]]) %*% t(X2-matrix(1,counts[2],1) %*% m[2, ,drop=FALSE]) %*% (X2-matrix(1,counts[2],1) %*% m[2, ,drop=FALSE]) %*% solve(sigmas[[1]]))
-      grad_sigma<-grad_sigma[upper.tri(grad_sigma, diag=TRUE)]
-
-      return(c(grad_prior,grad_mean1,grad_mean2,as.vector(grad_sigma)))
-    }
-
-  
-  L_ssl <- function(w,g, X, y, X_u) {
-    g<-as.vector(g)
-    # g<-rep(0,nrow(X_u))
-    loss <- L_sl(w,X,y) + sum(g * log(matrix(1,nrow(X_u),1)+exp(-1 * (X_u %*% w))) + (1-g) * log(matrix(1,nrow(X_u),1)+exp((X_u %*% w))))
-    return(as.numeric(loss))
   }
   
-  grad_ssl <- function(w,g, X, y, X_u) {
-    g<-as.vector(g)
-    # g<-rep(0,nrow(X_u))
-    grad_sl(w,X,y) + t(X_u) %*% (g*(-1 * (exp(-1 * (X_u %*% w))/(matrix(1,nrow(X_u),1)+exp(-1 * (X_u %*% w))))) + (1-g) * (1 * (exp(1 * (X_u %*% w))/(matrix(1,nrow(X_u),1)+exp(1 * (X_u %*% w)))))) 
+  grad_sl <- function(w, X, Y,lambda) {
+    vars<-vec2vars(w)
+    m<-vars$m
+    prior<-vars$prior
+    sigmas<-vars$sigmas
+
+    X1<-X[as.logical(Y[,1]), ,drop=FALSE]
+    X2<-X[as.logical(Y[,2]), ,drop=FALSE]
+    counts<-colSums(Y)
+    grad_prior <- counts[1]*(1/prior[1])-counts[2]*(1/(1-prior[1]))
+    grad_mean1 <- (colSums(X1)-counts[1]*m[1,]) %*% solve(sigmas[[1]])
+    grad_mean2 <- (colSums(X2)-counts[2]*m[2,]) %*% solve(sigmas[[2]])
+    grad_sigma <- -0.5*(sum(counts))*solve(sigmas[[1]]) + 0.5 * (solve(sigmas[[1]]) %*% t(X1-matrix(1,counts[1],1) %*% m[1, ,drop=FALSE]) %*% (X1-matrix(1,counts[1],1) %*% m[1, ,drop=FALSE]) %*% solve(sigmas[[1]]) + solve(sigmas[[1]]) %*% t(X2-matrix(1,counts[2],1) %*% m[2, ,drop=FALSE]) %*% (X2-matrix(1,counts[2],1) %*% m[2, ,drop=FALSE]) %*% solve(sigmas[[1]]))
+    grad_sigma[upper.tri(grad_sigma, diag=FALSE)]<-grad_sigma[upper.tri(grad_sigma, diag=FALSE)]*2
+    grad_sigma<-grad_sigma[upper.tri(grad_sigma, diag=TRUE)]
+  
+    return(c(grad_prior,grad_mean1,grad_mean2,as.vector(grad_sigma)))
   }
   
   psi<-function(g,X,y,X_u) {
     g<-matrix(g,length(g),1)
-    
     Y_e<-rbind(Y,cbind(g,1-g))
     X_e<-rbind(X,X_u)
-
+    
     prior<-matrix(colMeans(Y_e),2,1)
-
     
     #Set priors if not set by user
     if (is.null(prior)) prior<-matrix(colMeans(Y_e),2,1)
@@ -157,14 +112,15 @@ ICLDA <- ICLinearDiscriminantClassifier <- function(X, y, X_u, method="ml",prior
     #TODO: this is the biased estimate of the covariance matrix!
     
     sigma <- (t(X_e-matrix(1,nrow(Y_e),1) %*% means[1, ,drop=FALSE]) %*% diag(Y_e[,1]) %*% (X_e-matrix(1,nrow(Y_e),1) %*% means[1, ,drop=FALSE]) + t(X_e-matrix(1,nrow(Y_e),1) %*% means[2, ,drop=FALSE]) %*% diag(Y_e[,2]) %*% (X_e-matrix(1,nrow(Y_e),1) %*% means[2, ,drop=FALSE]))/(nrow(Y_e))
+#     # Supervised Sigma     
+#     means_s<-t((t(X) %*% Y))/(colSums(Y))
+#     sigma <- (t(X-matrix(1,nrow(Y),1) %*% means_s[1, ,drop=FALSE]) %*% diag(Y[,1]) %*% (X-matrix(1,nrow(Y),1) %*% means_s[1, ,drop=FALSE]) + t(X-matrix(1,nrow(Y),1) %*% means_s[2, ,drop=FALSE]) %*% diag(Y[,2]) %*% (X-matrix(1,nrow(Y),1) %*% means_s[2, ,drop=FALSE]))/(nrow(Y))
 
     sigma<-sigma[upper.tri(sigma, diag=TRUE)]
     w <- c(prior[1],as.vector(t(means)),as.vector(sigma))
   }
 
   psi_grad<-function(g,X,Y,X_u) {
-    k<-ncol(X)
-    
 
     X1<-X[as.logical(Y[,1]), ,drop=FALSE]
     X2<-X[as.logical(Y[,2]), ,drop=FALSE]
@@ -179,22 +135,23 @@ ICLDA <- ICLinearDiscriminantClassifier <- function(X, y, X_u, method="ml",prior
     grad_mean2 <- ((matrix(1,length(g),1) %*% t((t(X_e) %*% Y_e))[2,])-counts_e[2]*X_u)/(counts_e[2]^2)
     grad_sigma<-matrix(NA,nrow(X_u),k*(k+1)/2)
     for (i in 1:length(g)) {
-      gs<- (t(X_u[i,,drop=F]-m[1,]) %*% (X_u[i,,drop=F]-m[1,]) - t(X_u[i,,drop=F]-m[2,]) %*% (X_u[i,,drop=F]-m[2,]))/nrow(Y_e)
+      gs<- (t(X_u[i,,drop=FALSE]-m[1,]) %*% (X_u[i,,drop=FALSE]-m[1,]) - t(X_u[i,,drop=F]-m[2,]) %*% (X_u[i,,drop=F]-m[2,]))/nrow(Y_e)
       grad_sigma[i,] <-gs[upper.tri(gs, diag=TRUE)]
     }
     return(cbind(grad_prior,grad_mean1,grad_mean2,grad_sigma))
-
   }
 
   loss<-function(g,X,Y,X_u) {
     w<-psi(g,X,Y,X_u)
     # if (verbose) cat("Loss: ", L_sl(w,X,y),"\n")
-    L_sl(w,X,Y,X_u)
+#     print(L_sl(w,X,Y))
+#     if (is.infinite(L_sl(w,X,Y))) { browser()}
+    return(L_sl(w,X,Y))
   }
   
   gradient <- function(g,X,Y,X_u) {
     w<-psi(g,X,Y,X_u)
-    
+
     ## For testing purposes
     # if (verbose) cat("Gradient norm: ", c(rcond(-Dw(w,g,X,y,X_u)),norm(Dg(w,X,y,X_u),"F")),"\n")
     # true<-grad(function(u) {loss(u,X,y,X_u)},g)
@@ -202,38 +159,34 @@ ICLDA <- ICLinearDiscriminantClassifier <- function(X, y, X_u, method="ml",prior
     # print(grad)
     # print(true)
     # browser()
-    # psi_grad(g,X,Y,X_u)[490,]
-    # grad(function(u) {psi(u,X,Y,X_u)[6]},g)[490,]
+    # psi_grad(g,X,Y,X_u)
+    # grad(function(u) {psi(u,X,Y,X_u)[6]},g)
     # grad(function(u) {L_sl(u,X,Y)},w)
     # grad_sl(w,X,Y)
     # print(cbind(t(grad),t(t(true))))
-
+    
+#     print(w[1:4])
+#     print(L_sl(w,X,Y))
     grad<-t(grad_sl(w,X,Y)) %*% t(psi_grad(g,X,Y,X_u))
     return(grad)
   }
   
- 
-  g <- rep(0.5,nrow(X_u))
-
+#   g <- runif(nrow(X_u))
+#   g <- rep(1,nrow(X_u))
+  g <- posterior(LinearDiscriminantClassifier(X,y),X_u)[,1] # Initialize responsibilities using supervised posterior
 
   opt_result <- optim(g, fn=loss, gr=gradient, X=X, Y=Y,X_u=X_u, method="L-BFGS-B", lower=0.0, upper=1.0, control=list(fnscale=-1))
   # g<-as.numeric(opt_result[1,1:length(g)])
   g<-opt_result$par
   w<-psi(g,X,y,X_u)
-
-  k<-ncol(X)
-  prior<-matrix(NA,length(classnames),1)
-      prior[1,] <- w[1]
-      prior[2,] <- 1-w[1]
-      means<-matrix(NA,length(classnames),k)
-      means[1,] <- w[(1+1):(1+k)]
-      means[2,] <- w[(1+1+k):(1+2*k)]
-      sigmas<-list()
-      Sigma <- diag(k) 
-      Sigma[upper.tri(Sigma, diag=TRUE)] <- w[(1+2*k+1):length(w)] 
-      Sigma <- Sigma + t(Sigma) - diag(diag(Sigma))
-
-      sigmas[[1]] <- Sigma
-      sigmas[[2]] <- Sigma
-  new("ICLinearDiscriminantClassifier", prior=prior, means=means, sigma=sigmas,classnames=classnames,scaling=scaling, modelform=modelform,responsibilities=g)
+  
+  # Return vector of vars as vars
+  vars<-vec2vars(w)
+  m<-vars$m
+  prior<-vars$prior
+  sigmas<-vars$sigmas
+  if (sup_prior) { prior<-matrix(colMeans(Y),2,1) }
+#   print(L_sl(w,X,Y))
+  
+  new("ICLinearDiscriminantClassifier", prior=prior, means=m, sigma=sigmas,classnames=classnames,scaling=scaling, modelform=modelform,responsibilities=g)
 }

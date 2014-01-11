@@ -1,3 +1,5 @@
+#' @include Generics.R
+
 #' Classifier class
 #'
 #' Top level classifier class

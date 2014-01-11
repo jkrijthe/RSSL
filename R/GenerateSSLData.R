@@ -20,9 +20,13 @@ GenerateSlicedCookie<-function(n=100,expected=FALSE) {
   return(data.frame(X,y))
 }
 
-Generate2ClassGaussian<-function(n=10000,d=100,var=1) {
+Generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
   X<-rbind(mvrnorm(n/2,rep(-1,d),diag(rep(var,d))),mvrnorm(n/2,rep(1,d),diag(rep(var,d))))
-  y<-rbind(matrix(-1,n/2,1),matrix(1,n/2,1))
+  if (expected) {
+    y<-rbind(matrix(-1,n/2,1),matrix(1,n/2,1))
+  } else {
+    y<-factor(as.integer(X[,1]>X[,2])*2-1)
+  }
   return(data.frame(X,y))
 }
 
@@ -75,19 +79,20 @@ GenerateFourClusters<-function(n=100,distance=6,expected=FALSE) {
 #' @param y labels for observations
 #' @export 
 clplot<-function(X,y) {
-  levels(y)<-c(levels(y),"NA")
-  y[is.na(y)]<-factor("NA")
-  colScale <- scale_colour_manual(values = c("orange","purple","green"))
-  
-  p<-qplot(X[,1],X[,2],color=y,asp=1,size=y)+colScale+scale_size_manual(values=c(4,4,2))
-  p<-p + opts(
-    panel.background = theme_rect(fill = "transparent",colour = NA), # or theme_blank()
-    panel.grid.minor = theme_blank(), 
-    panel.grid.major = theme_blank()
+  if (is.factor(y)) {
+#     levels(y)<-c(levels(y),"NA")
+#     y[is.na(y)]<-"NA"
+    colScale <- scale_colour_manual(values = c("orange","purple","black"))
+  }
+  if (is.factor(y)) p<-qplot(X[,1],X[,2],color=y,asp=1,size=y,shape=y)+colScale+scale_size_manual(values=c(3,3,0.5))+scale_shape()   # Shape depends on cond
+  else p<-qplot(X[,1],X[,2],color=y,asp=1)                                                                                                  
+  p<-p + theme(
+    panel.background = element_rect(fill = "transparent",colour = NA), 
+    panel.grid.minor = element_line(colour="lightgrey",size=0.5,linetype=2), 
+    panel.grid.major = element_line(colour="lightgrey",size=0.5,linetype=2)
   )
-  p<-p+xlab("Feature 1")
-  p<-p+ylab("Feature 2")
-  p<-p+scale_linetype_discrete(name = "Class")
+  p<-p+xlab(colnames(X)[1])
+  p<-p+ylab(colnames(X)[2])
   return (p)
 }
 # 

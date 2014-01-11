@@ -120,6 +120,45 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
     theta<-opt_result$par
     
     unlabels<-theta
+  } else if (method=="projection") {
+    
+    
+    opt_func <- function(theta) {
+      # Return a Mahanalobis type distance between the semi-supervised and supervised coefficients
+      
+      theta<-matrix(theta)
+      w_semi <- C %*% t(Xe) %*% rbind(matrix(y),theta)
+      if (lambda2>0) { 
+        error("Not implemented") #todo
+      }
+      else { 
+        return((w_semi-w_sup) %*% t(X) %*% X %*%  (w_semi-w_sup))   
+      }
+    }
+    
+    O1 <- 2/nrow(X) * G %*% t(X) %*% y
+    O2 <- 2/nrow(X) * G %*% t(X_u)
+    O3 <- 2/nrow(X) * X_u %*% t(F) %*% y
+    
+    if (lambda2>0) {
+      O4<- 2 * lambda2 * X_u %*% C %*% diag(c(0,rep(1,(m-1)))) %*% t(F) %*% y
+      O5<- 2 * lambda2 * X_u %*% C %*% diag(c(0,rep(1,(m-1)))) %*% C %*% t(X_u)
+    }
+    
+    opt_grad <- function(theta) {
+      theta<-matrix(theta)
+      reg3<-lambda3*2*(rep(sum(theta),nrow(theta))-rep(nrow(theta)*mean_y,nrow(theta)))
+      
+      if (lambda2>0) return(O1 + O2 %*% theta - O3 + O4 + O5 %*% theta + reg3)
+      else return(O1 + O2 %*% theta - O3 + reg3  ) 
+    }
+    
+    theta <- rep(1.5,nrow(X_u))
+    # Bounded optimization
+    opt_result <- optim(theta, opt_func, gr=opt_grad, method="L-BFGS-B", lower=1.0, upper=2.0, control=list(fnscale=1))
+    theta<-opt_result$par
+    
+    unlabels<-theta
   }
   ## Gradient Descent implementation
   else {
