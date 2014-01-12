@@ -21,7 +21,7 @@ setClass("ICLinearDiscriminantClassifier",
 #' @param factr change the precision requirement passed to the optim function (default: 1e7)
 #' @param ... Additional Parameters, Not used
 #' @export
-ICLDA <- ICLinearDiscriminantClassifier <- function(X, y, X_u,prior=NULL, scale=FALSE,init=NULL, sup_prior=FALSE, factr=1e7,  ...) {
+ICLinearDiscriminantClassifier <- function(X, y, X_u,prior=NULL, scale=FALSE,init=NULL, sup_prior=FALSE, factr=1e7,  ...) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
   X<-ModelVariables$X
