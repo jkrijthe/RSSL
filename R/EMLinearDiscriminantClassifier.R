@@ -5,6 +5,7 @@ setClass("EMLinearDiscriminantClassifier",
          contains="LinearDiscriminantClassifier")
 
 #' Expectation Maximization Nearest Mean Classifier
+#' @export
 EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-8, verbose=FALSE, ...) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)

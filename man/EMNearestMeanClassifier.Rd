@@ -2,10 +2,10 @@
 \alias{EMNearestMeanClassifier}
 \title{Expectation Maximization Nearest Mean Classifier}
 \usage{
-  EMNearestMeanClassifier(X, y, X_u, method = "EM",
-    scale = FALSE, eps = 1e-04, ...)
+EMNearestMeanClassifier(X, y, X_u, method = "EM", scale = FALSE,
+  eps = 1e-04, ...)
 }
 \description{
-  Expectation Maximization Nearest Mean Classifier
+Expectation Maximization Nearest Mean Classifier
 }
 

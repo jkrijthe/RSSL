@@ -1,5 +1,6 @@
 export(DensityAdaptiveRegression)
 export(DensitySensitiveRegression)
+export(EMLinearDiscriminantClassifier)
 export(EMLogisticRegression)
 export(ERLogisticLossClassifier)
 export(EntropyRegularizedLogisticRegression)

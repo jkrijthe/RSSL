@@ -5,7 +5,7 @@ setClass("EMNearestMeanClassifier",
          contains="NearestMeanClassifier")
 
 #' Expectation Maximization Nearest Mean Classifier
-EMNMC<-EMNearestMeanClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-4, ...) {
+EMNearestMeanClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-4, ...) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
   X<-ModelVariables$X
