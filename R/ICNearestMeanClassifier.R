@@ -21,7 +21,7 @@ setClass("ICNearestMeanClassifier",
 #' \item{prior}{the number of trials}
 #' \item{sigma}{the number of hits}
 #' @export
-ICNM <- ICNearestMeanClassifier <- function(X, y, X_u, method="closedform",scale=FALSE, ...) {
+ICNearestMeanClassifier <- function(X, y, X_u, method="closedform",scale=FALSE, ...) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
   X<-ModelVariables$X
