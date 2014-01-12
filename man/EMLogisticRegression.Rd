@@ -2,7 +2,7 @@
 \alias{EMLogisticRegression}
 \title{Expectation Maximization Logistic Regression}
 \usage{
-  EMLogisticRegression(X,y,X_u,intercept=TRUE,scale=FALSE)
+EMLogisticRegression(X,y,X_u,intercept=TRUE,scale=FALSE)
 }
 \arguments{
   \item{X}{Design matrix of the labeled observations}
@@ -18,12 +18,12 @@
   matrix X before running the regression}
 }
 \value{
-  S4 object of class EMLogisticRegression with the
-  following slots: \item{theta}{weight vector}
-  \item{classnames}{the names of the classes}
+S4 object of class EMLogisticRegression with the following
+slots: \item{theta}{weight vector} \item{classnames}{the
+names of the classes}
 }
 \description{
-  Semi-supervised Logistic regression using expectation
-  maximization, a way of soft self-learning
+Semi-supervised Logistic regression using expectation
+maximization, a way of soft self-learning
 }
 

@@ -2,9 +2,9 @@
 \alias{ICLeastSquaresRegression}
 \title{<brief desc>}
 \usage{
-  ICLeastSquaresRegression(X, y, X_u, lambda1 = 0,
-    lambda2 = 0, scale = FALSE, lowerbound = -Inf,
-    upperbound = Inf, ..., method = "default")
+ICLeastSquaresRegression(X, y, X_u, lambda1 = 0, lambda2 = 0,
+  scale = FALSE, lowerbound = -Inf, upperbound = Inf, ...,
+  method = "default")
 }
 \arguments{
   \item{X}{<what param does>}
@@ -28,6 +28,6 @@
   \item{method}{<what param does>}
 }
 \description{
-  <full description>
+<full description>
 }
 

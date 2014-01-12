@@ -2,8 +2,8 @@
 \alias{TSVM}
 \title{Transductive SVM classifier}
 \usage{
-  TSVM(X, y, X_u, Clabeled = 0, Cunlabeled = 0,
-    intercept = TRUE, scale = TRUE, ...)
+TSVM(X, y, X_u, Clabeled = 0, Cunlabeled = 0, intercept = TRUE,
+  scale = TRUE, ...)
 }
 \arguments{
   \item{X}{Design matrix, intercept term is added within
@@ -27,16 +27,16 @@
   \item{...}{additional arguments}
 }
 \value{
-  S4 object of class TSVM with the following slots:
-  \item{theta}{weight vector} \item{classnames}{the names
-  of the classes} \item{modelform}{formula object of the
-  model used in regression} \item{scaling}{a scaling object
-  containing the paramters of the z-transforms applied to
-  the data} \item{optimization}{the object returned by the
-  optim function} \item{unlabels}{the labels assigned to
-  the unlabeled objects}
+S4 object of class TSVM with the following slots:
+\item{theta}{weight vector} \item{classnames}{the names of
+the classes} \item{modelform}{formula object of the model
+used in regression} \item{scaling}{a scaling object
+containing the paramters of the z-transforms applied to the
+data} \item{optimization}{the object returned by the optim
+function} \item{unlabels}{the labels assigned to the
+unlabeled objects}
 }
 \description{
-  Transductive SVM classifier
+Transductive SVM classifier
 }
 

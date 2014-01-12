@@ -9,16 +9,24 @@
 \alias{loss,SGDSVM-method}
 \alias{loss,SelfLearning-method}
 \title{Loss of a classifier or regression function}
+\usage{
+loss(object, ...)
+
+loss(object, X, probs=FALSE)
+
+loss(object, X, probs=FALSE)
+
+\S4method{loss}{LogisticRegression}(object, newdata, y = NULL)
+
+loss(object, newdata, y)
+
+loss(object, X, probs=FALSE)
+
+loss(object, X, probs=FALSE)
+
+loss(object, X, probs=FALSE)
+}
 \arguments{
-  \item{object}{object of class NormalBasedClassifier}
-
-  \item{newdata}{a matrix of data.frame, depending on what
-  was used to train the classifier, with new objects to be
-  classified}
-
-  \item{y}{if newdata is a matrix, y should contain the
-  correct labels of the observations in newdata}
-
   \item{object}{Object of class LeastSquaresClassifier}
 
   \item{X}{Design matrix of the test data, intercept term
@@ -36,6 +44,15 @@
   \item{y}{Vector with true classes of the test data}
 
   \item{newdata}{data.frame object with test data}
+
+  \item{object}{object of class NormalBasedClassifier}
+
+  \item{newdata}{a matrix of data.frame, depending on what
+  was used to train the classifier, with new objects to be
+  classified}
+
+  \item{y}{if newdata is a matrix, y should contain the
+  correct labels of the observations in newdata}
 
   \item{object}{Object of class LeastSquaresClassifier}
 
@@ -65,36 +82,36 @@
   \item{newdata}{data.frame object with test data}
 }
 \value{
-  The total minus log likelihood on the dataset
+numeric of the total loss on the test data
 
-  numeric of the total loss on the test data
+numeric of the total loss on the test data
 
-  numeric of the total loss on the test data
+The total minus log likelihood on the dataset
 
-  numeric of the total loss on the test data
+numeric of the total loss on the test data
 
-  numeric of the total loss on the test data
+numeric of the total loss on the test data
 
-  numeric of the total loss on the test data
+numeric of the total loss on the test data
 }
 \description{
-  Loss of a classifier or regression function
+Loss of a classifier or regression function
 
-  Return the MINUS log likelihood on the given dataset
+Loss on new objects of a trained least squares classifier
 
-  Loss method for LogisticRegression MINUS Log likelihood
-  on a new data set
+Calculate the logistic loss of a classifier on a given
+dataset
 
-  Loss on new objects of a trained least squares classifier
+Loss method for LogisticRegression MINUS Log likelihood on
+a new data set
 
-  Calculate the logistic loss of a classifier on a given
-  dataset
+Return the MINUS log likelihood on the given dataset
 
-  Hinge loss on new objects of a trained SGDSVM
+Hinge loss on new objects of a trained SGDSVM
 
-  Hinge loss on new objects of a trained LinearSVM
+Hinge loss on new objects of a trained LinearSVM
 
-  Loss method for SelfLearning Classifier The loss method
-  delegates prediction to the specific model object
+Loss method for SelfLearning Classifier The loss method
+delegates prediction to the specific model object
 }
 

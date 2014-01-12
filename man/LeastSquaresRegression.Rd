@@ -2,8 +2,7 @@
 \alias{LeastSquaresRegression}
 \title{<brief desc>}
 \usage{
-  LeastSquaresRegression(X, y, lambda = 0, scale = FALSE,
-    ...)
+LeastSquaresRegression(X, y, lambda = 0, scale = FALSE, ...)
 }
 \arguments{
   \item{X}{<what param does>}
@@ -17,6 +16,6 @@
   \item{...}{<what param does>}
 }
 \description{
-  <full description>
+<full description>
 }
 

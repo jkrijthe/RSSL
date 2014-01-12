@@ -2,8 +2,7 @@
 \alias{DensityAdaptiveRegression}
 \title{Density Adaptive Semi-supervised Regression}
 \usage{
-  DensityAdaptiveRegression(X, y, X_u, alpha = "CV",
-    kernel = "gaussian")
+DensityAdaptiveRegression(X, y, X_u, alpha = "CV", kernel = "gaussian")
 }
 \arguments{
   \item{X}{<what param does>}
@@ -17,6 +16,6 @@
   \item{kernel}{<what param does>}
 }
 \description{
-  Implementation of the method by Singh, Nowak and Zhu
+Implementation of the method by Singh, Nowak and Zhu
 }
 

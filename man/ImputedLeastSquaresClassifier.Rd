@@ -2,8 +2,7 @@
 \alias{ImputedLeastSquaresClassifier}
 \title{Simple Imputed Least Squares Classifier}
 \usage{
-  ImputedLeastSquaresClassifier(X, y, X_u,
-    method = "average")
+ImputedLeastSquaresClassifier(X, y, X_u, method = "average")
 }
 \arguments{
   \item{X}{Design matrix}
@@ -13,6 +12,6 @@
   \item{X_u}{Design matrix unlabeled data}
 }
 \description{
-  Simple Imputed Least Squares Classifier
+Simple Imputed Least Squares Classifier
 }
 

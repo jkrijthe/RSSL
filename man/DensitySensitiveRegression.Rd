@@ -2,8 +2,7 @@
 \alias{DensitySensitiveRegression}
 \title{Density Sentisitive Semi-supervised Regression}
 \usage{
-  DensitySensitiveRegression(X, y, X_u, alpha = "CV",
-    kernel = "gaussian")
+DensitySensitiveRegression(X, y, X_u, alpha = "CV", kernel = "gaussian")
 }
 \arguments{
   \item{X}{<what param does>}
@@ -17,6 +16,6 @@
   \item{kernel}{<what param does>}
 }
 \description{
-  Implementation of method by Azizyan, Singh and Wasserman
+Implementation of method by Azizyan, Singh and Wasserman
 }
 

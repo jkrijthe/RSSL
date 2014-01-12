@@ -2,9 +2,9 @@
 \alias{MajorityClassClassifier}
 \title{Majority Class Classifier}
 \usage{
-  MajorityClassClassifier(X, y, ...)
+MajorityClassClassifier(X, y, ...)
 }
 \description{
-  Majority Class Classifier
+Majority Class Classifier
 }
 

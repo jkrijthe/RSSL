@@ -1,26 +1,37 @@
 \name{ICLDA}
 \alias{ICLDA}
-\title{Moment constriant semi-supervised linear discriminant analysis}
+\title{Implicitly Constrained Semi-Supervised Linear Discriminant Classifier}
 \usage{
-  MCLinearDiscriminantClassifier(X, y, X_u,
-    method="closedform",prior=NULL, scale=FALSE, ...)
+ICLinearDiscriminantClassifier(X, y, X_u,prior=NULL, scale=FALSE,init=NULL, sup_prior=FALSE, factr=1e7,  ...)
 }
 \arguments{
-  \item{X}{<what param does>}
+  \item{X}{design matrix of the labeled objects}
 
-  \item{y}{<what param does>}
+  \item{y}{vector with labels}
 
-  \item{X_u}{<what param does>}
-
-  \item{method}{<what param does>}
+  \item{X_u}{design matrix of the labeled objects}
 
   \item{prior}{<what param does>}
 
-  \item{scale}{<what param does>}
+  \item{scale}{Should the features be normalized? (default:
+  FALSE)}
 
-  \item{...}{<what param does>}
+  \item{init}{not currently used}
+
+  \item{sup_prior}{use the prior estimates based only on
+  the labeled data, not the imputed labels (default:
+  FALSE)}
+
+  \item{factr}{change the precision requirement passed to
+  the optim function (default: 1e7)}
+
+  \item{...}{Additional Parameters, Not used}
 }
 \description{
-  <full description>
+Semi-supervised version of Linear Discriminant Analysis
+using implicit constraints. This method finds the labeling
+of the unlabeled objects, whose resulting LDA solution
+gives the highest log-likelihood when evaluated on the
+labeled objects only.
 }
 

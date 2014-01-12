@@ -2,7 +2,7 @@
 \alias{PreProcessingPredict}
 \title{Preprocess the input for a new set of test objects for classifier}
 \usage{
-  PreProcessingPredict(modelform,newdata,y=NULL,scaling=FALSE,intercept=FALSE)
+PreProcessingPredict(modelform,newdata,y=NULL,scaling=FALSE,intercept=FALSE)
 }
 \arguments{
   \item{modelform}{Formula object with model}
@@ -18,14 +18,14 @@
   design matrices}
 }
 \value{
-  list object with the following objects: \item{X}{design
-  matrix of the labeled data} \item{y}{integer vector
-  indicating the labels of the labeled data}
+list object with the following objects: \item{X}{design
+matrix of the labeled data} \item{y}{integer vector
+indicating the labels of the labeled data}
 }
 \description{
-  The following actions are carried out: 1. data.frames are
-  converted to matrix form and labels converted to integers
-  2. An intercept column is added if requested 3. centering
-  and scaling is applied if requested.
+The following actions are carried out: 1. data.frames are
+converted to matrix form and labels converted to integers
+2. An intercept column is added if requested 3. centering
+and scaling is applied if requested.
 }
 

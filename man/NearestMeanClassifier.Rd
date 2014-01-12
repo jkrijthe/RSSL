@@ -2,8 +2,7 @@
 \alias{NearestMeanClassifier}
 \title{Nearest Mean Classifier}
 \usage{
-  NearestMeanClassifier(X, y,
-    method="closedform",prior=NULL, scale=FALSE, ...)
+NearestMeanClassifier(X, y, method="closedform",prior=NULL, scale=FALSE, ...)
 }
 \arguments{
   \item{X}{Design matrix, intercept term is added within
@@ -24,23 +23,22 @@
   \item{...}{additional arguments}
 }
 \value{
-  S4 object of class LeastSquaresClassifier with the
-  following slots: \item{modelform}{weight vector}
-  \item{prior}{the prior probabilities of the classes}
-  \item{mean}{the estimates means of the classes}
-  \item{sigma}{The estimated covariance matrix}
-  \item{classnames}{a vector with the classnames for each
-  of the classes} \item{scaling}{scaling object used to
-  transform new observations}
+S4 object of class LeastSquaresClassifier with the
+following slots: \item{modelform}{weight vector}
+\item{prior}{the prior probabilities of the classes}
+\item{mean}{the estimates means of the classes}
+\item{sigma}{The estimated covariance matrix}
+\item{classnames}{a vector with the classnames for each of
+the classes} \item{scaling}{scaling object used to
+transform new observations}
 }
 \description{
-  Implementation of the nearest mean classifier modeled as
-  a gaussian for each class. Classes are modeled as
-  gaussians with equal, spherical covariance matrices. The
-  optimal covariance matrix and means for the classes are
-  found using maximum likelihood, which, in this case, has
-  a closed form solution. To get true nearest mean
-  classification, set prior as a matrix with equal
-  probabilty for all classes.
+Implementation of the nearest mean classifier modeled as a
+gaussian for each class. Classes are modeled as gaussians
+with equal, spherical covariance matrices. The optimal
+covariance matrix and means for the classes are found using
+maximum likelihood, which, in this case, has a closed form
+solution. To get true nearest mean classification, set
+prior as a matrix with equal probabilty for all classes.
 }
 

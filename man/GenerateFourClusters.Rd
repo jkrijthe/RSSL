@@ -2,7 +2,7 @@
 \alias{GenerateFourClusters}
 \title{Generate Four Clusters dataset}
 \usage{
-  GenerateFourClusters(n=100,distance=6,expected=FALSE)
+GenerateFourClusters(n=100,distance=6,expected=FALSE)
 }
 \arguments{
   \item{n}{number of observations to generate}
@@ -14,6 +14,6 @@
   the large margin}
 }
 \description{
-  Generate a four clusters dataset
+Generate a four clusters dataset
 }
 

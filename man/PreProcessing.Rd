@@ -2,7 +2,7 @@
 \alias{PreProcessing}
 \title{Preprocess the input to a classification function}
 \usage{
-  PreProcessing(X,y,X_u=NULL,scale=FALSE,intercept=FALSE)
+PreProcessing(X,y,X_u=NULL,scale=FALSE,intercept=FALSE)
 }
 \arguments{
   \item{X}{Design matrix, intercept term is added within
@@ -19,20 +19,20 @@
   design matrices}
 }
 \value{
-  list object with the following objects: \item{X}{design
-  matrix of the labeled data} \item{y}{integer vector
-  indicating the labels of the labeled data}
-  \item{X_u}{design matrix of the unlabeled data}
-  \item{classnames}{names of the classes corresponding to
-  the integers in y} \item{scaling}{a scaling object used
-  to scale the test observations in the same way as the
-  training set} \item{modelform}{a formula object
-  containing the used model}
+list object with the following objects: \item{X}{design
+matrix of the labeled data} \item{y}{integer vector
+indicating the labels of the labeled data}
+\item{X_u}{design matrix of the unlabeled data}
+\item{classnames}{names of the classes corresponding to the
+integers in y} \item{scaling}{a scaling object used to
+scale the test observations in the same way as the training
+set} \item{modelform}{a formula object containing the used
+model}
 }
 \description{
-  The following actions are carried out: 1. data.frames are
-  converted to matrix form and labels converted to integers
-  2. An intercept column is added if requested 3. centering
-  and scaling is applied if requested.
+The following actions are carried out: 1. data.frames are
+converted to matrix form and labels converted to integers
+2. An intercept column is added if requested 3. centering
+and scaling is applied if requested.
 }
 

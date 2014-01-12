@@ -1,9 +1,8 @@
 \name{LinearSVM}
 \alias{LinearSVM}
-\title{LinearSVM Class}
+\title{Linear SVM Classifier}
 \usage{
-  LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE,
-    intercept = TRUE)
+LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = TRUE)
 }
 \arguments{
   \item{X}{Design matrix}
@@ -22,11 +21,9 @@
   (default: TRUE)}
 }
 \value{
-  S4 object of type LinearSVM
+S4 object of type LinearSVM
 }
 \description{
-  LinearSVM Class
-
-  Linear SVM Classifier
+Linear SVM Classifier
 }
 

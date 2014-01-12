@@ -1,5 +1,7 @@
 #' @include LogisticRegression.R
-setClass("ExpectationMaximizationLogisticRegression",
+#' @export
+#' EMLogisticRegression class
+setClass("EMLogisticRegression",
          representation(theta="numeric"),
          prototype(name="Expectation Maximization Logistic Regression"), 
          contains="LogisticRegression")

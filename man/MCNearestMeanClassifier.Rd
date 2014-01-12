@@ -2,8 +2,7 @@
 \alias{MCNearestMeanClassifier}
 \title{Moment Constrained Nearest Mean Classifier (Semi-Supervised)}
 \usage{
-  MCNearestMeanClassifier(X, y, X_u, method="closedform",
-    scale=FALSE, ...)
+MCNearestMeanClassifier(X, y, X_u, method="closedform", scale=FALSE, ...)
 }
 \arguments{
   \item{X}{Design matrix, intercept term is added within
@@ -22,12 +21,12 @@
   \item{...}{additional arguments}
 }
 \value{
-  S4 object; a list consisting of \item{means}{the
-  approximation of piel} \item{prior}{the number of trials}
-  \item{sigma}{the number of hits}
+S4 object; a list consisting of \item{means}{the
+approximation of piel} \item{prior}{the number of trials}
+\item{sigma}{the number of hits}
 }
 \description{
-  To fit a true nearest mean classifier, set prior to equal
-  class priors. Based on Loog (2010)
+To fit a true nearest mean classifier, set prior to equal
+class priors. Based on Loog (2010)
 }
 

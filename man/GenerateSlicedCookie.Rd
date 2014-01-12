@@ -2,7 +2,7 @@
 \alias{GenerateSlicedCookie}
 \title{Generate Sliced Cookie dataset}
 \usage{
-  GenerateSlicedCookie(n=100,expected=FALSE)
+GenerateSlicedCookie(n=100,expected=FALSE)
 }
 \arguments{
   \item{n}{number of observations to generate}
@@ -12,11 +12,10 @@
   the large margin}
 }
 \value{
-  A data.frame with n objects from the sliced cookie
-  example
+A data.frame with n objects from the sliced cookie example
 }
 \description{
-  Generate a sliced cookie dataset: a circle with a large
-  margin in the middle.
+Generate a sliced cookie dataset: a circle with a large
+margin in the middle.
 }
 

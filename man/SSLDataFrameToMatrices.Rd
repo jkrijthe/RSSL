@@ -2,7 +2,7 @@
 \alias{SSLDataFrameToMatrices}
 \title{Convert data.frame to matrices for semi-supervised learners}
 \usage{
-  SSLDataFrameToMatrices(model,D,intercept=TRUE)
+SSLDataFrameToMatrices(model,D,intercept=TRUE)
 }
 \arguments{
   \item{model}{Formula object with model}
@@ -13,16 +13,16 @@
   design matrices}
 }
 \value{
-  list object with the following objects: \item{X}{design
-  matrix of the labeled data} \item{X_u}{design matrix of
-  the unlabeled data} \item{y}{integer vector indicating
-  the labels of the labeled data} \item{classnames}{names
-  of the classes corresponding to the integers in y}
+list object with the following objects: \item{X}{design
+matrix of the labeled data} \item{X_u}{design matrix of the
+unlabeled data} \item{y}{integer vector indicating the
+labels of the labeled data} \item{classnames}{names of the
+classes corresponding to the integers in y}
 }
 \description{
-  Given a formula object and a data.frame, extract the
-  design matrix X for the labeled observations, X_u for the
-  unlabeled observations and y for the labels of the
-  labeled observations
+Given a formula object and a data.frame, extract the design
+matrix X for the labeled observations, X_u for the
+unlabeled observations and y for the labels of the labeled
+observations
 }
 

@@ -2,8 +2,7 @@
 \alias{LeastSquaresClassifier}
 \title{Least Squares Classifier}
 \usage{
-  LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE,
-    x_center, scale=FALSE, ...)
+LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
 }
 \arguments{
   \item{X}{Design matrix, intercept term is added within
@@ -26,19 +25,19 @@
   \item{...}{additional arguments}
 }
 \value{
-  S4 object of class LeastSquaresClassifier with the
-  following slots: \item{theta}{weight vector}
-  \item{classnames}{the names of the classes}
-  \item{modelform}{formula object of the model used in
-  regression} \item{scaling}{a scaling object containing
-  the paramters of the z-transforms applied to the data}
+S4 object of class LeastSquaresClassifier with the
+following slots: \item{theta}{weight vector}
+\item{classnames}{the names of the classes}
+\item{modelform}{formula object of the model used in
+regression} \item{scaling}{a scaling object containing the
+paramters of the z-transforms applied to the data}
 }
 \description{
-  Use least squares regression as a classification
-  technique using classes as targets (1 for one class, 2
-  for the other). Implemented using matrix inversions, not
-  the more numerically stable Singular Value Decomposition
-  method. Note this method minimizes quadratic loss, not
-  the truncated quadratic loss.
+Use least squares regression as a classification technique
+using classes as targets (1 for one class, 2 for the
+other). Implemented using matrix inversions, not the more
+numerically stable Singular Value Decomposition method.
+Note this method minimizes quadratic loss, not the
+truncated quadratic loss.
 }
 

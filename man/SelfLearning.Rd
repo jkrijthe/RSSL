@@ -2,8 +2,8 @@
 \alias{SelfLearning}
 \title{Self Learning Semi-supervised Learning}
 \usage{
-  SelfLearning(X, y, X_u, method, prob = FALSE,
-    cautious = FALSE, ...)
+SelfLearning(X, y, X_u, method, prob = FALSE, cautious = FALSE,
+  scale = FALSE, ...)
 }
 \arguments{
   \item{X}{Design matrix, intercept term is added within
@@ -23,9 +23,9 @@
   \item{...}{additional arguments to be passed to method}
 }
 \description{
-  Use self learning to turn any supervised classifier into
-  a semi-supervised method by iteratively labeling the
-  unlabeled objects and added confident predictions to the
-  set of labeled objects
+Use self learning to turn any supervised classifier into a
+semi-supervised method by iteratively labeling the
+unlabeled objects and added confident predictions to the
+set of labeled objects
 }
 

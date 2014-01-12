@@ -20,6 +20,7 @@ GenerateSlicedCookie<-function(n=100,expected=FALSE) {
   return(data.frame(X,y))
 }
 
+#' @export
 Generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
   X<-rbind(mvrnorm(n/2,rep(-1,d),diag(rep(var,d))),mvrnorm(n/2,rep(1,d),diag(rep(var,d))))
   if (expected) {
