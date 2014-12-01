@@ -4,7 +4,7 @@
 \title{Linear Discriminant Classifier}
 \usage{
 LinearDiscriminantClassifier(X, y, method = "closedform", prior = NULL,
-  scale = FALSE, x_center = TRUE, ...)
+  scale = FALSE, x_center = FALSE, ...)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}

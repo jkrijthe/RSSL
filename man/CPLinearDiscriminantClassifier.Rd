@@ -5,7 +5,7 @@
 \usage{
 CPLinearDiscriminantClassifier(X, y, X_u, prior = NULL, scale = FALSE,
   init = NULL, max_iterations = 1000, alpha = 1, eps = 1e-04,
-  x_center = TRUE, ...)
+  x_center = FALSE, ...)
 }
 \arguments{
 \item{X}{design matrix of the labeled objects}

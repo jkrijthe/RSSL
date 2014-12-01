@@ -4,8 +4,12 @@
 \title{SVM solve.QP implementation}
 \usage{
 solve_svm(K, y, C = 1)
+
+solve_svm(K, y, C = 1)
 }
 \description{
+SVM solve.QP implementation
+
 SVM solve.QP implementation
 }
 

@@ -2,6 +2,7 @@
 \docType{methods}
 \name{predict}
 \alias{predict}
+\alias{predict,KernelLeastSquaresClassifier-method}
 \alias{predict,LeastSquaresClassifier-method}
 \alias{predict,LinearSVM-method}
 \alias{predict,LogisticLossClassifier-method}
@@ -12,6 +13,9 @@
 \title{Predictions of a classifier or regression function}
 \usage{
 predict(object, ...)
+
+\S4method{predict}{KernelLeastSquaresClassifier}(object, newdata,
+  probs = FALSE, ...)
 
 \S4method{predict}{LeastSquaresClassifier}(object, newdata, probs = FALSE,
   ...)

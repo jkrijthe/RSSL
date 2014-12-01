@@ -4,8 +4,9 @@
 \title{Implicitly Constained Least Squares Classifier}
 \usage{
 ICLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
-  intercept = TRUE, x_center = TRUE, scale = FALSE, method = "LBFGS",
-  projection = "supervised", lambda3 = 0, trueprob = NULL, ...)
+  intercept = TRUE, x_center = FALSE, scale = FALSE, method = "LBFGS",
+  projection = "supervised", lambda3 = 0, trueprob = NULL, eps = 1e-09,
+  ...)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -44,6 +45,6 @@ S4 object of class ICLeastSquaresClassifier with the following slots:
 \item{unlabels}{the labels assigned to the unlabeled objects}
 }
 \description{
-Implicitly constrained semisupervised learning with least squares loss. Least squares regression is used treating classes as targets (1 for one class, 2 for the other). Implemented using matrix inversions, not the more stable Singular Value Decomposition method. We find an (fractional) labelling of the unlabeled objects which, whose least squares regression solution minimizes the least squares loss on the labeled training data only. This is equivalent to finding a weighting of the unlabeled objects belonging to either of the two classes.
+Implicitly constrained semisupervised learning with quadratic loss. Least squares regression is used treating classes as targets (1 for one class, 2 for the other). We find an (fractional) labelling of the unlabeled objects, whose least squares regression solution minimizes the least squares loss on the labeled training data only. This is equivalent to finding a weighting of the unlabeled objects belonging to either of the two classes.
 }
 

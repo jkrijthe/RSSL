@@ -4,7 +4,7 @@
 \title{Preprocess the input to a classification function}
 \usage{
 PreProcessing(X, y, X_u = NULL, scale = FALSE, intercept = FALSE,
-  x_center = TRUE)
+  x_center = FALSE)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}

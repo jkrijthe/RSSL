@@ -2,11 +2,17 @@
 \docType{methods}
 \name{plot}
 \alias{plot}
+\alias{plot,KernelLeastSquaresClassifier,missing-method}
 \alias{plot,LeastSquaresClassifier,missing-method}
 \alias{plot,SelfLearning,ANY-method}
+\alias{show,LeastSquaresClassifier-method}
 \title{Plot function}
 \usage{
 plot(x, y, ...)
+
+\S4method{plot}{KernelLeastSquaresClassifier,missing}(x)
+
+\S4method{show}{LeastSquaresClassifier}(object)
 
 \S4method{plot}{LeastSquaresClassifier,missing}(x)
 

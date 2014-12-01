@@ -4,7 +4,7 @@
 \title{Contrastive Pressimistic Least Squares Classifier}
 \usage{
 CPLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
-  intercept = TRUE, x_center = TRUE, scale = FALSE, method = "default",
+  intercept = TRUE, x_center = FALSE, scale = FALSE, method = "default",
   max_iterations = 10000, alpha = 1000, eps = 1e-08, ...)
 }
 \arguments{

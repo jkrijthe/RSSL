@@ -4,7 +4,7 @@
 \title{Updated Covariance Least Squares Classifier}
 \usage{
 UCLeastSquaresClassifier(X, y, X_u, lambda = 0, intercept = TRUE,
-  x_center = TRUE, scale = FALSE, y_scale = FALSE, ...)
+  x_center = FALSE, scale = FALSE, y_scale = FALSE, ...)
 }
 \arguments{
 \item{X}{Design matrix}

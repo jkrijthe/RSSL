@@ -2,6 +2,7 @@
 \docType{methods}
 \name{loss}
 \alias{loss}
+\alias{loss,KernelLeastSquaresClassifier-method}
 \alias{loss,LeastSquaresClassifier-method}
 \alias{loss,LinearSVM-method}
 \alias{loss,LogisticLossClassifier-method}
@@ -12,6 +13,8 @@
 \title{Loss of a classifier or regression function}
 \usage{
 loss(object, ...)
+
+\S4method{loss}{KernelLeastSquaresClassifier}(object, newdata, y = NULL, ...)
 
 \S4method{loss}{LeastSquaresClassifier}(object, newdata, y = NULL, ...)
 

@@ -4,7 +4,7 @@
 \title{Implicitly Constrained Semi-Supervised Linear Discriminant Classifier}
 \usage{
 ICLinearDiscriminantClassifier(X, y, X_u, prior = NULL, scale = FALSE,
-  init = NULL, sup_prior = FALSE, factr = 1e+07, x_center = TRUE, ...)
+  init = NULL, sup_prior = FALSE, factr = 1e+07, x_center = FALSE, ...)
 }
 \arguments{
 \item{X}{design matrix of the labeled objects}

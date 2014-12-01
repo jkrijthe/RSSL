@@ -2,6 +2,7 @@
 \docType{methods}
 \name{boundaryplot}
 \alias{boundaryplot}
+\alias{boundaryplot,KernelLeastSquaresClassifier-method}
 \alias{boundaryplot,LeastSquaresClassifier-method}
 \alias{boundaryplot,LinearSVM-method}
 \alias{boundaryplot,LogisticLossClassifier-method}
@@ -11,6 +12,8 @@
 \title{Decision Boundary plot of a classifier}
 \usage{
 boundaryplot(object, ...)
+
+\S4method{boundaryplot}{KernelLeastSquaresClassifier}(object, p)
 
 \S4method{boundaryplot}{LeastSquaresClassifier}(object, p)
 
