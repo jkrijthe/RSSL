@@ -8,8 +8,6 @@ setClass("NormalizedLinearDiscriminantClassifier",
 #'
 #' <full description>
 #'
-#' @usage MCLinearDiscriminantClassifier(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...)
-#'
 #' @param X <what param does>
 #' @param y <what param does>
 #' @param X_u <what param does>
@@ -29,7 +27,8 @@ NormalizedLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform
   modelform<-ModelVariables$modelform
   
   Y <- model.matrix(~as.factor(y)-1)
-
+  Xe<-rbind(X,X_u)
+  
   #Set priors if not set by user
   if (is.null(prior)) prior<-matrix(colMeans(Y),2,1)
   
@@ -49,7 +48,7 @@ NormalizedLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform
   eigen(solve(S_total_all) %*% S_within_labeled)
   # Take first direction
   browser()
-  e
+  e<-NULL #TODO
   
   # Project into new space
   

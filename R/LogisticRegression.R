@@ -82,9 +82,6 @@ LogisticRegressionFast<-function(modelform,D) {
 #   return(ll)
 # })
 
-#' Loss method for LogisticRegression
-#' MINUS Log likelihood on a new data set
-#'
 #' @rdname loss-methods
 #' @aliases loss,LogisticRegression-method                                                                                                   
 setMethod("loss", signature(object="LogisticRegression"), function(object, newdata, y=NULL) {
@@ -113,7 +110,6 @@ setMethod("loss", signature(object="LogisticRegression"), function(object, newda
 #   loss(object,object@D)
 # })
 
-#' Predict
 #' @rdname predict-methods
 #' @aliases predict,LogisticRegression-method  
 setMethod("predict", signature(object="LogisticRegression"), function(object, newdata,probs=FALSE) {
@@ -132,7 +128,6 @@ ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@sca
   } else return(classes)
 })
 
-#' Boundary plot method for LogisticRegression
 #' @rdname boundaryplot-methods
 #' @aliases boundaryplot,LogisticRegression-method  
 setMethod("boundaryplot", signature(object="LogisticRegression"), function(object, p) {

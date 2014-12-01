@@ -38,8 +38,9 @@ if (y_scale) {
   if (method=="clustering") {
   	# Determine weights based on a clustering
   	clustering<-kmeans(Xe,centers=100,nstart=1000)
+    #TODO redo this section
   	cluster_probs<-prop.table(table(clustering$cluster))
-  	assignments<-cl_predict(clustering,X)
+  	assignments<-NULL #TODO: get cluster assignments
   	importanceweights<-cluster_probs[assignments]
   	importanceweights<-importanceweights/sum(importanceweights)
   } else if (method=="kernel") {

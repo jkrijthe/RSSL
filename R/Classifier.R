@@ -12,9 +12,7 @@ setClass("Classifier",
          prototype(modelform=NULL, classname=NULL, classnames=NULL,scaling=NULL)
 )
 
-#' Show method for Classifier
-#' @rdname show-methods
-#' @aliases show,Classifier-method
+#' @export
 setMethod("show", signature(object="Classifier"), function(object) {
   cat(object@name,"\n")
   cat("Classnames:\n",object@classnames,"\n")

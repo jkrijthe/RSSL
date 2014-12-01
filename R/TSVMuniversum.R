@@ -1,49 +1,57 @@
 #' TSVMuniversum
 #' @include Classifier.R
-setClass("TSVMuniversum", 
-         representation(name="ANY"), 
-         prototype(name="TSVMuniversum"))
+setClass("TSVMuniversvm", 
+         representation(name="ANY",modelform="ANY",classnames="ANY",scaling="ANY",binary_path="ANY",temp_path="ANY"), 
+         prototype(name="TSVMuniversvm"))
 
-# TSVMuniversum<-function(X, y, X_u=NULL, x_center=TRUE,scale=FALSE,binary_path=NULL,temp_path=NULL,,...) {
+TSVMuniversvm<-function(X, y, X_u=NULL, x_center=FALSE,scale=FALSE,binary_path=NULL,temp_path=NULL,...) {
+  if (is.null(binary_path)) {
+    stop("Path to UniverSVM binary is not given")
+  } else if (is.null(binary_path)) {
+    stop("Path to temp directory is not given")
+  }
   
-#   ## Preprocessing to correct datastructures and scaling  
-#   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center)
-#   X<-ModelVariables$X
-#   X_u<-ModelVariables$X_u
-#   y<-ModelVariables$y
-#   scaling<-ModelVariables$scaling
-#   classnames<-ModelVariables$classnames
-#   modelform<-ModelVariables$modelform
-# }
+  ## Preprocessing to correct datastructures and scaling  
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
+  X<-ModelVariables$X
+  X_u<-ModelVariables$X_u
+  y<-ModelVariables$y
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  modelform<-ModelVariables$modelform
 
+  write.matrix.csr(x=as.matrix.csr(X), y=y, file=paste(temp_path,"tempfile.train",sep=""))
+  write.matrix.csr(x=as.matrix.csr(X_u), y=rep(-3,nrow(X_u)), file=paste(temp_path,"tempfile.trainu",sep=""))
   
-# #   X <- model.matrix(modelform, D_l)
-# #   D_u[,classname]=-3
-# #   X_u <- model.matrix(modelform, D_u)
-# #   y<-as.factor(data.matrix(D_l[,classname]))
-# #   classnames <- levels(y)
-  
-  
-# #   #write.matrix.csr(x=as.matrix.csr(rbind(X,X_u)), y=c(y,D_u[,classname]), file="~/tempfile.train")
-# #   write.matrix.csr(x=as.matrix.csr(X), y=y, file="/Volumes/Experiments/tempfile.train")
-# #   write.matrix.csr(x=as.matrix.csr(X_u), y=D_u[,classname], file="/Volumes/Experiments/tempfile.trainu")
-  
-# #   system("../src/universvm1.22/universvm -u /Volumes/Experiments/tempfile.trainu /Volumes/Experiments/tempfile.train /Volumes/Experiments/tempfile.model",intern=TRUE)
-# #   new("TSVMuniversum",
-# #       modelform=modelform,
-# #       classname=classname,
-# #       classnames=classnames
-# #       )
-# # }
+  system(paste(binary_path,"universvm -u ",temp_path,"tempfile.trainu ",temp_path,"tempfile.train ",temp_path,"tempfile.model",sep=""),intern=FALSE)
+  new("TSVMuniversvm",
+      modelform=modelform,
+      classnames=classnames,
+      scaling=scaling,
+      binary_path=binary_path,
+      temp_path=temp_path
+      )
+}
 
-# setMethod("predict", signature(object="TSVMuniversum"), function(object, newdata, probs=FALSE) {
-#   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept)
-#   X<-ModelVariables$X
-# }
+setMethod("predict", signature(object="TSVMuniversvm"), function(object, newdata, probs=FALSE) {
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
+  X<-ModelVariables$X
+  
+  write.matrix.csr(x=as.matrix.csr(X), y=rep(2,nrow(X)), file=paste(object@temp_path,"tempfile.test",sep=""))
+  
+  system(paste(object@binary_path,"universvm -D ",object@temp_path,"tempfile.outputs -F ",object@temp_path,"tempfile.model ",object@temp_path,"tempfile.test",sep=""),intern=FALSE)
+  
+  y <- scan(paste("/Volumes/Experiments/","tempfile.outputs",sep=""),skip=2,what="")
+  y <- gsub("[\\,;]", "", y[4:length(y)])
+  y <- gsub("]","", y)
+  y <- as.numeric(y)
+  return((y>0)+1)
+  
+})
 
-# setMethod("loss", signature(object="TSVMuniversum"), function(object, newdata, y=NULL) {
-#   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept)
-#   X<-ModelVariables$X
-#   y<-ModelVariables$y
-#   if (is.null(y)) { stop("No labels supplied.")}
-# }
+setMethod("loss", signature(object="TSVMuniversvm"), function(object, newdata, y=NULL) {
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept)
+  X<-ModelVariables$X
+  y<-ModelVariables$y
+  if (is.null(y)) { stop("No labels supplied.")}
+})

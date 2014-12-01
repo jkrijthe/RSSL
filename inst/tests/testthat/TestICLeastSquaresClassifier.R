@@ -39,6 +39,11 @@ cat("Loss:  ",loss(g, X_test, y_test),"\n")
 g<-LeastSquaresClassifier(X,y)
 cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
 cat("Loss:  ",loss(g, X_test, y_test),"\n")
+
+g<-ICLeastSquaresClassifier(X,y,X_u,method="projection")
+cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
+cat("Loss:  ",loss(g, X_test, y_test),"\n")
+
 # 
 # g<-ICLeastSquaresClassifier(modelform, D)
 # cat("Error:  ",1-mean(predict(g,D_test)==D_test[,classname]),"\n")

@@ -21,14 +21,8 @@ ICLeastSquaresRegression <- function(X, y, X_u, lambda1=0, lambda2=0, scale=FALS
   else Xe <- rbind(X,X_u)
   
   #Added
-  if (scale) {
-    library(pls)
-    scaling<-stdize(Xe[,2:ncol(Xe),drop=FALSE], center = TRUE, scale = TRUE)
-    X[,2:ncol(Xe)]<-predict(scaling,X[,2:ncol(Xe),drop=FALSE])
-    X_u[,2:ncol(Xe)]<-predict(scaling,X_u[,2:ncol(Xe),drop=FALSE])
-    
-    Xe <- rbind(X,X_u)
-  } else {scaling=NULL}
+  warning("TODO: Reimplement scaling")
+  scaling<-NULL
   
   
   m<-ncol(Xe)

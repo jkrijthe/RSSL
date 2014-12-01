@@ -5,6 +5,12 @@ setClass("MajorityClassClassifier",
          contains="Classifier")
 
 #' Majority Class Classifier
+#' 
+#' TODO
+#'
+#' @param X Design matrix, intercept term is added within the function
+#' @param y Vector with class assignments
+#' @param ... Unused
 #'
 #' @export
 MajorityClassClassifier <- function(X, y, ...) {

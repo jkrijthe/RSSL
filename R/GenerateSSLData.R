@@ -8,10 +8,10 @@
 #' @param expected TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
 #' @return A data.frame with n objects from the sliced cookie example
 #' @export
-GenerateSlicedCookie<-function(n=100,expected=FALSE) {
+GenerateSlicedCookie<-function(n=100, expected=FALSE, gap=1) {
   X<-mvrnorm(n,c(0,0),diag(c(2,2)))
   
-  X[(X[,1]>0),1]<-X[(X[,1]>0),1]+1
+  X[(X[,1]>0),1]<-X[(X[,1]>0),1]+gap
   X[,1]<-X[,1]-0.5
   y<-matrix(-1,n,1)
   if (expected) { y[X[,1]>0,]<-1 }
@@ -20,6 +20,13 @@ GenerateSlicedCookie<-function(n=100,expected=FALSE) {
   return(data.frame(X,y))
 }
 
+#' Generate data from 2 gaussian distributed datasets
+#' 
+#' @param n integer; Number of examples to generate
+#' @param d integer; dimensionality of the problem
+#' @param var numeric; size of the variance parameter
+#' @param expected logical; whether the decision boundary should be the expected or perpendicular
+#' 
 #' @export
 Generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
   X<-rbind(mvrnorm(n/2,rep(-1,d),diag(rep(var,d))),mvrnorm(n/2,rep(1,d),diag(rep(var,d))))
@@ -81,12 +88,14 @@ GenerateFourClusters<-function(n=100,distance=6,expected=FALSE) {
 #' @export 
 clplot<-function(X,y) {
   if (is.factor(y)) {
-#     levels(y)<-c(levels(y),"NA")
-#     y[is.na(y)]<-"NA"
-    colScale <- scale_colour_manual(values = c("orange","purple","black"))
+    if (any(is.na(y))){
+      levels(y)<-c(levels(y),"NA")
+      y[is.na(y)]<-"NA"
+    }
+    colScale <- scale_colour_manual(values = c("orange","purple","darkgrey"))
   }
-  if (is.factor(y)) p<-qplot(X[,1],X[,2],color=y,asp=1,size=y,shape=y)+colScale+scale_size_manual(values=c(3,3,0.5))+scale_shape()   # Shape depends on cond
-  else p<-qplot(X[,1],X[,2],color=y,asp=1)                                                                                                  
+  if (is.factor(y)) p<-qplot(X[,1],X[,2],color=y,asp=1,size=y)+colScale+scale_size_manual(values=c(5,5,2))+scale_shape()   # Shape depends on cond
+  else p<-qplot(X[,1],X[,2],color=y,asp=1,size=5)                                                                                                  
   p<-p + theme(
     panel.background = element_rect(fill = "transparent",colour = NA), 
     panel.grid.minor = element_line(colour="lightgrey",size=0.5,linetype=2), 

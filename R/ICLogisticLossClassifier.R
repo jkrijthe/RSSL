@@ -2,7 +2,6 @@
 #'
 #' Implicitly constrained semisupervised learning with logistic loss. This is equivalent to finding a weighting of the unlabeled objects belonging to either of the two classes.
 #'
-#' @usage ICLogisticLossClassifier(X, y, X_u, lambda1=0, lambda2=0, intercept=TRUE, scale=FALSE, init=NA, ...)
 #'
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
@@ -12,6 +11,9 @@
 #' @param intercept TRUE if an intercept should be added to the model
 #' @param scale If TRUE, apply a z-transform to all observations in X and X_u before running the regression
 #' @param init Starting parameter vector for gradient descent
+#' @param verbose logical; Verbose output
+#' @param lambda3 numeric; Prior controlling the deviation of mean predictions form the overall mean
+#' @param trueprob numeric; Set overal mean
 #' @param ... additional arguments
 #' @return S4 object of class ICLogisticLossClassifier with the following slots:
 #' \item{theta}{weight vector}

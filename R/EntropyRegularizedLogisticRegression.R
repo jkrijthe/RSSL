@@ -8,15 +8,17 @@ setClass("EntropyRegularizedLogisticRegression",
 #'
 #' Entropy regularized logistic regression as introduced by \cite{Grandvalet2005}.
 #'
-#' @usage EntropyRegularizedLogisticRegression(X, y, X_u=NULL,lambda_entropy=1.0,lambda=0.0,intercept=TRUE, init=NA)
 #'
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param X_u Design matrix of the unlabeled data, intercept term is added within the function
-#' @param lambda_entropy Weight of the labeled observations compared to the unlabeled observations
 #' @param lambda l2 Regularization
+#' @param lambda_entropy Weight of the labeled observations compared to the unlabeled observations
 #' @param intercept Whether an intercept should be added to the model
 #' @param init Initial parameters for the gradient descent
+#' @param scale logical; whether the data should be normalized
+#' @param x_center logical; whether the data should be centered
+#' 
 #' @return S4 object of class EntropyRegularizedLogisticRegression with the following slots:
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}

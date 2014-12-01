@@ -9,13 +9,8 @@
 #' @export
 LeastSquaresRegression <- function(X, y, lambda=0, scale=FALSE, ...) {
   
-  if (scale) {
-    library(pls)
-    scaling<-stdize(X[,2:ncol(X),drop=FALSE], center = TRUE, scale = TRUE)
-    X[,2:ncol(X)]<-predict(scaling,X[,2:ncol(X),drop=FALSE])
-    
-  } else {scaling=NULL}
-  
+  warning("TODO: reimplement scaling")
+  scaling<-NULL
   n<-nrow(X)
   m<-ncol(X)
   if (nrow(X)<ncol(X)) inv <- function(X) { ginv(X) }

@@ -9,21 +9,22 @@ setClass("ICLinearDiscriminantClassifier",
 #' Semi-supervised version of Linear Discriminant Analysis using implicit constraints.
 #' This method finds the labeling of the unlabeled objects, whose resulting LDA solution gives the highest log-likelihood when evaluated on the labeled objects only.
 #'
-#' @usage ICLinearDiscriminantClassifier(X, y, X_u,prior=NULL, scale=FALSE,init=NULL, sup_prior=FALSE, factr=1e7,  ...)
 #'
 #' @param X design matrix of the labeled objects
 #' @param y vector with labels
 #' @param X_u design matrix of the labeled objects
-#' @param prior <what param does>
-#' @param scale Should the features be normalized? (default: FALSE)
+#' @param prior set a fixed class prior
+#' @param scale logical; Should the features be normalized? (default: FALSE)
 #' @param init not currently used
-#' @param sup_prior use the prior estimates based only on the labeled data, not the imputed labels (default: FALSE)
+#' @param sup_prior logical; use the prior estimates based only on the labeled data, not the imputed labels (default: FALSE)
 #' @param factr change the precision requirement passed to the optim function (default: 1e7)
+#' @param x_center logical; Whether the data should be centered
 #' @param ... Additional Parameters, Not used
+#' 
 #' @export
-ICLinearDiscriminantClassifier <- function(X, y, X_u,prior=NULL, scale=FALSE,init=NULL, sup_prior=FALSE, factr=1e7,  ...) {
+ICLinearDiscriminantClassifier <- function(X, y, X_u, prior=NULL, scale=FALSE,init=NULL, sup_prior=FALSE, factr=1e7,  x_center=FALSE,...) {
   ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
   y<-ModelVariables$y
@@ -54,6 +55,7 @@ ICLinearDiscriminantClassifier <- function(X, y, X_u,prior=NULL, scale=FALSE,ini
   }
   
   L_sl <- function(w,X,Y) {
+    
       vars<-vec2vars(w)
       m<-vars$m
       prior<-vars$prior
@@ -64,13 +66,13 @@ ICLinearDiscriminantClassifier <- function(X, y, X_u,prior=NULL, scale=FALSE,ini
         sigma<-sigmas[[c]]
         Xc<-X[as.logical(Y[,c]), ,drop=FALSE] #Select all object in class c
         ll<-ll + nrow(Xc) * ( log(prior[c,])-(k/2)*log(2*pi)-(1/2)*log(det(sigma)) ) #Add the constant part for each row in Xc
-        ll<-ll+sum(-(1/2)*(Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma) * (Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])) #Add the dynamic contribution
+        ll<-ll-(1/2)*sum((Xc-(matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))%*%solve(sigma) * (Xc-(matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))) #Add the dynamic contribution
       }
       
       return(ll)
   }
   
-  grad_sl <- function(w, X, Y,lambda) {
+  grad_sl <- function(w, X, Y) {
     vars<-vec2vars(w)
     m<-vars$m
     prior<-vars$prior
@@ -83,7 +85,11 @@ ICLinearDiscriminantClassifier <- function(X, y, X_u,prior=NULL, scale=FALSE,ini
     grad_mean1 <- (colSums(X1)-counts[1]*m[1,]) %*% solve(sigmas[[1]])
     grad_mean2 <- (colSums(X2)-counts[2]*m[2,]) %*% solve(sigmas[[2]])
     grad_sigma <- -0.5*(sum(counts))*solve(sigmas[[1]]) + 0.5 * (solve(sigmas[[1]]) %*% t(X1-matrix(1,counts[1],1) %*% m[1, ,drop=FALSE]) %*% (X1-matrix(1,counts[1],1) %*% m[1, ,drop=FALSE]) %*% solve(sigmas[[1]]) + solve(sigmas[[1]]) %*% t(X2-matrix(1,counts[2],1) %*% m[2, ,drop=FALSE]) %*% (X2-matrix(1,counts[2],1) %*% m[2, ,drop=FALSE]) %*% solve(sigmas[[1]]))
-    grad_sigma[upper.tri(grad_sigma, diag=FALSE)]<-grad_sigma[upper.tri(grad_sigma, diag=FALSE)]*2
+    
+    # Numerical gradient: 
+    # grad(L_sl,x=w,X=X,Y=Y)
+    # optim(c(0.5,0,0,0,0,1,0,1),L_sl,X=X,Y=Y,control=list(fnscale=-1))
+    grad_sigma[upper.tri(grad_sigma, diag=FALSE)] <- grad_sigma[upper.tri(grad_sigma, diag=FALSE)]*2 #TODO: check this gradient analytically
     grad_sigma<-grad_sigma[upper.tri(grad_sigma, diag=TRUE)]
   
     return(c(grad_prior,grad_mean1,grad_mean2,as.vector(grad_sigma)))

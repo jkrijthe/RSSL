@@ -1,12 +1,15 @@
-#' Maximum Likelihood Covariance estimate
+#' @title Maximum Likelihood Covariance estimate
+#' 
+#' @param X matrix with observations
 #' @export
 cov_ml<-function(X) { ((nrow(X)-1)/nrow(X))*cov(X) }
 
-#' Standard Error of a vector
+#' @title Standard Error of a vector
+#' @param x numeric; vector for which to calculate standard error
 #' @export
 stderror <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x))) # http://stackoverflow.com/questions/2676554/in-r-how-to-find-the-standard-error-of-the-mean
 
-#' Convert data.frame to matrices for semi-supervised learners
+#' @title Convert data.frame to matrices for semi-supervised learners
 #'
 #' Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations
 #'
@@ -63,14 +66,13 @@ SSLDataFrameToMatrices <- function(model,D,intercept=TRUE) {
 #' Preprocess the input to a classification function
 #'
 #' The following actions are carried out: 1. data.frames are converted to matrix form and labels converted to integers 2. An intercept column is added if requested 3. centering and scaling is applied if requested.
-#'
-#' @usage PreProcessing(X,y,X_u=NULL,scale=FALSE,intercept=FALSE)
 #' 
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param X_u Design matrix of the unlabeled observations
 #' @param scale If TRUE, apply a z-transform to the design matrix X
 #' @param intercept Whether to include an intercept in the design matrices
+#' @param x_center logical (default: TRUE); Whether the feature vectors should be centered
 #' @return list object with the following objects:
 #' \item{X}{design matrix of the labeled data}
 #' \item{y}{integer vector indicating the labels of the labeled data}
@@ -79,9 +81,9 @@ SSLDataFrameToMatrices <- function(model,D,intercept=TRUE) {
 #' \item{scaling}{a scaling object used to scale the test observations in the same way as the training set}
 #' \item{modelform}{a formula object containing the used model}
 #' @export
-PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=TRUE) {
+PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE) {
   # Make sure we get a matrix from the model representation
-  if (is.formula(X) & is.data.frame(y)) {
+  if (is(X,"formula") & is.data.frame(y)) {
     modelform<-X
     list2env(SSLDataFrameToMatrices(X,y,intercept=intercept),environment())
     classnames<-classnames
@@ -103,7 +105,6 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=TRUE) 
   }
   
   if (scale | x_center) {
-    library(pls)
     if (intercept) { 
       cols<-2:ncol(X) #Do not scale the intercept column
     } else { 
@@ -113,12 +114,12 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=TRUE) 
     if (!is.null(X_u)) {
         Xe<-rbind(X,X_u)
         
-        scaling<-stdize(Xe[,cols,drop=FALSE], center = TRUE, scale = scale)
+        scaling<-scaleMatrix(Xe[,cols,drop=FALSE], center = TRUE, scale = scale)
         X[,cols]<-predict(scaling,X[,cols,drop=FALSE]) 
         X_u[,cols]<-predict(scaling,X_u[,cols,drop=FALSE])
     } else {
       
-      scaling<-stdize(X[,cols,drop=FALSE], center = TRUE, scale = scale)
+      scaling<-scaleMatrix(X[,cols,drop=FALSE], center = TRUE, scale = scale)
       X[,cols]<-predict(scaling,X[,cols,drop=FALSE]) 
     }
 
@@ -131,12 +132,11 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=TRUE) 
 #'
 #' The following actions are carried out: 1. data.frames are converted to matrix form and labels converted to integers 2. An intercept column is added if requested 3. centering and scaling is applied if requested.
 #'
-#' @usage PreProcessingPredict(modelform,newdata,y=NULL,scaling=FALSE,intercept=FALSE)
 #' 
 #' @param modelform Formula object with model
 #' @param newdata data.frame object with objects
-#' @param y Vector or factor with class assignments
-#' @param scaling Apply a given z-transform to the design matrix X
+#' @param y Vector or factor with class assignments (default: NULL)
+#' @param scaling Apply a given z-transform to the design matrix X (default: NULL)
 #' @param intercept Whether to include an intercept in the design matrices
 #' @return list object with the following objects:
 #' \item{X}{design matrix of the labeled data}

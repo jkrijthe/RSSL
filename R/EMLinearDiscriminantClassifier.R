@@ -5,6 +5,16 @@ setClass("EMLinearDiscriminantClassifier",
          contains="LinearDiscriminantClassifier")
 
 #' Expectation Maximization Nearest Mean Classifier
+#' 
+#' @param X design matrix of the labeled objects
+#' @param y vector with labels
+#' @param X_u design matrix of the labeled objects
+#' @param method character; Currently only "EM"
+#' @param scale Should the features be normalized? (default: FALSE)
+#' @param eps Stopping criterion for the maximinimization
+#' @param verbose logical; Controls the verbosity of the output
+#' @param ... Additional Parameters, Not used
+#' 
 #' @export
 EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-8, verbose=FALSE, ...) {
   ## Preprocessing to correct datastructures and scaling  

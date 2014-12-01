@@ -1,45 +1,50 @@
 Package: RSSL
-Version: 0.2
-Date: 2013-07-30
-Title: Implementations of semi-supervised learning approaches to classification
+Version: 0.4
+Date: 2014-01-14
+Title: Implementations of semi-supervised learning approaches for classification
     and regression
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
 Author: Jesse Krijthe <jkrijthe@gmail.com>
 Maintainer: Jesse Krijthe <jkrijthe@gmail.com>
 Depends:
-    R (>= 2.11.0),
-    class,
-    sampling,
+    R (>= 3.1.0),
+    Matrix
+Suggests:
     MASS,
+    class,
+    quadprog,
+    ggplot2,
+    SparseM,
+    klaR,
+    sampling,
     e1071,
     foreign,
     bootstrap,
     methods,
     plyr,
-    Matrix,
-    pls,
-    optimx
-Suggests:
-    MASS,
-    quadprog,
-    ggplot2
-Description: Implementations of semi-supervised learning approaches to
+    animation,
+    reshape
+Description: Implementations of semi-supervised learning approaches for
     classification and regression. Serves as benchmarks to new approaches and
-    contains examples of the authors' own methods.
+    contains implementations of the authors' own methods.
 License: GPL (>= 2)
-URL: http://www.github.com/jkrijthe/rssl
-BugReports: http://www.github.com/jkrijthe/rssl
+URL: http://www.github.com/jkrijthe/RSSL
+BugReports: http://www.github.com/jkrijthe/RSSL
+Roxygen: list(wrap = FALSE)
 Collate:
     'Generics.R'
     'Classifier.R'
+    'LeastSquaresClassifier.R'
+    'CPLeastSquaresClassifier.R'
+    'NormalBasedClassifier.R'
+    'LinearDiscriminantClassifier.R'
+    'CPLinearDiscriminantAnalysis.R'
     'ClusterThenLabelClassifier.R'
     'CoTraining.R'
     'CrossValidation.R'
     'DensityAdaptiveRegression.R'
     'DensitySensitiveRegression.R'
-    'NormalBasedClassifier.R'
-    'LinearDiscriminantClassifier.R'
     'EMLinearDiscriminantClassifier.R'
     'LogisticRegression.R'
     'EMLogisticRegression.R'
@@ -48,10 +53,10 @@ Collate:
     'LogisticLossClassifier.R'
     'ERLogisticLossClassifier.R'
     'EntropyRegularizedLogisticRegression.R'
-    'GRFHarmonicFunctionRegression.R'
+    'ErrorCurve.R'
+    'GRFClassifier.R'
     'GenerateSSLData.R'
     'HelperFunctions.R'
-    'LeastSquaresClassifier.R'
     'ICLeastSquaresClassifier.R'
     'ICLeastSquaresRegression.R'
     'ICLinearDiscriminantClassifier.R'
@@ -61,23 +66,27 @@ Collate:
     'IWLeastSquaresClassifier.R'
     'IWLogisticRegression.R'
     'ImputedLeastSquaresClassifier.R'
-    'KNN.R'
     'LeastSquaresRegression.R'
+    'LinearSVM.R'
     'MCLinearDiscriminantClassifier.R'
     'MCNearestMeanClassifier.R'
-    'MMLeastSquaresClassifier.R'
     'MajorityClassClassifier.R'
     'NormalizedLinearDiscriminantClassifier.R'
     'QuadraticDiscriminantClassifier.R'
+    'RSSL.R'
     'S3VM.R'
     'S4VM.R'
     'SGDSVM.R'
     'SGT.R'
     'SGTlight.R'
     'SVM.R'
+    'SVMlin.R'
     'SelfLearning.R'
     'TSVM.R'
+    'TSVM_CCCP.R'
     'TSVMbundle.R'
     'TSVMlight.R'
     'TSVMuniversum.R'
     'UCLeastSquaresClassifier.R'
+    'caretModels.R'
+    'scaleMatrix.R'

@@ -24,7 +24,7 @@ setClass("NearestMeanClassifier",
 #' \item{classnames}{a vector with the classnames for each of the classes}
 #' \item{scaling}{scaling object used to transform new observations}
 #' @export
-NearestMeanClassifier <- function(X, y, method="closedform",prior=NULL, scale=FALSE,  ...) {
+NearestMeanClassifier <- function(X, y, method="closedform", prior=NULL, scale=FALSE,  ...) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,X_u=NULL,scale=scale,intercept=FALSE)

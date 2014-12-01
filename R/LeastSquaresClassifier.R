@@ -1,7 +1,7 @@
 #' @include Classifier.R
 setClass("LeastSquaresClassifier",
-         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY"),
-         prototype(name="LeastSquaresClassifier",scaling=NULL), 
+         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",kernel="ANY",Xtrain="ANY"),
+         prototype(name="LeastSquaresClassifier",scaling=NULL,kernel=NULL,Xtrain=NULL), 
          contains="Classifier")
 
 #' Least Squares Classifier
@@ -23,30 +23,87 @@ setClass("LeastSquaresClassifier",
 #' \item{modelform}{formula object of the model used in regression}
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 #' @export
-LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=TRUE, scale=FALSE, ...) {
+LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, kernel=NULL, method="inverse",...) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
   X<-ModelVariables$X
-  y<-ModelVariables$y
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
+  #y<-ModelVariables$y
   
-  if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
+  if (length(classnames)>2) {
+    y <- model.matrix(~y-1, data.frame(y))
+  } else {
+    y <- model.matrix(~y-1, data.frame(y))[,1,drop=FALSE]
+  }
+  
+  
+  
+  # Check number of classes
+  #if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
+  # Check if all classes are present.
   
   #There is a problem using ginv when using PCs as inputs: the problems seem to be rescaled such that the bias term is no longer correct
   
   ## Start Implementation
-  n<-nrow(X)
-  m<-ncol(X)
+  n <- nrow(X)
+  m <- ncol(X)
+  k <- ncol(y)
+  
+  Xtrain<-NULL
   if (nrow(X)<ncol(X)) inv <- function(X) { ginv(X) }
   else inv <- function(X) { ginv(X) }
   
-  if (intercept) {
-    theta <- inv(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1))))) %*% (t(X) %*% y)
+  
+  
+  if (method=="inverse") {
+      if (intercept) {
+        theta <- inv(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1))))) %*% (t(X) %*% y)
+      } else {
+        theta <- inv(t(X) %*% X + n*lambda*diag(rep(1,m))) %*% (t(X) %*% y)
+      }
+  } else if (method=="Normal") {
+    if (intercept) solution <- solve(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1)))), t(X) %*% y)
+    else solution <- solve(t(X) %*% X + n*lambda*diag(m), t(X) %*% y)
+    theta<-matrix(solution,m,k)
+  }  else if (method=="QR") {
+    solution <- qr.solve(X,y)
+    theta<-matrix(solution,m,k)
+  } else if (method=="QR2") {
+    if (intercept) solution <- qr.solve(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1)))), t(X) %*% y)
+    else solution <- qr.solve(t(X) %*% X + n*lambda*diag(m), t(X) %*% y)
+    theta<-matrix(solution,m,k)
+  } else if (method=="BFGS") {
+    # BFGS gradient descent
+    theta<-rep(0,m*k)
+    theta<-matrix(solve_quadratic_bfgs(X,y,lambda),m,k)     
+  } else if (method=="BFGSCPP") {
+    # BFGS gradient descent
+    theta<-rep(0,ncol(X))
+    theta<-matrix(optim(theta,fn=function(w,X,y) { squared_objective(matrix(w),X,matrix(y)) },gr=function(w,X,y) { squared_gradient(matrix(w),X,matrix(y)) },X=X,y=y,method="BFGS")$par,m,k)
+  } 
+  else if (method=="CPP") {
+    theta<-squared_solution(X,matrix(y))
+  } else if (method=="SGD") {
+    # Stochastic gradient descent
+  }else if (method=="CG") {
+    # Conjugate gradient method
+    theta <- rep(0,ncol(X))
+    theta <- matrix(optim(theta,fn=objective,gr=gradient,X=X,y=y,method="CG")$par)
+  } else if (method=="Newton") {
+    
+    returnfunction<-function(w,X,y) {
+      val<-objective(w,X,y)
+      attr(val,"gradient")<-gradient(w,X,y)
+      attr(val,"hessian")<-hessian(w,X,y)
+      return(val)
+    }
+    theta <- rep(0,ncol(X))
+    theta<-matrix(nlm(returnfunction,p=theta, X=X,y=y,iterlim=1000)$estimate)
   } else {
-    theta <- inv(t(X) %*% X + n*lambda*diag(rep(1,m))) %*% (t(X) %*% y)
+    stop("Unknown method")
   }
   
   ## Return correct object
@@ -55,59 +112,39 @@ LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=TRUE
       scaling=scaling,
       theta=theta,
       modelform=modelform,
-      intercept=intercept
+      intercept=intercept,
+      kernel=kernel,
+      Xtrain=Xtrain
       )
 }
 
-#' Loss method for Least Squares Classifier
-#'
-#' Loss on new objects of a trained least squares classifier
-#'
-#' @usage loss(object, X, probs=FALSE)
-#' @usage loss(object, newdata, lambda=0, probs=FALSE)
-#'
-#' @param object Object of class LeastSquaresClassifier
-#' @param X Design matrix of the test data, intercept term is added within the function
-#' @param y Vector with true classes of the test data
-#' @param newdata data.frame object with test data
-#' @return numeric of the total loss on the test data
 #' @rdname loss-methods
 #' @aliases loss,LeastSquaresClassifier-method
-setMethod("loss", signature(object="LeastSquaresClassifier"), function(object, newdata, y=NULL) {
+#' @export
+setMethod("loss", signature(object="LeastSquaresClassifier"), function(object, newdata, y=NULL,...) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept)
   X<-ModelVariables$X
-  y<-ModelVariables$y
+  #y<-ModelVariables$y
+  warning("TODO: how to mitigate loss being counted twice?")
+  y <- model.matrix(~y-1,data.frame(y))
   if (is.null(y)) { stop("No labels supplied.")}
-  return(sum((X %*% object@theta - y)^2))
+  return(((X %*% object@theta - y[,1])^2))
 })
 
-#' Predict method for Least Squares Classifier
-#'
-#' Predict classes of new data based on trained least squares classifier
-#'
-#' @usage predict(object, X, probs=FALSE)
-#' @usage predict(object, newdata, lambda=0, probs=FALSE)
-#'
-#' @param object Object of class LeastSquaresClassifier
-#' @param X Design matrix of the test data, intercept term is added within the function
-#' @param newdata data.frame object with test data
-#' @param probs whether class probabilities should be returned
-#' @return factor of predicted classes
 #' @rdname predict-methods
 #' @aliases predict,LeastSquaresClassifier-method
-setMethod("predict", signature(object="LeastSquaresClassifier"), function(object, newdata, probs=FALSE) {
+setMethod("predict", signature(object="LeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept)
-
   X<-ModelVariables$X
   
   theta <- matrix(object@theta, nrow=ncol(X))
   expscore <- X %*% theta
-  
+
   # If we need to return classes
-  if (length(object@classnames)>2) {
+  if (ncol(theta)>1) {
     classes <- factor(apply(expscore,1,which.max),levels=1:length(object@classnames), labels=object@classnames)
   } else {
-    classes <- factor(as.integer(expscore>1.5)+1,levels=1:length(object@classnames), labels=object@classnames)
+    classes <- factor(as.integer(expscore[,1]<0.5)+1,levels=1:length(object@classnames), labels=object@classnames)
   }
   
   if (probs){
@@ -117,9 +154,12 @@ setMethod("predict", signature(object="LeastSquaresClassifier"), function(object
   }
 })
 
-#' Plot method for LeastSquaresClassifier
-#'
-#' @param x LeastSquaresClassifier object
+#' @rdname plot-methods
+#' @aliases plot,LeastSquaresClassifier,missing-method
+setMethod("show", signature(object="LeastSquaresClassifier"), function(object) {
+  print(object@theta)
+})
+
 #' @rdname plot-methods
 #' @aliases plot,LeastSquaresClassifier,missing-method
 setMethod("plot", signature(x="LeastSquaresClassifier",y="missing"), function(x) {
@@ -130,12 +170,26 @@ setMethod("plot", signature(x="LeastSquaresClassifier",y="missing"), function(x)
   return(p)
 })
 
-#' Boundary plot method for LeastSquaresClassifier
-#'
-#' @param object LeastSquaresClassifier object
-#' @param p ggplot object of classification problem generated by clplot
 #' @rdname boundaryplot-methods
 #' @aliases boundaryplot,LeastSquaresClassifier-method
 setMethod("boundaryplot", signature(object="LeastSquaresClassifier"), function(object, p) {
   p+geom_abline(intercept = (-(object@theta[1]-1.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
 })
+
+solve_quadratic_bfgs <- function(X,y,lambda) {
+  warning("No regularization implemented.")
+  
+  objective<-function(w,X,y) {
+    w <- matrix(w,m,k)
+    sum((X%*%w-y)^2)
+  }
+  gradient<-function(w,X,y) {
+    w <- matrix(w,m,k)
+    2 * t(X) %*% X %*% w - 2 * t(X) %*% y
+  }
+  hessian<-function(w,X,y) {
+    2 * t(X) %*% X
+  }
+  
+  optim(theta,fn=objective,gr=gradient,X=X,y=y,method="BFGS")$par
+}

@@ -5,6 +5,19 @@ setClass("ERLogisticLossClassifier",
          prototype(name="Entropy Regularized Logistic Loss Classifier"), 
          contains="LogisticLossClassifier")
 
+#' Entropy Regularized Logistic Loss Classifier
+#' 
+#' @param X Design matrix, intercept term is added within the function
+#' @param y Vector or factor with class assignments
+#' @param X_u Design matrix of the unlabeled data, intercept term is added within the function
+#' @param lambda numeric; Regularization parameter for the supervised loss
+#' @param lambda_entropy numeric; Parameter for the entropy term
+#' @param intercept TRUE if an intercept should be added to the model
+#' @param scale If TRUE, apply a z-transform to all observations in X and X_u before running the regression
+#' @param init Starting parameter vector for gradient descent
+#' @param x_center logical; whether the data should be centered
+#' @param ... additional arguments
+#' 
 #' @export
 ERLogisticLossClassifier <- function(X,y,X_u=NULL,lambda=0.0,lambda_entropy=1.0,intercept=TRUE, init=NA,scale=FALSE,x_center=FALSE) {
 
@@ -53,9 +66,10 @@ ERLogisticLossClassifier <- function(X,y,X_u=NULL,lambda=0.0,lambda_entropy=1.0,
   } else {
     w<-init
   }
-
-  opt_result <- optimx(w, fn=opt_func, gr=NULL, X=X, y=y, X_u=X_u, method="BFGS", control=list(fnscale=1), lower=-Inf, upper=Inf)
-  w<-as.numeric(opt_result[1,1:length(w)])
+  
+  
+  opt_result <- optim(w, fn=opt_func, gr=NULL, X=X, y=y, X_u=X_u, method="BFGS", control=list(fnscale=1), lower=-Inf, upper=Inf)
+  w<-as.numeric(opt_result$par[1:length(w)]) #TODO: changed this: is it still correct?
   
   new("ERLogisticLossClassifier",
       modelform=modelform, 
