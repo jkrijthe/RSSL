@@ -19,7 +19,7 @@ setClass("UCLeastSquaresClassifier",
 #' @param x_center logical; Whether the features should be centered
 #' @param ... Unused
 #' 
-#' 
+#' @export
 UCLeastSquaresClassifier<-function(X, y, X_u, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, y_scale=FALSE, ...) {
 	  ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center)
