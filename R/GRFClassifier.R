@@ -54,7 +54,7 @@ harmonic_function <- function(W,Y) {
   L <- diag(colSums(W)) - W;
   
   # the harmonic function.
-  fu <- -solve(L[(l+1):n, (l+1):n]) %*% L[(l+1):n, 1:l] %*% Y
+  fu <- -solve(L[(l+1):n, (l+1):n],L[(l+1):n, 1:l] %*% Y)
   
   # compute the CMN solution
   #q = colSums(Y)+1 % the unnormalized class proportion estimate from labeled data, with Laplace smoothing

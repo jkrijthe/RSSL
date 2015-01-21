@@ -183,6 +183,9 @@ c.ErrorCurve <- function(x,...,recursive=FALSE) {}
 #' 
 #' @export
 plotErrorCurve<-function(x, measurement=1,legendsetting="right",dataset_names=NULL,classifier_names=NULL,ncol=2,...) {
+  require(data.table)
+  require(reshape)
+  require(ggplot2)
   
   data<-x
   
@@ -217,7 +220,7 @@ plotErrorCurve<-function(x, measurement=1,legendsetting="right",dataset_names=NU
     
     dataframes.merged[[i]]<-data.frame(results.merged,Dataset=dataset_name,Measurement=1)
   }
-  plotdata<-rbind.fill(dataframes.merged)
+  plotdata<-rbindlist(dataframes.merged)
   
   # Reorder and relabel the classifier names
   if (!is.null(classifier_names)) {
@@ -264,6 +267,9 @@ plotErrorCurve<-function(x, measurement=1,legendsetting="right",dataset_names=NU
 #' 
 #' @export
 DifferencePlot<-function(data,measurement=1,legendsetting="right",dataset_names=NULL,classifier_names=NULL) {
+  require(data.table)
+  require(reshape)
+  require(ggplot2)
   
   # Check for input object
   if (class(data)=="ErrorCurve") { 
@@ -292,10 +298,10 @@ DifferencePlot<-function(data,measurement=1,legendsetting="right",dataset_names=
 #     res_dif3 <- results[,1,4,m]-results[,1,5,m]
     dataset_name <- ifelse(is.null(dataset_names),i,dataset_names[[i]])
     
-#     dataframes.merged[[i]]<-rbind.fill(data.frame(res_dif=res_dif1,Dataset=dataset_name,Classifier="Projection"), data.frame(res_dif=res_dif2,Dataset=dataset_name,Classifier="Self Learning"), data.frame(res_dif=res_dif3,Dataset=dataset_name,Classifier="TSVM"))
-dataframes.merged[[i]]<-rbind.fill(data.frame(res_dif=res_dif1,Dataset=dataset_name,Classifier="Projection"), data.frame(res_dif=res_dif2,Dataset=dataset_name,Classifier="Self Learning"))
+#     dataframes.merged[[i]]<-fill(data.frame(res_dif=res_dif1,Dataset=dataset_name,Classifier="Projection"), data.frame(res_dif=res_dif2,Dataset=dataset_name,Classifier="Self Learning"), data.frame(res_dif=res_dif3,Dataset=dataset_name,Classifier="TSVM"))
+dataframes.merged[[i]]<-rbindlist(data.frame(res_dif=res_dif1,Dataset=dataset_name,Classifier="Projection"), data.frame(res_dif=res_dif2,Dataset=dataset_name,Classifier="Self Learning"))
   }
-  plotdata<-rbind.fill(dataframes.merged)
+  plotdata<-rbindlist(dataframes.merged)
   # Reorder and relabel the classifier names
 #   if (!is.null(classifier_names)) {
 #     plotdata$Classifier<-factor(plotdata$Classifier,levels=classifiers.names,labels=classifier_names)
@@ -324,6 +330,9 @@ dataframes.merged[[i]]<-rbind.fill(data.frame(res_dif=res_dif1,Dataset=dataset_n
 #' 
 #' @export
 plotErrorCurve2<-function(x,measurement=1,legendsetting="right",dataset_names=NULL,classifier_names=NULL,ncol=2,...) {
+  require(data.table)
+  require(reshape)
+  require(ggplot2)
   
   data <- x
   # Check for input object
@@ -364,7 +373,7 @@ plotErrorCurve2<-function(x,measurement=1,legendsetting="right",dataset_names=NU
     dataframes.merged[[i]]<-data.frame(results.merged1,Dataset=dataset_name,Measurement="Error")
     dataframes.merged[[i+length(data)]]<-data.frame(results.merged2,Dataset=dataset_name,Measurement=dimnames(data[[1]]$results)[[4]][2])
   }
-  plotdata<-rbind.fill(dataframes.merged)
+  plotdata<-rbindlist(dataframes.merged)
   
   # Reorder and relabel the classifier names
   if (!is.null(classifier_names)) {
@@ -374,7 +383,7 @@ plotErrorCurve2<-function(x,measurement=1,legendsetting="right",dataset_names=NU
   }
   
   h <- ggplot(plotdata, aes_string(x="factor(Size)",y="Mean",group="Classifier",color="Classifier")) +
-    facet_wrap(Measurement ~ Dataset, ncol=ncol, scales="free") +
+    facet_wrap(Dataset ~ Measurement, ncol=ncol, scales="free") +
     geom_line(aes_string(y="Mean",group="Classifier",color="Classifier")) +
     geom_point(aes_string(y="Mean",group="Classifier",color="Classifier")) +
     geom_ribbon(aes_string(ymin="Mean-Std.Error", ymax="Mean+Std.Error",group="Classifier",color="Classifier",fill="Classifier"),colour=NA,alpha=0.5) +

@@ -1,0 +1,140 @@
+---
+title: "Semi-Supervised Classifiers"
+author: "Jesse Krijthe"
+date: "January 21, 2015"
+output: html_document
+---
+```{r echo=FALSE, include=FALSE}
+library(RSSL)
+library(createdatasets)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+```
+
+```{r}
+line_coefficients <- function(object) {
+  stopifnot(is.null(object@scaling)) # Check the input has not been scaled
+  w<- -(object@means[2,, drop=FALSE]-object@means[1,, drop=FALSE]) %*% solve(object@sigma[[1]])
+  
+  w0<-(log(object@prior[1])-log(object@prior[2])- 0.5*object@means[1,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[1,, drop=FALSE]) + 0.5*object@means[2,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[2,, drop=FALSE]))
+  list(intercept = -w0/w[2], slope = -w[1]/w[2])
+}
+
+line_coefficients_ls <- function(object) {
+  stopifnot(is.null(object@scaling)) # Check the input has not been scaled
+  list(intercept = (-(object@theta[1]-0.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
+}
+```
+
+The RSSL package contains mostly methods for semi-supervised classification. This vignette serves as an overview of the available classifiers and their example outputs.
+
+### The example dataset
+```{r}
+data <- data.frame(generateGaussianClass(100,var=0.2))[sample(1:100),]
+X <- as.matrix(data[1:10,1:2])
+y <- data$Class[1:10]
+Xu <- as.matrix(data[-c(1:10),1:2])
+data$labeled<-c(rep(TRUE,10),rep(FALSE,90))
+data$Class[11:90]<-NA
+#data$Class<-addNA(data$Class)
+
+p1 <- ggplot(data,aes(x=V1,y=V2,shape=Class,color=Class)) +
+  geom_point(size=6,alpha=0.8) +
+  coord_equal() +
+  theme_tufte(base_family = "Avenir",base_size = 18) +
+  scale_shape_stata(na.value=16) +
+  scale_color_colorblind(na.value="grey") +
+  theme(axis.title.y=element_text(angle = 0, hjust = 0)) +
+  scale_linetype_stata() +
+  labs(y="",x="")
+```
+
+
+### Gaussian Random Field Classifier
+```{r}
+#GRFClassifier(X,y,Xu)
+```
+
+
+### Self-learning
+```{r}
+g_ls <- LeastSquaresClassifier(X,y)
+g_self <- SelfLearning(X,y,Xu,LeastSquaresClassifier)
+```
+
+```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
+lines_ls <- data_frame(
+  intercept=c(-(g_ls@theta[1]-0.5)/g_ls@theta[3], 
+              -(g_self@model@theta[1]-0.5)/g_self@model@theta[3]
+              ),
+  slope=c(-g_ls@theta[2]/g_ls@theta[3],
+          -g_self@model@theta[2]/g_self@model@theta[3]
+          ),
+  Classifier=factor(c("LS","Self Learning"),levels=c("LS","Self Learning"),ordered=TRUE)
+)
+
+p1 + geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ls,show_guide = TRUE)
+```
+
+### Transductive SVM
+```{r}
+#g_svm <- SVM(X,y)
+#g_tsvm <- TSVM_CCCPlin(X,y,Xu,C=1,Cstar=1)
+```
+
+### 'Safe' Semi-Supervised Learning (S4VM)
+```{r}
+g_s4vm <- S4VM(X,y,Xu) # Returns NULL
+```
+
+### Entropy Regularization (Logistic Regression)
+```{r}
+g_lr <- 
+g_erlr <- ERLogisticLossClassifier(X,y,Xu)
+```
+
+### Implicitly Constrained Least Squares Classifier
+```{r}
+g_sup <- LeastSquaresClassifier(X,y)
+g_proj_sup <- ICLeastSquaresClassifier(X,y,Xu,projection = "supervised")
+g_proj_semi <- ICLeastSquaresClassifier(X,y,Xu,projection = "semisupervised")
+```
+
+```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
+lines_ls <- data_frame(
+  intercept=c(line_coefficients_ls(g_sup)$intercept, 
+              line_coefficients_ls(g_proj_sup)$intercept,
+              line_coefficients_ls(g_proj_semi)$intercept
+              ),
+  slope=c(line_coefficients_ls(g_sup)$slope,
+          line_coefficients_ls(g_proj_sup)$slope,
+          line_coefficients_ls(g_proj_semi)$slope
+          ),
+  Classifier=factor(c("LS","Proj_sup","Proj_semi"),levels=c("LS","Proj_sup","Proj_semi"),ordered=TRUE)
+)
+
+p1 +  geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ls,show_guide = TRUE)
+```
+
+### Implicitly Constrained Linear Discriminant Anaylsis
+```{r}
+g_sup <- LinearDiscriminantClassifier(X, y)
+g_semi <- ICLinearDiscriminantClassifier(X,y,Xu)
+```
+
+```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
+lines_lda <- data_frame(
+  intercept=c(line_coefficients(g_sup)$intercept,
+              line_coefficients(g_semi)$intercept
+              ),
+  slope=c(line_coefficients(g_sup)$slope,
+          line_coefficients(g_semi)$slope
+          ),
+  Classifier=factor(c("LDA","ICLDA"),levels=c("LDA","ICLDA"))
+)
+
+p1 + geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),size=0.8,data=lines_lda,show_guide = TRUE)
+```
+
+

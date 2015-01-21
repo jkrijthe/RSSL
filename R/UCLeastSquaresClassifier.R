@@ -35,8 +35,6 @@ UCLeastSquaresClassifier<-function(X, y, X_u, lambda=0, intercept=TRUE, x_center
     y <- model.matrix(~y-1, data.frame(y))[,1,drop=FALSE]
   }
   
-  
-  
   if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
 
   # There is a problem using ginv when using PCs as inputs: the problems seem to be rescaled such that the bias term is no longer correct

@@ -15,10 +15,29 @@ split_dataset_ssl<-function(X, y, frac_train=0.8, frac_ssl=0.8) {
          )
 }
 
-dataset<-Generate2ClassGaussian(n=1000,d = 2,var = 0.3,expected = TRUE)
+dataset<-Generate2ClassGaussian(n=100,d = 2,var = 0.2,expected = TRUE)
 dmat<-model.matrix(formula("y~.-1"),dataset)
 tvec<-factor(dataset$y)
-problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.80)
+problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.90)
+
+plot(rbind(problem$X,problem$X_u),bty="n",pch=NA,las=1,xlab="",ylab="",cex.lab=0.5,cex.axis=0.7,asp=1)
+points(problem$X,asp=1,pch=c(4,0)[problem$y],cex=2, )
+points(problem$X_u,pch=16,cex=0.8)
+#text(par("usr")[1] -0.3, 0, adj = 1, labels = "X2", xpd = TRUE)
+g_sup<-LeastSquaresClassifier(problem$X,problem$y)
+abline((0.5-g_sup@theta[1])/g_sup@theta[3],-g_sup@theta[2]/g_sup@theta[3])
+g_semi<-ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection="semisupervised")
+abline((0.5-g_semi@theta[1])/g_semi@theta[3],-g_semi@theta[2]/g_semi@theta[3],lty=2,lwd=2)
+points(problem$X_u,col="red",cex=g_semi@unlabels*2)
+
+x_grid <- seq(par("usr")[1],par("usr")[2],length.out = 100)
+y_grid <- seq(par("usr")[3],par("usr")[4],length.out = 100)
+xy_grid<-cbind(1, expand.grid(x_grid,y_grid))
+ys <- as.matrix(xy_grid) %*% g_sup@theta
+contour(x_grid,y_grid,matrix(ys,100,100),add=TRUE,labcex=1)
+
+ys <- as.matrix(xy_grid) %*% g_semi@theta
+contour(x_grid,y_grid,matrix(ys,100,100),add=TRUE,labcex=1)
 
 
 
@@ -33,8 +52,9 @@ sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection = "
 
 
 #Regularized solutions
-sum(loss(LeastSquaresClassifier(problem$X,problem$y,lambda=100),rbind(problem$X,problem$X_u),c(problem$y,problem$y_u)))
-sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection = "semisupervised",lambda2=100),rbind(problem$X,problem$X_u),c(problem$y,problem$y_u)))
+sum(loss(LeastSquaresClassifier(problem$X,problem$y,lambda=0),rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
+sum(loss(LeastSquaresClassifier(problem$X,problem$y,lambda=0.01),rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
+sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection = "semisupervised",lambda2=0.01),rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
 sum(loss(LeastSquaresClassifier(problem$X,problem$y,lambda=0.01),problem$X_test,problem$y_test)) # Error
 sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection = "semisupervised",lambda2=0.01),problem$X_test,problem$y_test))
 sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection = "supervised",lambda2=0.01),problem$X_test,problem$y_test))
@@ -45,11 +65,11 @@ losses<-cbind(
   loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection = "semisupervised"),rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u)))
   )
 
-table(apply(losses[,c(1,3)],1,which.min))
+table(apply(losses[,c(1,2,3)],1,which.min))
 losses<-cbind(1:nrow(losses),losses)
-colnames(losses)<-c("id","SL","IC","CP")
+colnames(losses)<-c("id","sup","proj_sup","proj_semi")
 library(ggplot2)
-plotdata<-reshape(data.frame(losses), varying=c("SL","IC","CP"), direction = "long",timevar="method",times=c("SL","IC","CP"),v.names="loss")
+plotdata<-reshape(data.frame(losses), varying=c("sup","proj_sup","proj_semi"), direction = "long",timevar="method",times=c("sup","proj_sup","proj_semi"),v.names="loss")
 
 ggplot(data=plotdata,aes(id,fill=method,y=loss)) + geom_bar(stat="identity",position="dodge")
 

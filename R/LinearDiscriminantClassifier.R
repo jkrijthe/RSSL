@@ -1,7 +1,7 @@
 #' @include NormalBasedClassifier.R
 setClass("LinearDiscriminantClassifier",
          representation(means="matrix",sigma="list",prior="matrix"),
-         prototype(name="Nearest Mean Classifier"),
+         prototype(name="Linear Discrimant Classifier"),
          contains="NormalBasedClassifier")
 
 #' Linear Discriminant Classifier

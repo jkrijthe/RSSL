@@ -8,8 +8,11 @@ Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
 Author: Jesse Krijthe <jkrijthe@gmail.com>
 Maintainer: Jesse Krijthe <jkrijthe@gmail.com>
 Depends:
-    R (>= 3.1.0),
-    Matrix
+    RcppArmadillo
+Imports:
+    Rcpp,
+    RcppArmadillo
+LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     MASS,
     class,
@@ -75,6 +78,7 @@ Collate:
     'NormalizedLinearDiscriminantClassifier.R'
     'QuadraticDiscriminantClassifier.R'
     'RSSL.R'
+    'RcppExports.R'
     'S3VM.R'
     'S4VM.R'
     'SGDSVM.R'

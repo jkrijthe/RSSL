@@ -173,7 +173,7 @@ setMethod("plot", signature(x="LeastSquaresClassifier",y="missing"), function(x)
 #' @rdname boundaryplot-methods
 #' @aliases boundaryplot,LeastSquaresClassifier-method
 setMethod("boundaryplot", signature(object="LeastSquaresClassifier"), function(object, p) {
-  p+geom_abline(intercept = (-(object@theta[1]-1.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
+  p+geom_abline(intercept = (-(object@theta[1]-0.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
 })
 
 solve_quadratic_bfgs <- function(X,y,lambda) {
