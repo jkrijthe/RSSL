@@ -29,6 +29,6 @@ S4 object of class LeastSquaresClassifier with the following slots:
 \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 }
 \description{
-Use least squares regression as a classification technique using classes as targets (1 for one class, 2 for the other). Implemented using matrix inversions, not the more numerically stable Singular Value Decomposition method. Note this method minimizes quadratic loss, not the truncated quadratic loss.
+Use least squares regression as a classification technique using class indicators as targets. Note this method minimizes quadratic loss, not the truncated quadratic loss.
 }
 

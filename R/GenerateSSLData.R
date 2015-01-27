@@ -17,7 +17,7 @@ GenerateSlicedCookie<-function(n=100, expected=FALSE, gap=1) {
   if (expected) { y[X[,1]>0,]<-1 }
   else { y[X[,2]>0,]<-1}
   
-  return(data.frame(X,y))
+  return(data.frame(X,Class=factor(y)))
 }
 
 #' Generate data from 2 gaussian distributed datasets

@@ -6,7 +6,7 @@ setClass("LeastSquaresClassifier",
 
 #' Least Squares Classifier
 #'
-#' Use least squares regression as a classification technique using classes as targets (1 for one class, 2 for the other). Implemented using matrix inversions, not the more numerically stable Singular Value Decomposition method. Note this method minimizes quadratic loss, not the truncated quadratic loss.
+#' Use least squares regression as a classification technique using class indicators as targets. Note this method minimizes quadratic loss, not the truncated quadratic loss.
 #'
 #' @usage LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
 #'
@@ -55,8 +55,6 @@ LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALS
   Xtrain<-NULL
   if (nrow(X)<ncol(X)) inv <- function(X) { ginv(X) }
   else inv <- function(X) { ginv(X) }
-  
-  
   
   if (method=="inverse") {
       if (intercept) {

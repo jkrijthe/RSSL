@@ -25,18 +25,24 @@ line_coefficients_ls <- function(object) {
   stopifnot(is.null(object@scaling)) # Check the input has not been scaled
   list(intercept = (-(object@theta[1]-0.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
 }
+
+line_coefficients_ll <- function(object) {
+  stopifnot(is.null(object@scaling)) # Check the input has not been scaled
+  list(intercept = (-(object@w[1])/object@w[3]), slope = (-object@w[2]/object@w[3]))
+}
 ```
 
 The RSSL package contains mostly methods for semi-supervised classification. This vignette serves as an overview of the available classifiers and their example outputs.
 
-### The example dataset
+### The example datasets
+Two Gaussians example:
 ```{r}
 data <- data.frame(generateGaussianClass(100,var=0.2))[sample(1:100),]
 X <- as.matrix(data[1:10,1:2])
 y <- data$Class[1:10]
 Xu <- as.matrix(data[-c(1:10),1:2])
 data$labeled<-c(rep(TRUE,10),rep(FALSE,90))
-data$Class[11:90]<-NA
+data$Class[11:100]<-NA
 #data$Class<-addNA(data$Class)
 
 p1 <- ggplot(data,aes(x=V1,y=V2,shape=Class,color=Class)) +
@@ -50,14 +56,44 @@ p1 <- ggplot(data,aes(x=V1,y=V2,shape=Class,color=Class)) +
   labs(y="",x="")
 ```
 
-
-### Gaussian Random Field Classifier
+Sliced cookie example:
 ```{r}
-#GRFClassifier(X,y,Xu)
+data2 <- data.frame(GenerateSlicedCookie(100))[sample(1:100),]
+X2 <- as.matrix(data2[1:10,1:2])
+y2 <- data2$Class[1:10]
+Xu2 <- as.matrix(data2[-c(1:10),1:2])
+data2$labeled<-c(rep(TRUE,10),rep(FALSE,90))
+data2$Class[11:100]<-NA
+#data$Class<-addNA(data$Class)
+
+p2 <- ggplot(data2,aes(x=X1,y=X2,shape=Class,color=Class)) +
+  geom_point(size=6,alpha=0.8) +
+  coord_equal() +
+  theme_tufte(base_family = "Avenir",base_size = 18) +
+  scale_shape_stata(na.value=16) +
+  scale_color_colorblind(na.value="grey") +
+  theme(axis.title.y=element_text(angle = 0, hjust = 0)) +
+  scale_linetype_stata() +
+  labs(y="",x="")
 ```
 
 
+### Gaussian Random Field Classifier
+Gaussian Random Field classifier, assumes a similarity measure between objects is given. The idea is to minimize the quadratic distance between the labeling assigned to nearby points. This can be achieved by minimizing the following Energy function:
+$$ E(f) = \frac{1}{2} \sum_{i,j} w_{i,j} (f(i)-f(j))^2 $$
+If we fix the the $f(i)$'s for the labeled objects to their given values and minimize this energy function, one can derive that the minimizing function is harmonic. An harmonic function is a twice differentiable function whose laplacian is $$ \Delta f = 0 $$.
+This solution can be found directly using:
+$$f_u=(D_{uu}-W_{uu})^{-1} W_{ul} f_l = (I-P_{uu})^{-1} P_{ul} f_l$$
+An example of the imputated labels for a given problem is
+```{r}
+# g_grf <- GRFClassifier(X,y,Xu)
+# data.frame(Xu,y=g_grf@unlabels[,1]) %>% 
+#   ggplot(aes(x=V1,y=V2,color=y))+
+#   geom_point()
+```
+
 ### Self-learning
+Self-learning refers to the process of using the predictions of an initial learner as additional data for this learner in an iterative way. Here, for a given classifier, we initially train the classifier on only the labeled examples. We than use the predictions of this classifier on the unlabeled objects as the true labels and retrain the classifier with this additional data. This is iterated until the labels predicted by the classifier no longer change.
 ```{r}
 g_ls <- LeastSquaresClassifier(X,y)
 g_self <- SelfLearning(X,y,Xu,LeastSquaresClassifier)
@@ -77,6 +113,14 @@ lines_ls <- data_frame(
 p1 + geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ls,show_guide = TRUE)
 ```
 
+### Expectation Maximization
+For likelihood based models in particular, an obvious approach to semi-supervised learning is to treat the data as missing parameters to optimize over using maximum likelihood. For LDA, as is often the case in analyses with missing data, this leads to a non-convex function for the likelihood. A default strategy is to approximate this maximization using Expectation Maximization (EM). For EMLDA, the expectation step corresponds to updating the labels of the unlabeled objects with their probabilities. The maximization step is to update the parameters of the model (means, variances and priors of the classes) based on these estimates of the labeled of the unlabeled objects. These steps are iterated until convergence.
+
+```{r}
+g_lda <- LinearDiscriminantClassifier(X,y)
+g_emlda <- EMLinearDiscriminantClassifier(X,y,Xu)
+```
+
 ### Transductive SVM
 ```{r}
 #g_svm <- SVM(X,y)
@@ -90,28 +134,56 @@ g_s4vm <- S4VM(X,y,Xu) # Returns NULL
 
 ### Entropy Regularization (Logistic Regression)
 ```{r}
-g_lr <- 
-g_erlr <- ERLogisticLossClassifier(X,y,Xu)
+  g_lr <- LogisticLossClassifier(X2,y2)
+g_erlr <- ERLogisticLossClassifier(X2,y2,Xu2,lambda_entropy = 0,init = rnorm(3))
+```
+
+```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
+lines_ll <- data_frame(
+  intercept=c(line_coefficients_ll(g_lr)$intercept, 
+              line_coefficients_ll(g_erlr)$intercept
+              ),
+  slope=c(line_coefficients_ll(g_lr)$slope,
+          line_coefficients_ll(g_erlr)$slope
+          ),
+  Classifier=factor(c("LL","ERLR"),levels=c("LL","ERLR"),ordered=TRUE)
+)
+
+p2 +  geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ll,show_guide = TRUE)
 ```
 
 ### Implicitly Constrained Least Squares Classifier
+Let $w$ be the weight vector in a linear model. In ICLS, we minimize the distance of a weight vector that could be attained by a possible labeling of the unlabeled objects to the supervised weight vector $w_{sup}$. 
+
+This distance can be calculated in multiple ways. The option "supervised" corresponds to
+$$ d(w,w_{sup}) = (w-w_{sup})^{\top} X^{\top} X (w-w_{sup}) $$.
+Conceptually, this is the same as minimizing the squared loss on the labeled objects, over the space of $w$'s that can be attained by a possible labeling of the unlabeled objects.
+
+The option "semisupervised" corresponds to:
+$$ d(w,w_{sup}) = (w-w_{sup})^{\top} X_e^{\top} X_e (w-w_{sup}) $$.
+where $X_e$ is the combined labeled and unlabeled data design matrix. This is a much more conservative estimator. It conceptually corresponds to finding the w that given the lowest squared loss on labeled and unlabeled data even for the _worst_ possible labeling of the unlabeled objects.
+
+The option "euclidean" corresponds to Euclidean projection and has the property that the Euclidean distance of $w$ to $w_{oracle}$ (the solution when we would have known all possible labelings) improves, although this might not translate into improved performance in quadratic loss sense.
 ```{r}
 g_sup <- LeastSquaresClassifier(X,y)
 g_proj_sup <- ICLeastSquaresClassifier(X,y,Xu,projection = "supervised")
 g_proj_semi <- ICLeastSquaresClassifier(X,y,Xu,projection = "semisupervised")
+g_proj_euc <- ICLeastSquaresClassifier(X,y,Xu,projection = "euclidean")
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
 lines_ls <- data_frame(
   intercept=c(line_coefficients_ls(g_sup)$intercept, 
               line_coefficients_ls(g_proj_sup)$intercept,
-              line_coefficients_ls(g_proj_semi)$intercept
+              line_coefficients_ls(g_proj_semi)$intercept,
+              line_coefficients_ls(g_proj_euc)$intercept
               ),
   slope=c(line_coefficients_ls(g_sup)$slope,
           line_coefficients_ls(g_proj_sup)$slope,
-          line_coefficients_ls(g_proj_semi)$slope
+          line_coefficients_ls(g_proj_semi)$slope,
+          line_coefficients_ls(g_proj_euc)$slope
           ),
-  Classifier=factor(c("LS","Proj_sup","Proj_semi"),levels=c("LS","Proj_sup","Proj_semi"),ordered=TRUE)
+  Classifier=factor(c("LS","Proj_sup","Proj_semi","Proj_Euc"),levels=c("LS","Proj_sup","Proj_semi","Proj_Euc"),ordered=TRUE)
 )
 
 p1 +  geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ls,show_guide = TRUE)

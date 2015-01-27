@@ -25,19 +25,18 @@ GRFClassifier<-function(X,y,X_u,kernel=NULL,y_u=NULL,eta=0.1,CMN=TRUE) {
 #   if (is.null(kernel)) {
 #     W<-kernelMatrix(rbfdot(sigma = 1), rbind(X,X_u))
 #   }
-  W<-NULL
+  Xin<-rbind(X,X_u)
+  W <- exp(-as.matrix(dist(Xin))^2/0.1)
   #TODO: Learn the kernel!
   
-  harmonic_function(W,Y)
-  
+  unlabels <- harmonic_function(W,Y)
+
   #TODO: What is the output?
-#   return(new("GRFClassifier",
-#              modelform,
-#              scaling,
-#              X,
-#              y,
-#              X_u,
-#              ))
+  return(new("GRFClassifier",
+             modelform=NULL,
+             scaling=NULL,
+             unlabels=unlabels
+             ))
 }
 
 setMethod("predict", signature(object="GRFClassifier"),function(object,newdata,...) {
