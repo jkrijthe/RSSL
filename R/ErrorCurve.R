@@ -28,7 +28,12 @@
 ErrorCurve<-function(X, y, classifiers, with_replacement=FALSE, sizes=10:10:nrow(X),n_test=1000,repeats=100,verbose=TRUE) {
   
   results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), 4))
-  dimnames(results)<-list(1:repeats,sizes,lapply(classifiers, function(c) {as.character(body(c))[[2]]}),c("Error", "Loss Test", "Loss Train"))
+  if (is.null(names(classifiers))) {
+    classifier_names <- lapply(classifiers, function(c) {as.character(body(c))[[2]]})
+  } else {
+    classifier_names <- names(classifiers) 
+  }
+  dimnames(results)<-list(1:repeats,sizes,classifier_names,c("Error", "Loss Test", "Loss Train"))
   sample.test<-sample(1:nrow(X), n_test, replace=TRUE)
   X_test<-X[sample.test,,drop=FALSE]
   y_test<-y[sample.test]
@@ -95,7 +100,12 @@ ErrorCurveSSL<-function(X, y, classifiers, n_l, with_replacement=FALSE, sizes=2^
   K <- length(levels(y))
   
   results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), 4))
-  dimnames(results)<-list(1:repeats,sizes,lapply(classifiers, function(c) {as.character(body(c))[[2]]}),c("Error", "Avg. Loss Test", "Avg. Loss Train","Avg. Loss Lab+Unlab"))
+  if (is.null(names(classifiers))) {
+    classifier_names <- lapply(classifiers, function(c) {as.character(body(c))[[2]]})
+  } else {
+    classifier_names <- names(classifiers) 
+  }
+  dimnames(results)<-list(1:repeats,sizes,classifier_names,c("Error", "Avg. Loss Test", "Avg. Loss Train","Avg. Loss Lab+Unlab"))
   
   if (verbose) cat("Number of features: ", ncol(X),"\n")
   if (verbose) cat("Number of objects:  ", nrow(X),"\n")
@@ -158,6 +168,76 @@ ErrorCurveSSL<-function(X, y, classifiers, n_l, with_replacement=FALSE, sizes=2^
                ,n_l=n_l,
                results=results,
                n_test=n_test,
+               independent="Number of unlabeled objects")
+  class(object)<-"ErrorCurve"
+  return(object)
+}
+
+ErrorCurveTransductive <- function(X, y, classifiers, n_l, with_replacement=FALSE, sizes=2^(1:8),repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL) {
+  
+  #TODO sanity checks: X and y should be the same length, should be matrices?
+  if (!is.factor(y)) { stop("Labels are not a factor.") }
+  K <- length(levels(y))
+  
+  results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), 3))
+  if (is.null(names(classifiers))) {
+    classifier_names <- lapply(classifiers, function(c) {as.character(body(c))[[2]]})
+  } else {
+    classifier_names <- names(classifiers) 
+  }
+  dimnames(results)<-list(1:repeats,sizes,classifier_names,c("Error Unlab", "Avg. Loss Unlab","Avg. Loss Lab+Unlab"))
+  
+  if (verbose) cat("Number of features: ", ncol(X),"\n")
+  if (verbose) cat("Number of objects:  ", nrow(X),"\n")
+  if (verbose) pb <- txtProgressBar(0,repeats) # Display a text progress bar
+  
+  for (i in 1:repeats) {
+    if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
+    
+    sample.labeled <- strata(data.frame(strata=y),"strata",rep(n_min,K),method="srswr")$ID_unit
+    sample.labeled <- c(sample.labeled, sample((1:nrow(X))[-sample.labeled],n_l-(K*n_min),replace=FALSE))
+    
+    X_l <- X[sample.labeled,,drop=FALSE]
+    y_l <- y[sample.labeled]
+    
+    if (!with_replacement) {
+      sample.unlabeled <- sample((1:nrow(X))[-sample.labeled])
+    } else {
+      sample.unlabeled <- sample(1:nrow(X),max(sizes),replace=TRUE)
+    }
+    X_u <- X[sample.unlabeled,,drop=FALSE]
+    y_u <- y[sample.unlabeled]
+    
+    for (s in 1:length(sizes)) {
+      if (sizes[s]>nrow(X_u)) {break}
+      
+      X_u_s <- X_u[1:sizes[s],,drop=FALSE]
+      y_u_s <- y_u[1:sizes[s]]
+      
+      prX_l <- X_l
+      prX_u_s <- X_u_s
+      #For all preprocessing
+      #             pca<-prcomp(X_l)
+      #             # print(rankMatrix(X_l))
+      #             prX_l<-(predict(pca, X_l))[,1:(rankMatrix(X_l)-1)]
+      #             prX_u_s<-(predict(pca, X_u_s))[,1:(rankMatrix(X_l)-1)]
+      #             prX_test<-(predict(pca, X_test))[,1:(rankMatrix(X_l)-1)]
+      # cat(nrow(X_test),nrow(X_u_s),nrow(X_l),"\n")
+      for (c in 1:length(classifiers)) {
+        
+        
+        trained_classifier<-do.call(classifiers[[c]],list(X=prX_l, y=y_l, X_u=prX_u_s, y_u=y_u_s))
+        
+        results[i,s,c,1] <- 1-mean(y_u_s==predict(trained_classifier,prX_u_s))
+        results[i,s,c,2] <- 1-mean(y_u_s==trained_classifier@unlab_predictions)
+        results[i,s,c,3] <- 0 #mean(loss(trained_classifier, prX_l, y_l))
+      }
+    }
+  }
+  if (verbose) cat("\n")
+  object<-list(call="Not known"
+               ,n_l=n_l,
+               results=results,
                independent="Number of unlabeled objects")
   class(object)<-"ErrorCurve"
   return(object)

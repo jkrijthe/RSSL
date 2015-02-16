@@ -1,6 +1,6 @@
 #' @include Classifier.R
 setClass("GRFClassifier",
-         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY"),
+         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",Xtrain="matrix",ytrain="ANY",eta="numeric",sigma="numeric",unlab_predictions="factor"),
          prototype(name="GRFClassifier",scaling=NULL), 
          contains="Classifier")
 
@@ -15,33 +15,56 @@ setClass("GRFClassifier",
 #' @param CMN Should the Class Mass Normalization heuristic be applied? (default: TRUE)
 #'  
 #' @export
-GRFClassifier<-function(X,y,X_u,kernel=NULL,y_u=NULL,eta=0.1,CMN=TRUE) {
+GRFClassifier<-function(X,y,X_u,sigma=0.1,eta=0.1,CMN=TRUE,scale=FALSE,x_center=FALSE) {
   #only do evaluation if we need predictions
   #TODO: include external classifier scores
   
-  Y<-model.matrix(~as.factor(y)-1)
+  mv <- PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
+  X <- mv$X
+  X_u <- mv$X_u
+  scaling <- mv$scaling
+  classnames <- mv$classnames
+  modelform <- mv$modelform
+  Y <- mv$Y
   
-  W<-NULL
-#   if (is.null(kernel)) {
-#     W<-kernelMatrix(rbfdot(sigma = 1), rbind(X,X_u))
-#   }
-  Xin<-rbind(X,X_u)
-  W <- exp(-as.matrix(dist(Xin))^2/0.1)
+  Xin <- rbind(X,X_u)
+  W <- exp(-as.matrix(dist(Xin))^2/sigma) # A possible Kernel
+  
   #TODO: Learn the kernel!
   
   unlabels <- harmonic_function(W,Y)
-
+  class_ind <- as.integer(unlabels < 0.5)
+  unlab_predictions <- factor(class_ind,levels=0:1,labels=classnames)
+  
   #TODO: What is the output?
   return(new("GRFClassifier",
-             modelform=NULL,
+             modelform=modelform,
              scaling=NULL,
-             unlabels=unlabels
+             unlabels=unlabels,
+             unlab_predictions=unlab_predictions,
+             Xtrain=X,
+             classnames=classnames,
+             ytrain=y,
+             sigma=sigma,
+             eta=eta
              ))
 }
 
 setMethod("predict", signature(object="GRFClassifier"),function(object,newdata,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y,scaling=object@scaling,intercept=object@intercept)
-  X<-ModelVariables$X 
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
+  X<-ModelVariables$X
+  
+  # Train the classifier here
+  t_class <- GRFClassifier(object@Xtrain,object@ytrain,X,object@sigma,object@eta)
+  class_ind <- as.integer(t_class@unlabels < 0.5)
+  factor(class_ind,levels=0:1,labels=object@classnames)
+})
+
+setMethod("loss", signature(object="GRFClassifier"),function(object,newdata,...) {
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y,scaling=object@scaling,intercept=FALSE)
+  X<-ModelVariables$X
+  
+  rep(0,nrow(X))
 })
 
 # Direct R Translation of Xiaojin Zhu's Matlab code

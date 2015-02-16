@@ -10,6 +10,8 @@ TSVMuniversvm<-function(X, y, X_u=NULL, x_center=FALSE,scale=FALSE,binary_path=N
   } else if (is.null(binary_path)) {
     stop("Path to temp directory is not given")
   }
+  require(e1071)
+  require(SparseM)
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
@@ -41,17 +43,19 @@ setMethod("predict", signature(object="TSVMuniversvm"), function(object, newdata
   
   system(paste(object@binary_path,"universvm -D ",object@temp_path,"tempfile.outputs -F ",object@temp_path,"tempfile.model ",object@temp_path,"tempfile.test",sep=""),intern=FALSE)
   
-  y <- scan(paste("/Volumes/Experiments/","tempfile.outputs",sep=""),skip=2,what="")
+  y <- scan(paste(object@temp_path,"tempfile.outputs",sep=""),skip=2,what="")
   y <- gsub("[\\,;]", "", y[4:length(y)])
   y <- gsub("]","", y)
   y <- as.numeric(y)
-  return((y>0)+1)
+  return(factor((y>0)+1,levels=1:2,labels=object@classnames))
   
 })
 
 setMethod("loss", signature(object="TSVMuniversvm"), function(object, newdata, y=NULL) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept)
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE)
   X<-ModelVariables$X
   y<-ModelVariables$y
   if (is.null(y)) { stop("No labels supplied.")}
+  
+  return(0)
 })

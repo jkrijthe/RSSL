@@ -30,6 +30,6 @@ list object with the following objects:
 \item{modelform}{a formula object containing the used model}
 }
 \description{
-The following actions are carried out: 1. data.frames are converted to matrix form and labels converted to integers 2. An intercept column is added if requested 3. centering and scaling is applied if requested.
+The following actions are carried out: 1. data.frames are converted to matrix form and labels converted to an indicator matrix 2. An intercept column is added if requested 3. centering and scaling is applied if requested.
 }
 

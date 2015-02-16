@@ -8,13 +8,13 @@ Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
 Author: Jesse Krijthe <jkrijthe@gmail.com>
 Maintainer: Jesse Krijthe <jkrijthe@gmail.com>
 Depends:
-    RcppArmadillo
+    RcppArmadillo,
+    MASS
 Imports:
     Rcpp,
     RcppArmadillo
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
-    MASS,
     class,
     quadprog,
     ggplot2,
@@ -27,7 +27,8 @@ Suggests:
     methods,
     plyr,
     animation,
-    reshape
+    reshape,
+    testthat
 Description: Implementations of semi-supervised learning approaches for
     classification and regression. Serves as benchmarks to new approaches and
     contains implementations of the authors' own methods.
@@ -61,16 +62,15 @@ Collate:
     'GenerateSSLData.R'
     'HelperFunctions.R'
     'ICLeastSquaresClassifier.R'
-    'ICLeastSquaresRegression.R'
     'ICLinearDiscriminantClassifier.R'
     'ICLogisticLossClassifier.R'
     'ICLogisticRegression.R'
     'ICNearestMeanClassifier.R'
+    'ICSVM.R'
     'IWLeastSquaresClassifier.R'
     'IWLogisticRegression.R'
     'ImputedLeastSquaresClassifier.R'
     'KernelLeastSquaresClassifier.R'
-    'LeastSquaresRegression.R'
     'LinearSVM.R'
     'MCLinearDiscriminantClassifier.R'
     'MCNearestMeanClassifier.R'
@@ -81,7 +81,6 @@ Collate:
     'RcppExports.R'
     'S3VM.R'
     'S4VM.R'
-    'SGDSVM.R'
     'SGT.R'
     'SGTlight.R'
     'SVM.R'
@@ -89,11 +88,11 @@ Collate:
     'SelfLearning.R'
     'TSVM.R'
     'TSVMCCPte.R'
-    'TSVM_CCCP.R'
     'TSVMbundle.R'
+    'TSVMcccp.R'
     'TSVMlight.R'
     'TSVMuniversum.R'
-    'UCLeastSquaresClassifier.R'
+    'USMLeastSquaresClassifier.R'
     'caretModels.R'
     'scaleMatrix.R'
     'testdata-data.R'

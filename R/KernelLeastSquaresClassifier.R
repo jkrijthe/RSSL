@@ -1,14 +1,14 @@
 #' @include Classifier.R
 setClass("KernelLeastSquaresClassifier",
-         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",kernel="ANY",Xtrain="ANY"),
-         prototype(name="LeastSquaresClassifier",scaling=NULL,kernel=NULL,Xtrain=NULL), 
+         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",Xtrain="ANY",y_scale="numeric",kernel="ANY"),
+         prototype(name="KernelLeastSquaresClassifier",scaling=NULL,kernel=NULL,Xtrain=NULL,y_scale=0), 
          contains="Classifier")
 
-#' Least Squares Classifier
+#' Kernelized Least Squares Classifier
 #'
 #' Use least squares regression as a classification technique using classes as targets (1 for one class, 2 for the other). Implemented using matrix inversions, not the more numerically stable Singular Value Decomposition method. Note this method minimizes quadratic loss, not the truncated quadratic loss.
 #'
-#' @usage LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
+#' @usage KernelLeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
 #'
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
@@ -22,22 +22,59 @@ setClass("KernelLeastSquaresClassifier",
 #' \item{classnames}{the names of the classes}
 #' \item{modelform}{formula object of the model used in regression}
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
+#' @examples
+#' library(ggplot2)
+#' 
+#' # Two class problem
+#' 
+#' dmat<-model.matrix(Species~.-1,iris[51:150,])
+#' tvec<-droplevels(iris$Species[51:150])
+#' testdata <- data.frame(tvec,dmat[,1:2])
+#' colnames(testdata)<-c("Class","X1","X2")
+#' 
+#' precision<-100
+#' xgrid<-seq(min(dmat[,1]),max(dmat[,1]),length.out=precision)
+#' ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
+#' gridmat <- expand.grid(xgrid,ygrid)
+#' 
+#' g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,kernel=rbfdot(0.01),lambda=0.000001,scale = TRUE)
+#' plotframe <- cbind(gridmat, decisionvalues(g_kernel,gridmat))
+#' colnames(plotframe)<- c("x","y","Output")
+#' ggplot(plotframe, aes(x=x,y=y)) +
+#'   geom_tile(aes(fill = Output)) +
+#'   stat_contour(aes(z=Output),breaks=c(0.5),size=1) +
+#'   scale_fill_gradient(low="yellow", high="red",limits=c(0,1)) +
+#'   geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=3)
+#' 
+#' # Multiclass problem
+#' dmat<-model.matrix(Species~.-1,iris)
+#' tvec<-iris$Species
+#' testdata <- data.frame(tvec,dmat[,1:2])
+#' colnames(testdata)<-c("Class","X1","X2")
+#' 
+#' precision<-100
+#' xgrid<-seq(min(dmat[,1]),max(dmat[,1]),length.out=precision)
+#' ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
+#' gridmat <- expand.grid(xgrid,ygrid)
+#' 
+#' g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,kernel=rbfdot(0.1),lambda=0.00001,scale = TRUE,x_center=TRUE)
+#' plotframe <- cbind(gridmat, maxind=apply(decisionvalues(g_kernel,gridmat),1,which.max))
+#' ggplot(plotframe, aes(x=Var1,y=Var2)) +
+#'   geom_tile(aes(fill = factor(maxind,labels=levels(tvec)))) +
+#'   geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=4,alpha=0.5)
 #' @export
-KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=NULL, intercept=TRUE, x_center=FALSE, scale=FALSE, method="inverse",...) {
+KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
+  
+  stopifnot(require(kernlab))
   
   ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
-  X<-ModelVariables$X
-  y<-ModelVariables$y
-  scaling<-ModelVariables$scaling
-  classnames<-ModelVariables$classnames
-  modelform<-ModelVariables$modelform
-  
-  # Check number of classes
-  if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
-  # Check if all classes are present.
-  
-  #There is a problem using ginv when using PCs as inputs: the problems seem to be rescaled such that the bias term is no longer correct
+  ## Preprocessing to correct datastructures and scaling  
+  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=FALSE,x_center=x_center)
+  X <- ModelVariables$X
+  scaling <- ModelVariables$scaling
+  classnames <- ModelVariables$classnames
+  modelform <- ModelVariables$modelform
+  Y <- ModelVariables$Y
   
   ## Start Implementation
   n<-nrow(X)
@@ -46,71 +83,20 @@ KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=NULL, intercept=
   Xtrain<-NULL
   if (nrow(X)<ncol(X)) inv <- function(X) { ginv(X) }
   else inv <- function(X) { ginv(X) }
-  
-  objective<-function(w,X,y) {
-    sum((X%*%w-y)^2)
-  }
-  gradient<-function(w,X,y) {
-    2 * t(X) %*% X %*% w - 2 * t(X) %*% y
-  }
-  hessian<-function(w,X,y) {
-    2 * t(X) %*% X
-  }
-  
-  if (method=="inverse") {
-    if (is.null(kernel)) {
-      if (intercept) {
-        theta <- inv(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1))))) %*% (t(X) %*% y)
-      } else {
-        theta <- inv(t(X) %*% X + n*lambda*diag(rep(1,m))) %*% (t(X) %*% y)
-      }
-    } else {
-      require(kernlab)
-      if (inherits(kernel,"kernel")) {
-        Xtrain<-X
-        K<-kernelMatrix(kernel,X,X)
-        theta <- inv(K+lambda*diag(n)) %*% (y-mean(y))
-      }    
-    }
-  } else if (method=="Normal") {
-    solution <- solve(t(X) %*% X, t(X) %*% y)
-    theta<-matrix(solution)
-  }  else if (method=="QR") {
-    solution <- qr.solve(X,y)
-    theta<-matrix(solution)
-  } else if (method=="QR2") {
-    solution <- qr.solve(t(X) %*% X, t(X) %*% y)
-    theta<-matrix(solution)
-  } else if (method=="BFGS") {
-    # BFGS gradient descent
-    theta<-rep(0,ncol(X))
-    theta<-matrix(optim(theta,fn=objective,gr=gradient,X=X,y=y,method="BFGS")$par)     
-  } else if (method=="BFGSCPP") {
-    # BFGS gradient descent
-    theta<-rep(0,ncol(X))
-    theta<-matrix(optim(theta,fn=function(w,X,y) { squared_objective(matrix(w),X,matrix(y)) },gr=function(w,X,y) { squared_gradient(matrix(w),X,matrix(y)) },X=X,y=y,method="BFGS")$par)
-  } 
-  else if (method=="CPP") {
-    # Stochastic gradient descent
-    theta<-squared_solution(X,matrix(y))
-  } else if (method=="SGD") {
-    # Stochastic gradient descent
-  }else if (method=="CG") {
-    # Conjugate gradient method
-    theta <- rep(0,ncol(X))
-    theta <- matrix(optim(theta,fn=objective,gr=gradient,X=X,y=y,method="CG")$par)
-  } else if (method=="Newton") {
-    
-    returnfunction<-function(w,X,y) {
-      val<-objective(w,X,y)
-      attr(val,"gradient")<-gradient(w,X,y)
-      attr(val,"hessian")<-hessian(w,X,y)
-      return(val)
-    }
-    theta <- rep(0,ncol(X))
-    theta<-matrix(nlm(returnfunction,p=theta, X=X,y=y,iterlim=1000)$estimate)
+  if (y_scale) {
+    y_scale <- colMeans(Y)
   } else {
-    stop("Unknown method")
+    y_scale <- rep(0,ncol(Y))
+  }
+  
+  Y <- sweep(Y,2,y_scale) # Possibly center the numeric Y labels
+  
+  if (inherits(kernel,"kernel")) {
+    Xtrain <- X
+    K <- kernelMatrix(kernel,X,X)
+    theta <- solve(K+lambda*diag(n), Y)
+  } else {
+    stop("No appropriate kernel function from kernlab supplied. See, for instance, the help of vanilladot()")
   }
   
   ## Return correct object
@@ -119,9 +105,9 @@ KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=NULL, intercept=
       scaling=scaling,
       theta=theta,
       modelform=modelform,
-      intercept=intercept,
       kernel=kernel,
-      Xtrain=Xtrain
+      Xtrain=Xtrain,
+      y_scale=y_scale
   )
 }
 
@@ -129,53 +115,44 @@ KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=NULL, intercept=
 #' @aliases loss,LeastSquaresClassifier-method
 #' @export
 setMethod("loss", signature(object="KernelLeastSquaresClassifier"), function(object, newdata, y=NULL,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept)
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
   X<-ModelVariables$X
-  y<-ModelVariables$y
+  Y<-ModelVariables$Y
+  
   if (is.null(y)) { stop("No labels supplied.")}
-  return(((X %*% object@theta - y)^2))
+  
+  expscore <- kernelMatrix(object@kernel,X,object@Xtrain)%*% object@theta
+  Y <- sweep(Y,2,object@y_scale,"-")
+  return(rowSums((expscore - Y)^2))
 })
 
 #' @rdname predict-methods
 #' @aliases predict,LeastSquaresClassifier-method
 setMethod("predict", signature(object="KernelLeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept)
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
   
   X<-ModelVariables$X
   
-  if (is.null(object@kernel)) {
-    theta <- matrix(object@theta, nrow=ncol(X))
-    expscore <- X %*% theta
-  } else {
-    expscore<-kernelMatrix(object@kernel,X,object@Xtrain)%*% object@theta
-  }
+  expscore <- kernelMatrix(object@kernel,X,object@Xtrain)%*% object@theta
+  expscore <- sweep(expscore,2,object@y_scale,"+")
+  
   # If we need to return classes
   if (length(object@classnames)>2) {
     classes <- factor(apply(expscore,1,which.max),levels=1:length(object@classnames), labels=object@classnames)
   } else {
-    classes <- factor(as.integer(expscore>1.5)+1,levels=1:length(object@classnames), labels=object@classnames)
+    classes <- factor(as.integer(expscore<0.5)+1,levels=1:length(object@classnames), labels=object@classnames)
   }
   
-  if (probs){
-    return(expscore)
-  } else {
-    return(classes)
-  }
+  return(classes)
 })
 
-#' @rdname plot-methods
-#' @aliases plot,LeastSquaresClassifier,missing-method
-setMethod("plot", signature(x="KernelLeastSquaresClassifier",y="missing"), function(x) {
-  object<-x
-  #p<-qplot(object@D[is.na(object@D[,object@classname]),1],object@D[is.na(object@D[,object@classname]),2],color=object@unlabels)
-  p<-qplot(object@D[,1],object@D[,2],color=object@D[,object@classname])
-  p<-p+geom_abline(intercept = (1.5-x@theta[1])/x@theta[3], slope = -x@theta[2]/x@theta[3])
-  return(p)
+#' @aliases predict,LeastSquaresClassifier-method
+#' @export
+setMethod("decisionvalues", signature(object="KernelLeastSquaresClassifier"), function(object, newdata) {
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
+  
+  X<-ModelVariables$X
+  expscore <- kernelMatrix(object@kernel,X,object@Xtrain)%*% object@theta
+  expscore <- sweep(expscore,2,object@y_scale,"+")
+  return(expscore)
 })
-
-#' @rdname boundaryplot-methods
-#' @aliases boundaryplot,LeastSquaresClassifier-method
-setMethod("boundaryplot", signature(object="KernelLeastSquaresClassifier"), function(object, p) {
-  p+geom_abline(intercept = (-(object@theta[1]-1.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
-})
-

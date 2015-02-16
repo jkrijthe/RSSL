@@ -11,20 +11,19 @@ stderror <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x))) # http://stac
 
 #' @title Convert data.frame to matrices for semi-supervised learners
 #'
-#' Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations
+#' Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations. Note: always removes the intercept
 #'
-#' @usage SSLDataFrameToMatrices(model,D,intercept=TRUE)
+#' @usage SSLDataFrameToMatrices(model,D)
 #'
 #' @param model Formula object with model
 #' @param D data.frame object with objects
-#' @param intercept Whether to include an intercept in the design matrices
 #' @return list object with the following objects:
 #' \item{X}{design matrix of the labeled data}
 #' \item{X_u}{design matrix of the unlabeled data}
 #' \item{y}{integer vector indicating the labels of the labeled data}
 #' \item{classnames}{names of the classes corresponding to the integers in y}
 #' @export
-SSLDataFrameToMatrices <- function(model,D,intercept=TRUE) {
+SSLDataFrameToMatrices <- function(model,D) {
   # Split labeled and unlabelled data
   classname<-all.vars(model)[1] # determine the name of the dependent variable
   
@@ -33,10 +32,9 @@ SSLDataFrameToMatrices <- function(model,D,intercept=TRUE) {
   
   # Data.Frame to Matrices
   
-  X<-model.matrix(model, D_l)
-  y<-as.factor(data.matrix(D_l[,classname]))
+  X <- model.matrix(model, D_l)
+  y <- as.factor(data.matrix(D_l[,classname]))
   if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
-  classnames <- levels(y)
   
   X_u<-NULL
   if (nrow(D_u)>0) {
@@ -44,14 +42,12 @@ SSLDataFrameToMatrices <- function(model,D,intercept=TRUE) {
     X_u <- model.matrix(model, D_u)
   }
   
-  if (!intercept) {
-    selected.columns<-colnames(X) != "(Intercept)"
-    X <- X[, selected.columns] # Remove intercept
-    if (nrow(D_u)>0) X_u <- X_u[, selected.columns,drop=FALSE]
-  }
-  y<-as.integer(y)
+  # Remove Intercept
+  selected.columns<-colnames(X) != "(Intercept)"
+  X <- X[, selected.columns]
+  if (nrow(D_u)>0) X_u <- X_u[, selected.columns,drop=FALSE]
   
-  return(list(X=X, y=y, X_u=X_u, classnames=classnames))
+  return(list(X=X, y=y, X_u=X_u))
   
   # Data.Frame to Matrices
 #   mf <- model.frame(formula=model, data=D)
@@ -65,7 +61,7 @@ SSLDataFrameToMatrices <- function(model,D,intercept=TRUE) {
 
 #' Preprocess the input to a classification function
 #'
-#' The following actions are carried out: 1. data.frames are converted to matrix form and labels converted to integers 2. An intercept column is added if requested 3. centering and scaling is applied if requested.
+#' The following actions are carried out: 1. data.frames are converted to matrix form and labels converted to an indicator matrix 2. An intercept column is added if requested 3. centering and scaling is applied if requested.
 #' 
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
@@ -82,26 +78,42 @@ SSLDataFrameToMatrices <- function(model,D,intercept=TRUE) {
 #' \item{modelform}{a formula object containing the used model}
 #' @export
 PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE) {
+  
   # Make sure we get a matrix from the model representation
   if (is(X,"formula") & is.data.frame(y)) {
-    modelform<-X
-    list2env(SSLDataFrameToMatrices(X,y,intercept=intercept),environment())
-    classnames<-classnames
-  } else if (is.matrix(X) & (is.factor(y) | is.vector(y))) {
-    if (intercept) { 
-      X<-cbind(matrix(1,nrow(X),1),X)
-      if (!is.null(X_u)) { X_u<-cbind(matrix(1,nrow(X_u),1),X_u) }
-    } # Add intercept term
+    modelform <- X
+    problem <- SSLDataFrameToMatrices(X,y)
+    out <- PreProcessing(problem$X,problem$y,problem$X_u,scale=scale,intercept=intercept,x_center=FALSE)
+    out$modelform <- X
+    return(out)
+  } else if ((is.matrix(X) || is.data.frame(X)) && (is.factor(y))) {
     
-    modelform<-NULL
-    if (is.factor(y)) {
-      classnames<-levels(y)
-      y<-as.numeric(y)
+    modelform <- NULL
+    
+    if (is.data.frame(X)) {
+      if (intercept) {
+        X <- model.matrix(~., X)
+        if (!is.null(X_u)) { X_u <- model.matrix(~., X_u) }
+      } else {
+        X <- model.matrix(~.-1, X)
+        if (!is.null(X_u)) { X_u <- model.matrix(~.-1, X_u) }
+      }
     } else {
-      classnames<-1:length(unique(y)) 
+      if (intercept) { 
+        X<-cbind(matrix(1,nrow(X),1),X)
+        if (!is.null(X_u)) { X_u<-cbind(matrix(1,nrow(X_u),1),X_u) }
+      }
     }
+
+    classnames<-levels(y)
+    if (length(classnames)>2) {
+      Y <- model.matrix(~y-1, data.frame(y))
+    } else {
+      Y <- model.matrix(~y-1, data.frame(y))[,1,drop=FALSE]
+    }
+
   } else {
-    stop("No valid input for X and y, see help.")
+    stop("No valid input for X, y and X_u.")
   }
   
   if (scale | x_center) {
@@ -125,7 +137,7 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE)
 
   } else {scaling=NULL}
   
-  return(list(X=X,y=y,X_u=X_u,classnames=classnames,scaling=scaling,modelform=modelform))
+  return(list(X=X,y=y,Y=Y,X_u=X_u,classnames=classnames,scaling=scaling,modelform=modelform))
 }
 
 #' Preprocess the input for a new set of test objects for classifier
@@ -142,25 +154,40 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE)
 #' \item{X}{design matrix of the labeled data}
 #' \item{y}{integer vector indicating the labels of the labeled data}
 #' @export
-PreProcessingPredict<-function(modelform,newdata,y=NULL,scaling=NULL,intercept=FALSE) {
-if (!is.null(modelform)) {
-  list2env(SSLDataFrameToMatrices(modelform,newdata,intercept=intercept),environment())
-  X<-X
-} else {
-  if (!is.matrix(newdata)) { stop("Training data and Testing data don't match.")}
-  X<-newdata
-  if (intercept) { X<-cbind(matrix(1,nrow(X),1),X) } # Add intercept term
-}
-
-if (!is.null(scaling)) {
-  if (intercept) {
-    X[,2:ncol(X)]<-predict(scaling,X[,2:ncol(X),drop=FALSE]) 
+PreProcessingPredict<-function(modelform,newdata,y=NULL,classnames=NULL,scaling=NULL,intercept=FALSE) {
+  if (!is.null(modelform)) {
+    problem<- SSLDataFrameToMatrices(modelform,newdata)
+    return(PreProcessingPredict(NULL,problem$X,problem$y,classnames=classnames,scaling=scaling,intercept=intercept))
   } else {
-    X[,1:ncol(X)]<-predict(scaling,X[,1:ncol(X),drop=FALSE])
+    if (!(is.matrix(newdata) || is.data.frame(newdata))) { stop("Training data and Testing data don't match.")}
+    if (is.data.frame(newdata)) {
+      if (intercept) {
+        X <- model.matrix(~.,newdata)
+      } else {
+        X <- model.matrix(~.-1,newdata)
+      }
+    } else {
+      X <- newdata
+    }
+    if (intercept) { X<-cbind(matrix(1,nrow(X),1),X) } # Add intercept term
   }
+
+  if (!is.null(scaling)) {
+    if (intercept) {
+      X[,2:ncol(X)]<-predict(scaling,X[,2:ncol(X),drop=FALSE]) 
+    } else {
+      X[,1:ncol(X)]<-predict(scaling,X[,1:ncol(X),drop=FALSE])
+    }
+  }
+
+  Y <- classlabels_to_indicatormatrix(y,classnames) 
+
+  return(list(X=X,Y=Y,y=y))
 }
 
-y<-as.numeric(y)
-
-return(list(X=X,y=y))
+classlabels_to_indicatormatrix <- function(y,classnames) {
+  if (is.null(y)) {return(NULL)}
+  Y <- model.matrix(~y-1, data.frame(y))
+  if (length(classnames)==2) { Y <- Y[,1,drop=FALSE] }
+  return(Y)
 }

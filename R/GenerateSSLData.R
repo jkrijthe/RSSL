@@ -20,6 +20,22 @@ GenerateSlicedCookie<-function(n=100, expected=FALSE, gap=1) {
   return(data.frame(X,Class=factor(y)))
 }
 
+#' Generate data from 2 circles
+#' 
+#' One circle circumscribes the other
+#' 
+#' @param n integer; Number of examples to generate
+#' @param noise_var numeric; size of the variance parameter
+#' @param expected logical; whether the decision boundary should be the expected or perpendicular
+#' 
+#' @export
+generateTwoCircles <- function(n=100, noise_var=0.2) {
+  x <- runif(n)*4*pi-2*pi
+  X <- rbind(cbind(c(1,2)*cos(x)+noise_var*rnorm(n),c(1,2)*sin(x))+noise_var*rnorm(n))
+  y <- factor(rep(c(1,2),length.out = n))
+  data.frame(X=X,Class=y)           
+}
+
 #' Generate data from 2 gaussian distributed datasets
 #' 
 #' @param n integer; Number of examples to generate
@@ -35,7 +51,7 @@ Generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
   } else {
     y<-factor(as.integer(X[,1]>X[,2])*2-1)
   }
-  return(data.frame(X,y))
+  return(data.frame(X,Class=factor(y)))
 }
 
 # D<-GenerateSlicedCookie(1000,expected=FALSE)
@@ -64,7 +80,7 @@ GenerateFourClusters<-function(n=100,distance=6,expected=FALSE) {
   y<-rep(-1,4*n)
   if (expected) { y[X[,1]>X[,2]]<-1 }
   else { y[X[,1]>-X[,2]]<-1 }
-  return(data.frame(X,y))
+  return(data.frame(X,Class=factor(y)))
 }
 # D<-GenerateFourClusters(1000,distance=6,expected=TRUE)
 # clplot(as.matrix(D[,1:2]),factor(D$y))

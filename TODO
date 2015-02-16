@@ -21,3 +21,5 @@ ICQDA
 MCQDA?
 RSSL: ImputedLeastSquaresClassifier
 RSSL: Yarowsky cautious algorithm
+
+There is a problem using ginv when using PCs as inputs: the problems seem to be rescaled such that the bias term is no longer correct

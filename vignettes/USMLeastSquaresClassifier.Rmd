@@ -1,0 +1,102 @@
+---
+title: "Updated Second Moment Least Squares Classifier"
+author: "Jesse Krijthe"
+date: "February 4, 2015"
+output: html_document
+---
+```{r echo=FALSE, message=FALSE}
+library("knitr")
+library("dplyr")
+library("createdatasets")
+```
+
+Regular OLS:
+$$\beta = (X^\top X)^{-1} X^\top y $$
+
+Popper-Shafer proposes the following update if we know $\mathbb{E}[X^\top X]$:
+$$ \beta = \mathbb{E}[X^\top X]^{-1} X^\top y$$
+
+In semi-supervised learning, we do not know $\mathbb{E}[X^\top X]$, but we can conceivably get a good estimate for it using $X_e$:
+$$ \beta = (\frac{l}{l+u} X_e^\top X_e)^{-1} X^\top y$$
+
+# Invariance to transformations of the output variable
+In the case of classification, we have a choice what numeric encoding to use for the classes. For instance, in the 2-class case, we could encode the classes as $0$ and $1$ or, $-1$ and $+1$, etc. In regular OLS this choice has no effect on the classifier that is learned as long as an intercept is used in the model. Does the same hold for the USMLS model?
+
+Let's consider both a scaling $s$ and translation $c$ for the labels $y$. OLS is invariant to such changes:
+
+$$\begin{aligned}
+\beta_{new} & = (X^\top X)^{-1} X^\top (s y + c 1) \\
+& = s \beta_{old} + (X^\top X)^{-1} X^\top 1 c \\
+\end{aligned}$$
+If we assume the first column of $X$ is a column of $1$ corresponding to the intercept then $(X^\top X)^{-1} X^\top 1$ is equal to the first column of $(X^\top X)^{-1} X^\top X = I$, which is $[1,0,\dots,0]^\top$. So we get
+$$\beta_{new} = s \beta_{old} + [1,0,\dots,0]^\top c$$
+So scaling and translation of the output vector corresponds to scaling and translation in the vector $\beta$, which will have no effect on the predicted labels.
+
+
+Now consider the USMLS method:
+$$\begin{aligned}
+\beta_{new} & = (\frac{l}{l+u} X_e^\top X_e)^{-1} X^\top (s y + c 1) \\
+            & = s \beta_{old} + (\frac{l}{l+u} X_e^\top X_e)^{-1} X^\top 1 c \\
+\end{aligned}$$
+So, it is still invariant to scaling, but not neccesarily translation. However, if we first center both the $X$ and the $X_e$ matrix (independently), then we can perform a similar trick to the OLS case. This is because when $X$ is scaled $X^\top 1=[l,0,\dots,0]^\top$ and the first column of $(\frac{l}{l+u} X_e^\top X_e)^{-1} = [\frac{1}{l},0,\dots,0]^\top$.
+
+Another invariant estimator would be 
+
+Let's consider a numerical example. We'll set it up as follows:
+```{r}
+dataset <- createIonosphere()
+modelform <- formula(Return~.)
+classname <- "Return"
+
+X <- model.matrix(modelform,dataset)
+y <- dataset[,classname,with=FALSE][[1]]
+
+X<-X[,c(1,4:8)]
+y<-y[1:100]
+Y<-model.matrix(~factor(y)-1, data.frame(y))
+y<-as.numeric(y)
+
+Xe<-X[-c(1:100),]
+X<-X[1:100,]
+
+inv<-solve
+n<-nrow(X)
+m<-ncol(X)
+lambda<-0.0
+```
+
+The OLS estimator clearly scales and translates with a scaling and translation of the output:
+```{r}
+theta <- solve((n/nrow(X)) * t(X) %*% X, t(X) %*% y)
+theta2 <- solve((n/nrow(X)) * t(X) %*% X, t(X) %*% ((y-1)*2))
+kable(data.frame(`Normal`=theta, `(Output-1)*2`=theta2,check.names = FALSE))
+```
+
+The UMSLS estimator is not invariant to translation (compare $\theta_1$ with $\theta_2$) while it does become invariant when we consider the scaled versions of _both_ $X_e$ and $X$ (compare $\theta_3$ with $\theta_4$).
+
+Another option is to center the $X_e$ matrix and the labels $y$ (compare $\theta_5$ with $\theta_6$)
+```{r}
+# Invariance test for USMLS
+Xs<-X
+Xs[,2:ncol(X)]<-scale(X[,2:ncol(X)],scale = FALSE)
+Xse<-Xe
+Xse[,2:ncol(Xe)]<-scale(Xe[,2:ncol(Xe)],scale=FALSE) 
+   
+theta <- solve((n/nrow(Xe)) * t(Xe) %*% Xe, t(X) %*% y)
+theta2 <- solve((n/nrow(X)) * t(Xe) %*% Xe, t(X) %*% ((y-1)*2)) # Scaled+Translated
+theta3 <- solve((n/nrow(Xse)) * t(Xse) %*% Xse, t(Xs) %*% y) # Normal, scaled input
+theta4 <- solve((n/nrow(Xse)) * t(Xse) %*% Xse, t(Xs) %*% ((y-1)*2)) # Scaled+translated, scaled input
+theta5 <- solve((n/nrow(Xse)) * t(Xse) %*% Xse, t(X-100) %*% (y-mean(y))) # Normal, scaled input
+theta6 <- solve((n/nrow(Xse)) * t(Xse) %*% Xse, t(X-100) %*% ((y-1)*2-mean((y-1)*2))) 
+```
+
+```{r echo=FALSE}
+kable(data.frame(`$\\theta_1$`=theta,
+                 `$\\theta_2$`=theta2,
+                 `$\\theta_3$`=theta3,
+                 `$\\theta_4$`=theta4,
+                 `$\\theta_5$`=theta5,
+                 `$\\theta_6$`=theta6,
+                 check.names=FALSE))
+```
+

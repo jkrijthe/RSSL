@@ -25,6 +25,15 @@ SelfLearning(X, y, X_u, method, prob = FALSE, cautious = FALSE,
 \item{...}{additional arguments to be passed to method}
 }
 \description{
-Use self learning to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and added confident predictions to the set of labeled objects
+Use self learning to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and adding these predictions to the set of labeled objects.
+}
+\examples{
+data(testdata)
+t_self <- SelfLearning(testdata$X,testdata$y,testdata$X_u,method=NearestMeanClassifier)
+t_sup <- NearestMeanClassifier(testdata$X,testdata$y)
+# Classification Error
+1-mean(predict(t_self, testdata$X_test)==testdata$y_test)
+1-mean(predict(t_sup, testdata$X_test)==testdata$y_test)
+loss(t_self, testdata$X_test, testdata$y_test)
 }
 

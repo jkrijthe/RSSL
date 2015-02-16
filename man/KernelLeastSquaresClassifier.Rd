@@ -2,9 +2,9 @@
 % Please edit documentation in R/KernelLeastSquaresClassifier.R
 \name{KernelLeastSquaresClassifier}
 \alias{KernelLeastSquaresClassifier}
-\title{Least Squares Classifier}
+\title{Kernelized Least Squares Classifier}
 \usage{
-LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
+KernelLeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -13,11 +13,11 @@ LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ..
 
 \item{lambda}{Regularization parameter of the l2 penalty in regularized least squares}
 
-\item{intercept}{TRUE if an intercept should be added to the model}
-
 \item{x_center}{TRUE, whether the dependent variables (features) should be centered}
 
 \item{scale}{If TRUE, apply a z-transform to the design matrix X before running the regression}
+
+\item{intercept}{TRUE if an intercept should be added to the model}
 
 \item{...}{additional arguments}
 }
@@ -30,5 +30,46 @@ S4 object of class LeastSquaresClassifier with the following slots:
 }
 \description{
 Use least squares regression as a classification technique using classes as targets (1 for one class, 2 for the other). Implemented using matrix inversions, not the more numerically stable Singular Value Decomposition method. Note this method minimizes quadratic loss, not the truncated quadratic loss.
+}
+\examples{
+library(ggplot2)
+
+# Two class problem
+
+dmat<-model.matrix(Species~.-1,iris[51:150,])
+tvec<-droplevels(iris$Species[51:150])
+testdata <- data.frame(tvec,dmat[,1:2])
+colnames(testdata)<-c("Class","X1","X2")
+
+precision<-100
+xgrid<-seq(min(dmat[,1]),max(dmat[,1]),length.out=precision)
+ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
+gridmat <- expand.grid(xgrid,ygrid)
+
+g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,kernel=rbfdot(0.01),lambda=0.000001,scale = TRUE)
+plotframe <- cbind(gridmat, decisionvalues(g_kernel,gridmat))
+colnames(plotframe)<- c("x","y","Output")
+ggplot(plotframe, aes(x=x,y=y)) +
+  geom_tile(aes(fill = Output)) +
+  stat_contour(aes(z=Output),breaks=c(0.5),size=1) +
+  scale_fill_gradient(low="yellow", high="red",limits=c(0,1)) +
+  geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=3)
+
+# Multiclass problem
+dmat<-model.matrix(Species~.-1,iris)
+tvec<-iris$Species
+testdata <- data.frame(tvec,dmat[,1:2])
+colnames(testdata)<-c("Class","X1","X2")
+
+precision<-100
+xgrid<-seq(min(dmat[,1]),max(dmat[,1]),length.out=precision)
+ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
+gridmat <- expand.grid(xgrid,ygrid)
+
+g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,kernel=rbfdot(0.1),lambda=0.00001,scale = TRUE,x_center=TRUE)
+plotframe <- cbind(gridmat, maxind=apply(decisionvalues(g_kernel,gridmat),1,which.max))
+ggplot(plotframe, aes(x=Var1,y=Var2)) +
+  geom_tile(aes(fill = factor(maxind,labels=levels(tvec)))) +
+  geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=4,alpha=0.5)
 }
 

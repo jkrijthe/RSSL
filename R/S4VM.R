@@ -6,4 +6,7 @@
 #' @param y labels
 #' @param X_u Design matrix unlabeled data
 #' @export
-S4VM<-function(X,y,X_u){} 
+S4VM<-function(X,y,X_u){
+  
+  
+} 

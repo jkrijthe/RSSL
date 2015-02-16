@@ -4,8 +4,8 @@
 \alias{GRFClassifier}
 \title{Gaussian Random Fields and Harmonic functions}
 \usage{
-GRFClassifier(X, y, X_u, kernel = NULL, y_u = NULL, eta = 0.1,
-  CMN = TRUE)
+GRFClassifier(X, y, X_u, sigma = 0.1, eta = 0.1, CMN = TRUE,
+  scale = FALSE, x_center = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -14,13 +14,13 @@ GRFClassifier(X, y, X_u, kernel = NULL, y_u = NULL, eta = 0.1,
 
 \item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{kernel}{TODO: kernel function??}
-
-\item{y_u}{Labels given by external classifier}
-
 \item{eta}{The influence of the external classifier}
 
 \item{CMN}{Should the Class Mass Normalization heuristic be applied? (default: TRUE)}
+
+\item{kernel}{TODO: kernel function??}
+
+\item{y_u}{Labels given by external classifier}
 }
 \description{
 Gaussian Random Fields and Harmonic functions

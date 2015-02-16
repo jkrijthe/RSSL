@@ -1,9 +1,7 @@
-library(quadprog)
-
 #' @include Classifier.R
-setClass("TSVM", 
+setClass("TSVMcccp", 
          representation(),
-         prototype(name="Transductive Support Vector Machine"), 
+         prototype(name="Transductive Support Vector Machine training using CCCP"), 
          contains="Classifier")
 
 #' @title CCCP Transductive SVM classifier
@@ -26,17 +24,18 @@ setClass("TSVM",
 #' \item{unlabels}{the labels assigned to the unlabeled objects}
 #' 
 #' @export
-TSVM_CCCP <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, eps=1e-6,verbose=TRUE,...) {
+TSVMcccp <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, eps=1e-6,verbose=TRUE,...) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X<-ModelVariables$X
-  #y<-ModelVariables$y
+  y<-ModelVariables$y
   X_u<-ModelVariables$X_u
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
+  Y <- ModelVariables$Y
   
-  y <- model.matrix(~y-1,data.frame(y))[,1]*2-1
+  y <- as.numeric(Y*2-1)
   
   L <- nrow(X)
   U <- nrow(X_u)
@@ -97,8 +96,6 @@ TSVM_CCCP <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, 
     res <- solve.QP(Dmat = (Ke+diag(0.00000001,nrow(Ke))), dvec = xi, Amat=Amat, bvec=bvec,meq=1)
     alpha<-res$solution
     
-    
-    
     eps <- 0.01
     #Compute the bias term
     w <- (alpha) %*% Ke
@@ -121,10 +118,18 @@ TSVM_CCCP <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, 
     
     iterations <- iterations + 1
   }
-  return(list(alpha=alpha,b=b,K=Ke,beta=beta))
+  return(new(Class = "TSVMcccp",
+             alpha=alpha,
+             b=b,
+             K=Ke,
+             beta=beta))
 }
 
-#' SVM solve.QP implementation
+setMethod("predict", signature(object="TSVMcccp"), function(object, newdata, probs=FALSE) {
+  
+})
+
+# SVM solve.QP implementation
 solve_svm <- function(K, y, C=1) {
   n <- nrow(K)
 

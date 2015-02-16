@@ -1,12 +1,12 @@
 #' @include Classifier.R
 setClass("SelfLearning",
-         representation(model="Classifier",n_iter="numeric",i_labels="matrix"),
+         representation(model="Classifier",n_iter="numeric",i_labels="list"),
          prototype(name="Self Learning"),
          contains="Classifier")
 
 #' Self Learning Semi-supervised Learning
 #'
-#' Use self learning to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and added confident predictions to the set of labeled objects
+#' Use self learning to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and adding these predictions to the set of labeled objects.
 #'
 #'
 #' @param X Design matrix, intercept term is added within the function
@@ -17,17 +17,26 @@ setClass("SelfLearning",
 #' @param cautious TODO: implement this
 #' @param scale logical; Whether the feature vectors should be normalized
 #' @param ... additional arguments to be passed to method
+#' @examples
+#' data(testdata)
+#' t_self <- SelfLearning(testdata$X,testdata$y,testdata$X_u,method=NearestMeanClassifier)
+#' t_sup <- NearestMeanClassifier(testdata$X,testdata$y)
+#' # Classification Error
+#' 1-mean(predict(t_self, testdata$X_test)==testdata$y_test) 
+#' 1-mean(predict(t_sup, testdata$X_test)==testdata$y_test) 
+#' loss(t_self, testdata$X_test, testdata$y_test)
 #' @export
 SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, scale=FALSE, ...) {
 
   # Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=FALSE,intercept=FALSE,x_center=FALSE)
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=FALSE,intercept=FALSE,x_center=FALSE)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
-  #y<-ModelVariables$y
+  y<-ModelVariables$y
   scaling<-ModelVariables$scaling
   modelform<-ModelVariables$modelform
-
+  classnames<-ModelVariables$classnames
+  
   # Intial step: label unlabeled objects using supervised classifier
   model<-method(X, y, ...)
    
@@ -35,7 +44,8 @@ SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, 
   y_unlabelled_old <- rep(NA,length(y_unlabelled))
   
   # Retrain and retrain until convergence
-  i_labels <- y_unlabelled
+  i_labels <- list()
+  i_labels[[1]] <- y_unlabelled
   n_iter<-0
   while (any(is.na(y_unlabelled_old)) | any(y_unlabelled_old!=y_unlabelled)) {
     n_iter <- n_iter+1
@@ -45,13 +55,11 @@ SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, 
     model <- method(rbind(X, X_u), unlist(list(y, y_unlabelled_old)),...)
     y_unlabelled <- predict(model,X_u)
     if (!cautious) {
-      i_labels <- unlist(list(i_labels,y_unlabelled))
+      i_labels[[n_iter+1]] <- y_unlabelled
     } else {
       stop("Cautious algorithm not implemented yet")
     }
   }
-  
-  i_labels <- matrix(i_labels,ncol=n_iter+1) # Return the imputed labels of each iteration
   
   object <- new("SelfLearning",
                 modelform=modelform,
@@ -59,7 +67,8 @@ SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, 
                 model=model,
                 n_iter=n_iter,
                 scaling=scaling,
-                i_labels=i_labels)
+                i_labels=i_labels,
+                classnames=classnames)
   return(object)
 }
 
@@ -68,7 +77,7 @@ SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, 
 #' @rdname predict-methods
 #' @aliases predict,SelfLearning-method
 setMethod("predict", signature(object="SelfLearning"), function(object,newdata,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE)
+  ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
   X<-ModelVariables$X
 
   return(predict(object@model,X,...))
@@ -79,9 +88,10 @@ setMethod("predict", signature(object="SelfLearning"), function(object,newdata,.
 #' @rdname loss-methods
 #' @aliases loss,SelfLearning-method    
 setMethod("loss", signature(object="SelfLearning"), function(object,newdata,y=NULL,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE)
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
+  
   X<-ModelVariables$X
-  #y<-ModelVariables$y
+  y<-ModelVariables$y
   return(loss(object@model,X,y,...))
 })
 

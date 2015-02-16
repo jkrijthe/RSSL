@@ -4,16 +4,14 @@
 \alias{SSLDataFrameToMatrices}
 \title{Convert data.frame to matrices for semi-supervised learners
 
-Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations}
+Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations. Note: always removes the intercept}
 \usage{
-SSLDataFrameToMatrices(model,D,intercept=TRUE)
+SSLDataFrameToMatrices(model,D)
 }
 \arguments{
 \item{model}{Formula object with model}
 
 \item{D}{data.frame object with objects}
-
-\item{intercept}{Whether to include an intercept in the design matrices}
 }
 \value{
 list object with the following objects:
@@ -25,6 +23,6 @@ list object with the following objects:
 \description{
 Convert data.frame to matrices for semi-supervised learners
 
-Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations
+Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations. Note: always removes the intercept
 }
 

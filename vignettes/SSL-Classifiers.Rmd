@@ -35,17 +35,40 @@ line_coefficients_ll <- function(object) {
 The RSSL package contains mostly methods for semi-supervised classification. This vignette serves as an overview of the available classifiers and their example outputs.
 
 ### The example datasets
+```{r}
+add_missinglabels_mar <- function(df,formula=NULL,prob=0.1) {
+  if (!is.null(formula)) {
+    df <- model.frame(formula,df)
+  }
+  n <- nrow(df)
+  df[sample(1:n,ceiling(prob*n)),1] <- NA
+  return(df)
+}
+```
+
+```{r}
+df_to_matrices <- function(df,formula=NULL) {
+  if (!is.null(formula)) {
+    df <- model.frame(formula,df)
+  }
+  
+  d <- ncol(df)
+  
+  X <- model.matrix(~.-1, df[!is.na(df[,1]),2:d])
+  Xu <- model.matrix(~.-1, df[is.na(df[,1]),2:d])
+  y <- df[!is.na(df[,1]),1]
+  
+  return(list(X=X,Xu=Xu,y=y))
+}
+```
+
 Two Gaussians example:
 ```{r}
-data <- data.frame(generateGaussianClass(100,var=0.2))[sample(1:100),]
-X <- as.matrix(data[1:10,1:2])
-y <- data$Class[1:10]
-Xu <- as.matrix(data[-c(1:10),1:2])
-data$labeled<-c(rep(TRUE,10),rep(FALSE,90))
-data$Class[11:100]<-NA
-#data$Class<-addNA(data$Class)
+data_2gauss <- data.frame(generateGaussianClass(100,var=0.2)) %>% 
+  add_missinglabels_mar(prob=0.9)
+problem_2gauss <-  data_2gauss %>% df_to_matrices
 
-p1 <- ggplot(data,aes(x=V1,y=V2,shape=Class,color=Class)) +
+p1 <- ggplot(data_2gauss,aes(x=V1,y=V2,shape=Class,color=Class)) +
   geom_point(size=6,alpha=0.8) +
   coord_equal() +
   theme_tufte(base_family = "Avenir",base_size = 18) +
@@ -58,15 +81,11 @@ p1 <- ggplot(data,aes(x=V1,y=V2,shape=Class,color=Class)) +
 
 Sliced cookie example:
 ```{r}
-data2 <- data.frame(GenerateSlicedCookie(100))[sample(1:100),]
-X2 <- as.matrix(data2[1:10,1:2])
-y2 <- data2$Class[1:10]
-Xu2 <- as.matrix(data2[-c(1:10),1:2])
-data2$labeled<-c(rep(TRUE,10),rep(FALSE,90))
-data2$Class[11:100]<-NA
-#data$Class<-addNA(data$Class)
+data_slicedcookie <- data.frame(GenerateSlicedCookie(100))[sample(1:100),] %>% 
+  add_missinglabels_mar(prob=0.9)
+problem_slicedcookie <- data_slicedcookie %>% df_to_matrices
 
-p2 <- ggplot(data2,aes(x=X1,y=X2,shape=Class,color=Class)) +
+p2 <- ggplot(data_slicedcookie,aes(x=X1,y=X2,shape=Class,color=Class)) +
   geom_point(size=6,alpha=0.8) +
   coord_equal() +
   theme_tufte(base_family = "Avenir",base_size = 18) +
@@ -90,6 +109,33 @@ An example of the imputated labels for a given problem is
 # data.frame(Xu,y=g_grf@unlabels[,1]) %>% 
 #   ggplot(aes(x=V1,y=V2,color=y))+
 #   geom_point()
+```
+
+
+```{r}
+generateTwoCircles(200,0.05) %>%
+  ggplot(aes(X.1,X.2,color=y)) %>%
+  + geom_point() %>%
+  + coord_equal()
+
+data <- generateTwoCircles(200, 0.05) 
+Xin <- as.matrix(data[,1:2])
+yin <- model.matrix(~y-1,data)[1:2,1,drop=FALSE]
+W <- exp(-as.matrix(dist(Xin))^2/0.1)
+
+u<-harmonic_function(W,yin)
+
+data.frame(Xin, posterior=c(yin,u)) %>%
+  ggplot(aes(X.1,X.2,colour=posterior)) %>%
+  + geom_point(size=5,alpha=0.8) %>%
+  + coord_equal()
+
+W <- exp(-as.matrix(dist(Xin))^2/0.1)
+u <- harmonic_function(W,yin)
+data.frame(X=Xin,y=c(yin,u)) %>%
+ggplot(aes(X.X.1,X.X.2,color=y)) %>%
++ geom_point() %>%
++ coord_equal()
 ```
 
 ### Self-learning
@@ -210,3 +256,56 @@ p1 + geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),size=0
 ```
 
 
+### Testing improvements in the loss
+
+```{r}
+library(RSSL)
+
+dataset<-Generate2ClassGaussian(n=1000,d = 2,var = 0.3,expected = TRUE)
+dmat<-model.matrix(formula("y~.-1"),dataset)
+tvec<-factor(dataset$y)
+
+problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.98)
+sum(loss(LeastSquaresClassifier(problem$X,problem$y),problem$X_test,problem$y_test))
+sum(loss(UCLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
+sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
+sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection="semisupervised"),problem$X_test,problem$y_test))
+sum(loss(CPLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
+mean(predict(CPLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test)==problem$y_test)
+mean(predict(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection="semisupervised"),problem$X_test)==problem$y_test)
+mean(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test)==problem$y_test)
+
+#TODO: are CP and IC the same?
+
+sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=LeastSquaresClassifier),problem$X_test,problem$y_test))
+
+# Nearest Mean
+sum(loss(NearestMeanClassifier(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
+sum(loss(ICNearestMeanClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(EMNearestMeanClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=NearestMeanClassifier),problem$X_test,problem$y_test))
+
+
+# LDA
+sum(loss(LinearDiscriminantClassifier(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
+sum(loss(ICLinearDiscriminantClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(EMLinearDiscriminantClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(CPLinearDiscriminantClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=LinearDiscriminantClassifier),problem$X_test,problem$y_test))
+
+
+# Logistic Regression
+sum(loss(LogisticRegression(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
+sum(loss(LogisticLossClassifier(X=problem$X,y=problem$y,x_center=TRUE),problem$X_test,problem$y_test))
+sum(loss(ICLogisticLossClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(ERLogisticLossClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+mean(predict(LogisticLossClassifier(X=problem$X,y=problem$y),problem$X_test)==problem$y_test)
+mean(predict(ERLogisticLossClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test)==problem$y_test)
+
+# SVM
+sum(loss(LinearSVM(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
+
+
+# Graph based
+#GRF
+```

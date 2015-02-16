@@ -71,7 +71,7 @@ TSVM_CCCPlin <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALS
   return(list(w=w[-length(w)],b=b))
 }
 
-#' SVM solve.QP implementation
+# SVM solve.QP implementation
 solve_svm <- function(K, y, C=1) {
   n <- nrow(K)
   

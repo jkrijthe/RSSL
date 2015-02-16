@@ -4,8 +4,8 @@
 \alias{PreProcessingPredict}
 \title{Preprocess the input for a new set of test objects for classifier}
 \usage{
-PreProcessingPredict(modelform, newdata, y = NULL, scaling = NULL,
-  intercept = FALSE)
+PreProcessingPredict(modelform, newdata, y = NULL, classnames = NULL,
+  scaling = NULL, intercept = FALSE)
 }
 \arguments{
 \item{modelform}{Formula object with model}

@@ -29,7 +29,7 @@ setClass("ICLeastSquaresClassifier",
 #' \item{optimization}{the object returned by the optim function}
 #' \item{unlabels}{the labels assigned to the unlabeled objects}
 #' @export
-ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda3=0,trueprob=NULL,eps=10e-10,...) {
+ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda3=0,trueprob=NULL,eps=10e-10,y_scale=FALSE) {
   
   if (!(nrow(X)==length(y))) { stop("Length of y and number of rows in X should be the same.")}
   if (!is.factor(y)) { stop("Input labels should be a factor!")}
@@ -42,15 +42,15 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
-  #y<-ModelVariables$y
-  if (length(classnames)>2) {
-    y <- model.matrix(~y-1, data.frame(y))
+  y <- ModelVariables$Y
+  
+  if (y_scale) {
+    y_scale <- mean(y)
+    y <- y-y_scale
   } else {
-    y <- model.matrix(~y-1, data.frame(y))[,1,drop=FALSE]
+    y_scale <- 0
   }
   
-  
-
   if ((nrow(X)+nrow(X_u))<ncol(X)) inv <- function(M) { ginv(M) }
   else inv <- function(M) { ginv(M) } #Another possibility: chol2inv(chol(M))
   
@@ -73,7 +73,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
   ## Quadratic Programming implementation
   if (method=="QP") {
     if (projection=="supervised") {
-      dvec <- X_u %*% C %*% t(X) %*% y - G %*% t(X) %*% y
+      dvec <- X_u %*% C %*% t(X) %*% y - G %*% t(X) %*% Y
       Dmat <- G %*% t(X_u)
       Dmat <- Dmat + eps*diag(nrow(Dmat))
     } else if (projection=="semisupervised")  {
@@ -323,7 +323,8 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       unlabels=unlabels,
       scaling=scaling,
       intercept=intercept,
-      optimization=opt_result
+      optimization=opt_result,
+      y_scale=y_scale
       )
 }
 

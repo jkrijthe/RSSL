@@ -1,8 +1,12 @@
-## NearestMeanClassifier
+context("Nearest Mean Classifier")
 
-#Test Different input schemes
-cat("Classifier: NearestMeanClassifier\n")
-g<-NearestMeanClassifier(X,y)
+data(testdata)
+
+
+g<-NearestMeanClassifier(testdata$X,testdata$y)
+loss(g, testdata$X_test, testdata$y_test)
+lp<-log(posterior(g, testdata$X_test))
+sum(sapply(1:1000,function(i) {lp[i,as.numeric(testdata$y_test)[i]]}))
 cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
 cat("Loss:  ",loss(g, X_test, y_test),"\n")
 

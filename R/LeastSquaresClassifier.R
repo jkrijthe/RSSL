@@ -1,7 +1,7 @@
 #' @include Classifier.R
 setClass("LeastSquaresClassifier",
-         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",kernel="ANY",Xtrain="ANY"),
-         prototype(name="LeastSquaresClassifier",scaling=NULL,kernel=NULL,Xtrain=NULL), 
+         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",y_scale="numeric"),
+         prototype(name="LeastSquaresClassifier",scaling=NULL,y_scale=0), 
          contains="Classifier")
 
 #' Least Squares Classifier
@@ -23,83 +23,74 @@ setClass("LeastSquaresClassifier",
 #' \item{modelform}{formula object of the model used in regression}
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 #' @export
-LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, kernel=NULL, method="inverse",...) {
+LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, method="inverse",y_scale=FALSE) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
   X<-ModelVariables$X
-  scaling<-ModelVariables$scaling
-  classnames<-ModelVariables$classnames
-  modelform<-ModelVariables$modelform
-  #y<-ModelVariables$y
-  
-  if (length(classnames)>2) {
-    y <- model.matrix(~y-1, data.frame(y))
-  } else {
-    y <- model.matrix(~y-1, data.frame(y))[,1,drop=FALSE]
-  }
-  
-  
-  
-  # Check number of classes
-  #if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
-  # Check if all classes are present.
-  
-  #There is a problem using ginv when using PCs as inputs: the problems seem to be rescaled such that the bias term is no longer correct
+  scaling <- ModelVariables$scaling
+  classnames <- ModelVariables$classnames
+  modelform <- ModelVariables$modelform
+  Y <- ModelVariables$Y
   
   ## Start Implementation
   n <- nrow(X)
   m <- ncol(X)
-  k <- ncol(y)
+  k <- ncol(Y)
   
-  Xtrain<-NULL
+  if (y_scale) {
+    y_scale <- colMeans(Y)
+  } else {
+    y_scale <- rep(0,ncol(Y))
+  }
+  
+  Y <- sweep(Y,2,y_scale) # Possibly center the numeric Y labels
+  
   if (nrow(X)<ncol(X)) inv <- function(X) { ginv(X) }
   else inv <- function(X) { ginv(X) }
   
   if (method=="inverse") {
       if (intercept) {
-        theta <- inv(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1))))) %*% (t(X) %*% y)
+        theta <- inv(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1))))) %*% (t(X) %*% Y)
       } else {
-        theta <- inv(t(X) %*% X + n*lambda*diag(rep(1,m))) %*% (t(X) %*% y)
+        theta <- inv(t(X) %*% X + n*lambda*diag(rep(1,m))) %*% (t(X) %*% Y)
       }
   } else if (method=="Normal") {
-    if (intercept) solution <- solve(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1)))), t(X) %*% y)
-    else solution <- solve(t(X) %*% X + n*lambda*diag(m), t(X) %*% y)
+    if (intercept) solution <- solve(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1)))), t(X) %*% Y)
+    else solution <- solve(t(X) %*% X + n*lambda*diag(m), t(X) %*% Y)
     theta<-matrix(solution,m,k)
   }  else if (method=="QR") {
-    solution <- qr.solve(X,y)
+    solution <- qr.solve(X,Y)
     theta<-matrix(solution,m,k)
   } else if (method=="QR2") {
-    if (intercept) solution <- qr.solve(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1)))), t(X) %*% y)
-    else solution <- qr.solve(t(X) %*% X + n*lambda*diag(m), t(X) %*% y)
+    if (intercept) solution <- qr.solve(t(X) %*% X + n*lambda*diag(c(0,rep(1,(m-1)))), t(X) %*% Y)
+    else solution <- qr.solve(t(X) %*% X + n*lambda*diag(m), t(X) %*% Y)
     theta<-matrix(solution,m,k)
   } else if (method=="BFGS") {
     # BFGS gradient descent
     theta<-rep(0,m*k)
-    theta<-matrix(solve_quadratic_bfgs(X,y,lambda),m,k)     
+    theta<-matrix(solve_quadratic_bfgs(X,Y,lambda),m,k)     
   } else if (method=="BFGSCPP") {
     # BFGS gradient descent
     theta<-rep(0,ncol(X))
-    theta<-matrix(optim(theta,fn=function(w,X,y) { squared_objective(matrix(w),X,matrix(y)) },gr=function(w,X,y) { squared_gradient(matrix(w),X,matrix(y)) },X=X,y=y,method="BFGS")$par,m,k)
+    theta<-matrix(optim(theta,fn=function(w,X,Y) { squared_objective(matrix(w),X,matrix(Y)) },gr=function(w,X,Y) { squared_gradient(matrix(w),X,matrix(Y)) },X=X,Y=Y,method="BFGS")$par,m,k)
   } 
   else if (method=="CPP") {
-    theta<-squared_solution(X,matrix(y))
-  } else if (method=="SGD") {
-    # Stochastic gradient descent
-  }else if (method=="CG") {
+    theta<-squared_solution(X,matrix(Y))
+  } else if (method=="CG") {
     # Conjugate gradient method
     theta <- rep(0,ncol(X))
-    theta <- matrix(optim(theta,fn=objective,gr=gradient,X=X,y=y,method="CG")$par)
+    theta <- matrix(optim(theta,fn=objective,gr=gradient,X=X,y=Y,method="CG")$par)
   } else if (method=="Newton") {
     
-    returnfunction<-function(w,X,y) {
-      val<-objective(w,X,y)
-      attr(val,"gradient")<-gradient(w,X,y)
-      attr(val,"hessian")<-hessian(w,X,y)
+    returnfunction<-function(w,X,Y) {
+      val<-objective(w,X,Y)
+      attr(val,"gradient")<-gradient(w,X,Y)
+      attr(val,"hessian")<-hessian(w,X,Y)
       return(val)
     }
     theta <- rep(0,ncol(X))
-    theta<-matrix(nlm(returnfunction,p=theta, X=X,y=y,iterlim=1000)$estimate)
+    theta<-matrix(nlm(returnfunction,p=theta, X=X,Y=Y,iterlim=1000)$estimate)
   } else {
     stop("Unknown method")
   }
@@ -110,9 +101,7 @@ LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALS
       scaling=scaling,
       theta=theta,
       modelform=modelform,
-      intercept=intercept,
-      kernel=kernel,
-      Xtrain=Xtrain
+      intercept=intercept
       )
 }
 
@@ -120,24 +109,25 @@ LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALS
 #' @aliases loss,LeastSquaresClassifier-method
 #' @export
 setMethod("loss", signature(object="LeastSquaresClassifier"), function(object, newdata, y=NULL,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept)
-  X<-ModelVariables$X
-  #y<-ModelVariables$y
-  warning("TODO: how to mitigate loss being counted twice?")
-  y <- model.matrix(~y-1,data.frame(y))
-  if (is.null(y)) { stop("No labels supplied.")}
-  return(((X %*% object@theta - y[,1])^2))
+  ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
+  X <- ModelVariables$X
+  Y <- ModelVariables$Y
+
+  if (is.null(Y)) { stop("No labels supplied.")}
+  Y <- sweep(Y,2,object@y_scale,"-")
+  
+  return(rowSums((X %*% object@theta - Y)^2))
 })
 
 #' @rdname predict-methods
 #' @aliases predict,LeastSquaresClassifier-method
 setMethod("predict", signature(object="LeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept)
-  X<-ModelVariables$X
+  ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
+  X <- ModelVariables$X
   
   theta <- matrix(object@theta, nrow=ncol(X))
   expscore <- X %*% theta
-
+  expscore <- sweep(expscore,2,object@y_scale,"+")
   # If we need to return classes
   if (ncol(theta)>1) {
     classes <- factor(apply(expscore,1,which.max),levels=1:length(object@classnames), labels=object@classnames)
@@ -150,6 +140,17 @@ setMethod("predict", signature(object="LeastSquaresClassifier"), function(object
   } else {
     return(classes)
   }
+})
+
+setMethod("decisionvalues", signature(object="LeastSquaresClassifier"), function(object, newdata) {
+  ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
+  X <- ModelVariables$X
+  
+  theta <- matrix(object@theta, nrow=ncol(X))
+  expscore <- X %*% theta
+  expscore <- sweep(expscore,2,object@y_scale,"+")
+  
+  return(expscore)
 })
 
 #' @rdname plot-methods

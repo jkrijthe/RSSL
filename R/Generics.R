@@ -54,6 +54,11 @@ setGeneric("predict",function(object, ...) {standardGeneric("predict")})
 #' @rdname posterior-methods
 setGeneric("posterior",function(object, ...) {standardGeneric("posterior")})
 
+#' @export
+setGeneric("decisionvalues",function(object, newdata)
+  standardGeneric("decisionvalues")
+)
+
 #' Plot function
 #' 
 #' @param x Classifier or Regression object
