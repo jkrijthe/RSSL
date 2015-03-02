@@ -210,7 +210,7 @@ CrossValidationSSL<-function(X,y,classifiers,n_labeled=100,measures=c("predict",
 CrossValidationSSL2<-function(X,y,classifiers,n_labeled=100,groups=NULL,k=2,repeats=1,n_min=1,verbose=FALSE,dataset_name="Unknown Dataset") {
   N<-nrow(X)
   results<-array(NA, dim=c(repeats, length(classifiers), 4))
-  dimnames(results)<-list(1:repeats,lapply(classifiers, function(c) {as.character(body(c))[[2]]}),c("Error", "Avg. Loss Test", "Avg. Loss Train","Avg. Loss Trans"))
+  dimnames(results)<-list(1:repeats,names(classifiers),c("Error", "Avg. Loss Test", "Avg. Loss Train","Avg. Loss Trans"))
 
   if (verbose) cat(dataset_name,"\n")
   if (verbose) cat("Number of features:", ncol(X), "\n")
