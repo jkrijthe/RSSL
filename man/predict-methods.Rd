@@ -2,6 +2,7 @@
 % Please edit documentation in R/Generics.R, R/KernelLeastSquaresClassifier.R, R/LeastSquaresClassifier.R, R/LinearSVM.R, R/LogisticLossClassifier.R, R/LogisticRegression.R, R/NormalBasedClassifier.R, R/SVM.R, R/SelfLearning.R, R/USMLeastSquaresClassifier.R
 \docType{methods}
 \name{predict}
+\alias{decisionvalues,SVM-method}
 \alias{predict}
 \alias{predict,KernelLeastSquaresClassifier-method}
 \alias{predict,LeastSquaresClassifier-method}
@@ -9,6 +10,7 @@
 \alias{predict,LogisticLossClassifier-method}
 \alias{predict,LogisticRegression-method}
 \alias{predict,NormalBasedClassifier-method}
+\alias{predict,SVM-method}
 \alias{predict,SelfLearning-method}
 \alias{predict,USMLeastSquaresClassifier-method}
 \title{Predictions of a classifier or regression function}
@@ -29,7 +31,9 @@ predict(object, ...)
 
 \S4method{predict}{NormalBasedClassifier}(object, newdata, probs = FALSE)
 
-\S4method{predict}{LinearSVM}(object, newdata)
+\S4method{decisionvalues}{SVM}(object, newdata)
+
+\S4method{predict}{SVM}(object, newdata)
 
 \S4method{predict}{SelfLearning}(object, newdata, ...)
 
@@ -51,6 +55,8 @@ Predictions of a classifier or regression function
 Predict class of new observations using a LinearSVM
 
 Log likelihood on the training set
+
+Predict class of new observations using a LinearSVM
 
 Predict class of new observations using a LinearSVM
 

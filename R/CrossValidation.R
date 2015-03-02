@@ -17,7 +17,7 @@ CrossValidation<-function(X,y,classifiers,measures=c("predict","losstest"),group
   ## Repeats
   for (i in 1:repeats) {
     if (verbose) cat("\nRepeat: ",i,"/",repeats," ") # Print the current repeat
-    sample.classguarantee<-strata(data.frame(strata=y),"strata",c(k,k),method="srswor")$ID_unit
+    sample.classguarantee <- sample_k_per_level(y,k)
     sample.random <- sample((1:N)[-sample.classguarantee])
     
     N_fold<-ceiling(N/k) # Number of objects per fold
@@ -78,7 +78,7 @@ CrossValidationTransductive<-function(X,y,classifiers,measures=c("predict","loss
   ## Repeats
   for (i in 1:repeats) {
     if (verbose) cat("\nRepeat: ",i,"/",repeats," ") # Print the current repeat
-    sample.classguarantee<-strata(data.frame(strata=y),"strata",c(k,k),method="srswor")$ID_unit
+    sample.classguarantee <- sample_k_per_level(y,k)
     sample.random <- sample((1:N)[-sample.classguarantee])
     
     N_fold<-ceiling(N/k) # Number of objects per fold
@@ -150,7 +150,7 @@ CrossValidationSSL<-function(X,y,classifiers,n_labeled=100,measures=c("predict",
   if (verbose) pb<-txtProgressBar(0,repeats*k)
   for (i in 1:repeats) {
 
-    sample.classguarantee<-strata(data.frame(strata=y),"strata",c(k,k),method="srswor")$ID_unit
+    sample.classguarantee<-sample_k_per_level(y,k)
     sample.random <- sample((1:N)[-sample.classguarantee])    
 
     ##Folds
@@ -222,7 +222,7 @@ CrossValidationSSL2<-function(X,y,classifiers,n_labeled=100,groups=NULL,k=2,repe
     results[i,,2] <- 0 # Loss on test set
     results[i,,3] <- 0 # Loss on training set
     results[i,,4] <- 0 # Loss on training set
-    sample.classguarantee<-strata(data.frame(strata=y),"strata",c(n_min*k,n_min*k),method="srswor")$ID_unit
+    sample.classguarantee<-sample_k_per_level(y, n_min*k)
     sample.random <- sample((1:N)[-sample.classguarantee])
     
     N_fold<-floor(N/k) # Number of objects per fold
@@ -246,7 +246,7 @@ CrossValidationSSL2<-function(X,y,classifiers,n_labeled=100,groups=NULL,k=2,repe
       X_train<-X[idx_train,]
       y_train<-y[idx_train]
 
-      sample.labeled.classguarantee<-strata(data.frame(strata=y_train),"strata",c(n_min,n_min),method="srswor")$ID_unit
+      sample.labeled.classguarantee<-sample_k_per_level(y_train,n_min)
       sample.labeled.random <- sample((1:nrow(X_train))[-sample.labeled.classguarantee],n_labeled-2*n_min)
       idx_train_labeled<-c(sample.labeled.classguarantee, sample.labeled.random)
 

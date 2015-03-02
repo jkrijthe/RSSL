@@ -1,14 +1,32 @@
-RSSL: TransductiveSVM implementation
+LaplacianSVM classifier
+LinearSVM BGD implementation
+Regularized ICLS
+KernelLS, KernelICLS
+Debug EM en SelfLearning
+Multiclass Kernel ICLS
+TSVM debuggen
+S4VM implementeren
+Entropy Regularization (derivative check and param=0 geeft juiste antwoord)
+IWLeastSquaresClassifier
+Describe testdata
+ImputedLeastSquaresClassifier
+
+TransductiveSVM implementation
 RSSL: TSVMlight interface
 RSSL: TSVMDCA implementation
 RSSL: TSVMBundle implementation
+Entropy Regularization
 RSSL: CoTraining implementation
 RSSL: HybridMultiConditional implementation
 RSSL: HybridCoupledPriors implementation
-RSSL: ClusterThenLabel
-RSSL: Regression
-RSSL: DensityAdaptive
-RSSL: DensitySensitive
+UniverSVM 1.22
+SVMlin
+SemiL
+Manifold regularization
+low Density Separation
+RSSL: EM: loss must be lower with parameter update. Losslower in every step
+RSSL: SL check loss also decreases here
+
 RSSL: GRFHarmonicFunction
 RSSL: S3VM
 RSSL: S4VM
@@ -17,9 +35,11 @@ RSSL: MCLinearDiscriminant
 RSSL: ICLinearDscriminant
 MCNM
 ICNM
-ICQDA
-MCQDA?
-RSSL: ImputedLeastSquaresClassifier
+
+RSSL: Regression
+RSSL: DensityAdaptive
+RSSL: DensitySensitive
+
 RSSL: Yarowsky cautious algorithm
 
 There is a problem using ginv when using PCs as inputs: the problems seem to be rescaled such that the bias term is no longer correct

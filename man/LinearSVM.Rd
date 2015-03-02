@@ -4,7 +4,7 @@
 \alias{LinearSVM}
 \title{Linear SVM Classifier}
 \usage{
-LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = TRUE)
+LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09)
 }
 \arguments{
 \item{X}{Design matrix}

@@ -4,8 +4,8 @@
 \alias{SVM}
 \title{SVM Classifier}
 \usage{
-SVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = TRUE,
-  kernel = NULL, ...)
+SVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = FALSE,
+  kernel = NULL, eps = 1e-09)
 }
 \arguments{
 \item{X}{Design matrix}
@@ -18,10 +18,10 @@ SVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = TRUE,
 
 \item{scale}{Whether a z-transform should be applied (default: TRUE)}
 
-\item{intercept}{Whether an intercept should be added (default: TRUE)}
+\item{intercept}{Whether an intercept should be added (default: FALSE)}
 }
 \value{
-S4 object of type LinearSVM
+S4 object of type SVM
 }
 \description{
 SVM Classifier

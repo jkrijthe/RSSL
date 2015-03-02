@@ -9,6 +9,7 @@
 \alias{loss,LogisticLossClassifier-method}
 \alias{loss,LogisticRegression-method}
 \alias{loss,NormalBasedClassifier-method}
+\alias{loss,SVM-method}
 \alias{loss,SelfLearning-method}
 \alias{loss,USMLeastSquaresClassifier-method}
 \title{Loss of a classifier or regression function}
@@ -27,7 +28,7 @@ loss(object, ...)
 
 \S4method{loss}{NormalBasedClassifier}(object, newdata, y = NULL)
 
-\S4method{loss}{LinearSVM}(object, newdata, y = NULL)
+\S4method{loss}{SVM}(object, newdata, y = NULL)
 
 \S4method{loss}{SelfLearning}(object, newdata, y = NULL, ...)
 
@@ -52,7 +53,7 @@ Hinge loss on new objects of a trained LinearSVM
 
 Return the MINUS log likelihood on the given dataset
 
-Hinge loss on new objects of a trained LinearSVM
+Hinge loss on new objects of a trained SVM
 
 Loss method for SelfLearning Classifier
 The loss method delegates prediction to the specific model object

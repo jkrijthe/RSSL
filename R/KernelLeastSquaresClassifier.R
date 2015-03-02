@@ -13,6 +13,7 @@ setClass("KernelLeastSquaresClassifier",
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param lambda Regularization parameter of the l2 penalty in regularized least squares
+#' @param gamma numeric; Parameter for the Laplacian term in Laplacian RLSC
 #' @param intercept TRUE if an intercept should be added to the model
 #' @param x_center TRUE, whether the dependent variables (features) should be centered
 #' @param scale If TRUE, apply a z-transform to the design matrix X before running the regression
@@ -63,7 +64,7 @@ setClass("KernelLeastSquaresClassifier",
 #'   geom_tile(aes(fill = factor(maxind,labels=levels(tvec)))) +
 #'   geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=4,alpha=0.5)
 #' @export
-KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
+KernelLeastSquaresClassifier <- function(X, y, lambda=0, gamma=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
   
   stopifnot(require(kernlab))
   
@@ -92,9 +93,9 @@ KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=vanilladot(), x_
   Y <- sweep(Y,2,y_scale) # Possibly center the numeric Y labels
   
   if (inherits(kernel,"kernel")) {
-    Xtrain <- X
-    K <- kernelMatrix(kernel,X,X)
-    theta <- solve(K+lambda*diag(n), Y)
+      Xtrain <- X
+      K <- kernelMatrix(kernel,X,X)
+      theta <- solve(K+lambda*diag(n)*n, Y)
   } else {
     stop("No appropriate kernel function from kernlab supplied. See, for instance, the help of vanilladot()")
   }

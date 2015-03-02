@@ -23,7 +23,7 @@ setClass("LeastSquaresClassifier",
 #' \item{modelform}{formula object of the model used in regression}
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 #' @export
-LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, method="inverse",y_scale=FALSE) {
+LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, method="inverse", y_scale=FALSE) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)

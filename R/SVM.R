@@ -1,6 +1,6 @@
 #' @include Classifier.R
 setClass("SVM",
-         representation(scaling="ANY",alpha="ANY",bias="ANY",kernel="ANY",Xtrain="ANY"),
+         representation(scaling="ANY",alpha="ANY",bias="ANY",kernel="ANY",Xtrain="ANY",intercept="ANY",time="ANY"),
          prototype(name="Support Vector Machine"),
          contains="Classifier")
 
@@ -11,13 +11,13 @@ setClass("SVM",
 #' @param C Cost variable
 #' @param method Estimation procedure c("Dual","Primal","BGD","SGD","Pegasos")
 #' @param scale Whether a z-transform should be applied (default: TRUE)
-#' @param intercept Whether an intercept should be added (default: TRUE)
-#' @return S4 object of type LinearSVM
+#' @param intercept Whether an intercept should be added (default: FALSE)
+#' @return S4 object of type SVM
 #' @export
-SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=TRUE,kernel=NULL, ...) {
+SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,eps=1e-9) {
   
   ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept)
+  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=TRUE)
   X<-ModelVariables$X
   y<-ModelVariables$Y
   scaling<-ModelVariables$scaling
@@ -26,16 +26,12 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=TRUE,kernel=NULL, ..
   
   # Check for two classes and transform to {-1,1}
   if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
-  y<-((y-1)*2)-1
-  
-  eps<-0.1
+  y<-as.numeric((y*2)-1)
+
   ## Start Implementation
   time.begin<-Sys.time()
   if (method=="Dual") {
     if (!require(quadprog)) {stop("quadprog package is required to solve the dual formulation of LinearSVM")}
-    
-    
-    if (intercept) X<-X[,2:ncol(X)]
     
     if (!is.null(kernel)) {
       require(kernlab)
@@ -44,7 +40,8 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=TRUE,kernel=NULL, ..
         K<-kernelMatrix(kernel,X,X)
       }
     } else {
-      K<-X %*% t(X)
+      Xtrain <- X
+      K <- X %*% t(X)
     }
     
     Dmat <- (diag(y) %*% K %*% diag(y)) + eps*diag(nrow(X)) #Add small constant to diagonal to ensure numerical PSD
@@ -53,11 +50,11 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=TRUE,kernel=NULL, ..
     Amat <- t(rbind(y,Amat,-Amat))
     bvec <- c(rep(0,nrow(X)+1),rep(-C,nrow(X)))
     
-    opt_result<-solve.QP(Dmat, dvec, Amat, bvec, meq=1)
-    alpha<-opt_result$solution
-    SVs<-alpha>0.001
-    
-    bias <- -mean(K[SVs,] %*% alpha - y[SVs])
+    opt_result <- solve.QP(Dmat, dvec, Amat, bvec, meq=1)
+    alpha <- opt_result$solution*y
+    SVs <- (abs(alpha) > 0.00001) & (abs(alpha) < (C-0.00001))
+
+    bias <- -median(K[SVs,] %*% alpha - y[SVs])
     #TODO: check this: should we exclude objects not on the margin (alpha=1) in calculating b?
        
   }  else{
@@ -65,7 +62,6 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=TRUE,kernel=NULL, ..
   }
   
   time.passed<-Sys.time()-time.begin
-  print(time.passed)
   
   return(new("SVM",
              alpha=alpha,
@@ -74,80 +70,52 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=TRUE,kernel=NULL, ..
              kernel=kernel,
              scaling=scaling,
              modelform=modelform,
-             classnames=classnames))
+             classnames=classnames,
+             intercept=intercept,
+             time=time.passed))
 }
 
-
-
-# LinearSVM here
-# 
-# else if (method=="SGD") {
-#   opt_func <- function(w, X, y) {
-#     n_l<-nrow(X)
-#     d <- 1 - y * (X %*% w)
-#     l<-sum(d[d>0])+lambda * w %*% w
-#     #print(l)
-#     return(l)
-#   }
-#   
-#   
-#   opt_grad <- function(theta, X,y) {
-#     
-#     theta <- matrix(theta,nrow=ncol(X))
-#     
-#     # Two-class
-#     #t(y-(1-1/(1+exp(X %*% theta)))) %*% X
-#     
-#     # Multi-class
-#     expscore <- cbind(rep(0,nrow(X)), X %*% theta) # Numerators of the probability estimates    
-#     
-#     for (c in 2:length(classnames)) {
-#       theta[,c-1] <- matrix(colSums(X[y==c,,drop=FALSE]), ncol(X),1) - (t(X) %*% (exp(expscore[,c]) / rowSums(exp(expscore))))
-#     }
-#     as.vector(theta)
-#   }
-#   
-#   
-#   opt_result <- optim(w, opt_func, gr=NULL, X, y, method="BFGS", control=list(fnscale=1))
-#   w<-opt_result$par
-# }
-
-#' predict method for LinearSVM
+#' return decision values
 #'
 #' Predict class of new observations using a LinearSVM
 #' @rdname predict-methods
-#' @aliases predict,LinearSVM-method                                                                                             
-setMethod("predict", signature(object="LinearSVM"), function(object, newdata) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=TRUE)
-  X<-ModelVariables$X
+#' @aliases predict,LinearSVM-method
+setMethod("decisionvalues", signature(object="SVM"), function(object, newdata) {
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
+  X <- ModelVariables$X
   
-  w <- matrix(object@w,nrow=ncol(X))
+  if (!is.null(object@kernel)) {
+    output <- object@alpha %*% kernelMatrix(object@kernel,object@Xtrain,X) + object@bias
+  } else {
+    output <- object@alpha %*% object@Xtrain %*% t(X) + object@bias
+  }
   
-  result<-factor(as.numeric(X %*% w>0),levels=0:1)
-  levels(result)<-object@classnames
-  return(result)
+  return(as.numeric(output))
 })
 
-#' Loss method for LinearSVM
+#' prediction for SVM
 #'
-#' Hinge loss on new objects of a trained LinearSVM
-#' @rdname loss-methods
-#' @aliases loss,LinearSVM-method                        
-setMethod("loss", signature(object="LinearSVM"), function(object, newdata, y=NULL) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,object@scaling,intercept=TRUE)
-  X<-ModelVariables$X
-  y<-ModelVariables$y
-  
-  w <- matrix(object@w,nrow=ncol(X))
-  
-  y<-y*2-3
-  d <- 1 - y * (X %*% w)
-  l<-sum(d[d>0])
-  return(l)
+#' Predict class of new observations using a LinearSVM
+#' @rdname predict-methods
+#' @aliases predict,LinearSVM-method
+setMethod("predict", signature(object="SVM"), function(object, newdata) {
+  output <- decisionvalues(object,newdata)
+  factor(as.numeric(output>0),levels=0:1,labels=object@classnames)
 })
 
-#' @rdname boundaryplot-methods
-#' @aliases boundaryplot,LinearSVM-method  
-setMethod("boundaryplot", signature(object="LinearSVM"), function(object, p) {
-  p+geom_abline(intercept = (-object@w[1]/object@w[3]), slope = (-object@w[2]/object@w[3]))
-})  
+#' Losses per object for SVM
+#'
+#' Hinge loss on new objects of a trained SVM
+#' @rdname loss-methods
+#' @aliases loss,LinearSVM-method
+setMethod("loss", signature(object="SVM"), function(object, newdata, y=NULL) {
+  ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=y,object@scaling,intercept=TRUE,classnames=object@classnames)
+  X <- ModelVariables$X
+  Y <- ModelVariables$Y
+  y <- as.numeric((Y*2)-1)
+  
+  output <- decisionvalues(object,newdata)
+  d <- 1 - y * output
+  d[d<0] <- 0
+  return(d)
+})

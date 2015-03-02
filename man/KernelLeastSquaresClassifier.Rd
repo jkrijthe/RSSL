@@ -13,6 +13,8 @@ KernelLeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FAL
 
 \item{lambda}{Regularization parameter of the l2 penalty in regularized least squares}
 
+\item{gamma}{numeric; Parameter for the Laplacian term in Laplacian RLSC}
+
 \item{x_center}{TRUE, whether the dependent variables (features) should be centered}
 
 \item{scale}{If TRUE, apply a z-transform to the design matrix X before running the regression}

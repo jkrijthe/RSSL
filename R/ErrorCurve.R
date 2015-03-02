@@ -45,7 +45,7 @@ ErrorCurve<-function(X, y, classifiers, with_replacement=FALSE, sizes=10:10:nrow
   for (i in 1:repeats) {
     if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
     
-    sample.labeled<-strata(data.frame(strata=y),"strata",c(1,1),method="srswr")$ID_unit
+    sample.labeled<- sample_k_per_level(y,1)
     if (with_replacement) {
       sample.labeled<-c(sample.labeled, sample(1:nrow(X),max(sizes)-2,replace=TRUE))
     } else {
@@ -114,9 +114,9 @@ ErrorCurveSSL<-function(X, y, classifiers, n_l, with_replacement=FALSE, sizes=2^
   for (i in 1:repeats) {
     if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
     
-    sample.labeled <- strata(data.frame(strata=y),"strata",rep(n_min,K),method="srswr")$ID_unit
+    sample.labeled <- sample_k_per_level(y,n_min)
     sample.labeled <- c(sample.labeled, sample((1:nrow(X))[-sample.labeled],n_l-(K*n_min),replace=FALSE))
-    
+
     X_l <- X[sample.labeled,,drop=FALSE]
     y_l <- y[sample.labeled]
     
@@ -194,7 +194,7 @@ ErrorCurveTransductive <- function(X, y, classifiers, n_l, with_replacement=FALS
   for (i in 1:repeats) {
     if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
     
-    sample.labeled <- strata(data.frame(strata=y),"strata",rep(n_min,K),method="srswr")$ID_unit
+    sample.labeled <- sample_k_per_level(y,n_min)
     sample.labeled <- c(sample.labeled, sample((1:nrow(X))[-sample.labeled],n_l-(K*n_min),replace=FALSE))
     
     X_l <- X[sample.labeled,,drop=FALSE]
@@ -488,4 +488,21 @@ plotErrorCurve2<-function(x,measurement=1,legendsetting="right",dataset_names=NU
   #   ) +
   
   return(h)
+}
+
+#' Sample k indices per levels from a factor 
+#' @param y factor; factor with levels
+#' @param k integer; number of indices to sample per level
+#' @return vector with indices for sample
+#' @export
+sample_k_per_level <- function(y,k) {
+  stopifnot(is.factor(y))
+  stopifnot(k>0)
+  
+  all_idx <- 1:length(y)
+  sample_idx <- c()
+  for (i in levels(y)) {
+    sample_idx <- c(sample_idx,sample(all_idx[y==i],k))
+  }
+  return(sample_idx)
 }

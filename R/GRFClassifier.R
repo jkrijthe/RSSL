@@ -9,13 +9,13 @@ setClass("GRFClassifier",
 #' @param X matrix; Design matrix for labeled data
 #' @param y factor or integer vector; Label vector
 #' @param X_u matrix; Design matrix for unlabeled data
-#' @param kernel TODO: kernel function??
-#' @param eta The influence of the external classifier
+#' @param adjacency_kernel kernlab::kernel; kernel object
+#' @param eta The influence of the external classifier (not currently used)
 #' @param y_u Labels given by external classifier
 #' @param CMN Should the Class Mass Normalization heuristic be applied? (default: TRUE)
-#'  
+#' @example tests/examples/exampleGRFClassifier.R
 #' @export
-GRFClassifier<-function(X,y,X_u,sigma=0.1,eta=0.1,CMN=TRUE,scale=FALSE,x_center=FALSE) {
+GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,CMN=TRUE,scale=FALSE,x_center=FALSE) {
   #only do evaluation if we need predictions
   #TODO: include external classifier scores
   
@@ -28,8 +28,12 @@ GRFClassifier<-function(X,y,X_u,sigma=0.1,eta=0.1,CMN=TRUE,scale=FALSE,x_center=
   Y <- mv$Y
   
   Xin <- rbind(X,X_u)
-  W <- exp(-as.matrix(dist(Xin))^2/sigma) # A possible Kernel
   
+  if (!is.null(adjacency_kernel)) {
+    W <- kernelMatrix(adjacency_kernel,Xin,Xin)
+  } else {
+    W <- exp(-as.matrix(dist(Xin))^2/sigma) # A possible Kernel
+  }
   #TODO: Learn the kernel!
   
   unlabels <- harmonic_function(W,Y)

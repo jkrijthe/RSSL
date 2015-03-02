@@ -11,7 +11,7 @@ setdatadir("~/Data")
 
 #data <- model.frame(Class~.,Generate2ClassGaussian(n=350,d=34,var = 0.8),na.action=NULL)
 #data <- model.frame(Return~.,createIonosphere())
- data <- model.frame(formula(Diagnosis ~ .),createSPECTF())
+data <- model.frame(formula(Diagnosis ~ .),createSPECTF())
 X <- data[,-1]
 y <- data[[1]]
 X<-model.matrix(~.-1,X)
@@ -19,8 +19,6 @@ X<-model.matrix(~.-1,X)
 
 #X<-X[,apply(X, 2, var, na.rm=TRUE) != 0] # Remove constant columns
 #X<-scale(X) # Pre-scale data
-
-
 
 classifiers<-list(
   "LSC"=function(X,y,X_u,y_u) { LeastSquaresClassifier(X,y,x_center=FALSE,scale=FALSE) },
