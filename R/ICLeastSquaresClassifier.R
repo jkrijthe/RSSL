@@ -18,7 +18,7 @@ setClass("ICLeastSquaresClassifier",
 #' @param scale logical; If TRUE, apply a z-transform to all observations in X and X_u before running the regression
 #' @param method Either "LBFGS" for solving using L-BFGS-B gradient descent or "QP" for a quadratic programming based solution
 #' @param projection One of "supervised", "semisupervised" or "euclidean"
-#' @param lambda3 numeric; prior on the deviation from the supervised mean y
+#' @param lambda_prior numeric; prior on the deviation from the supervised mean y
 #' @param trueprob numeric; true mean y for all data
 #' @param ... additional arguments
 #' @return S4 object of class ICLeastSquaresClassifier with the following slots:
@@ -28,8 +28,16 @@ setClass("ICLeastSquaresClassifier",
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 #' \item{optimization}{the object returned by the optim function}
 #' \item{unlabels}{the labels assigned to the unlabeled objects}
+#' @examples
+#' data(testdata)
+#' w1 <- LeastSquaresClassifier(testdata$X, testdata$y, intercept = TRUE,x_center = FALSE, scale=FALSE)@@theta
+#' w2 <- ICLeastSquaresClassifier(testdata$X, testdata$y, testdata$X_u, intercept = TRUE, x_center = FALSE, scale=FALSE)@@theta
+#' plot(testdata$X[,1],testdata$X[,2],col=factor(testdata$y),asp=1)
+#' points(testdata$X_u[,1],testdata$X_u[,2],col="darkgrey",pch=16,cex=0.5)
+#' abline((0.5-w1[1])/w1[3],-w1[2]/w1[3],lty=2)
+#' abline((0.5-w2[1])/w2[3],-w2[2]/w2[3],lty=1)
 #' @export
-ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda3=0,trueprob=NULL,eps=10e-10,y_scale=FALSE) {
+ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda_prior=0,trueprob=NULL,eps=10e-10,y_scale=FALSE) {
   
   if (!(nrow(X)==length(y))) { stop("Length of y and number of rows in X should be the same.")}
   if (!is.factor(y)) { stop("Input labels should be a factor!")}
@@ -73,7 +81,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
   ## Quadratic Programming implementation
   if (method=="QP") {
     if (projection=="supervised") {
-      dvec <- X_u %*% C %*% t(X) %*% y - G %*% t(X) %*% Y
+      dvec <- X_u %*% C %*% t(X) %*% y - G %*% t(X) %*% y
       Dmat <- G %*% t(X_u)
       Dmat <- Dmat + eps*diag(nrow(Dmat))
     } else if (projection=="semisupervised")  {
@@ -95,7 +103,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
     meq <- 0
     
     # Hard constraint on the posterior of the weight being equal to the prior of the labels
-    if (lambda3!=0) {
+    if (lambda_prior!=0) {
       if (ncol(y)>1) stop("Mean constraint not implemented for multi-class")
       Amat <- cbind(1,Amat)
       bvec <- c(mean_y*nrow(X_u),bvec)
@@ -120,13 +128,14 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
   else if (method=="LBFGS") {
     if (projection=="supervised") {
       opt_func <- function(theta) {
-        theta<-matrix(theta)
+        theta <- matrix(theta)
+        labels <- theta
         theta <- C %*% t(Xe) %*% rbind(matrix(y),theta)
         if (lambda2>0) { 
-          if (intercept) { return(mean((X %*% theta - y)^2) + lambda2 * sum(theta[2:nrow(theta),1]^2))}
-          else  { return(mean((X %*% theta - y)^2) + lambda2 * sum(theta^2)) + lambda3*(mean(theta)-mean_y)^2 }
+          if (intercept) { return(mean((X %*% theta - y)^2) + lambda2 * sum(theta[2:nrow(theta),1]^2) + lambda_prior*(mean(labels)-mean_y)^2)}
+          else  { return(mean((X %*% theta - y)^2) + lambda2 * sum(theta^2) + lambda_prior*(mean(labels)-mean_y)^2) }
         }
-        else { return(mean((X %*% theta - y)^2)) + lambda3*(mean(theta)-mean_y)^2 }
+        else { return(mean((X %*% theta - y)^2) + lambda_prior*(mean(labels)-mean_y)^2) }
       }
       
       O1 <- 2/nrow(X) * G %*% t(X) %*% y
@@ -139,16 +148,22 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       }
       
       opt_grad <- function(theta) {
-        theta<-matrix(theta)
-        reg3<-lambda3*2*(rep(sum(theta),nrow(theta))-rep(nrow(theta)*mean_y,nrow(theta)))
-        
+        theta <- matrix(theta)
+        reg3 <- lambda_prior*2*(mean(theta)-mean_y)/nrow(theta)
         if (lambda2>0) return(O1 + O2 %*% theta - O3 + O4 + O5 %*% theta + reg3)
         else return(O1 + O2 %*% theta - O3 + reg3  ) 
       }
       
       theta <- rep(0.5,nrow(X_u))
-      # Bounded optimization
-      opt_result <- optim(theta, opt_func, gr=opt_grad, method="L-BFGS-B", lower=0, upper=1, control=list(fnscale=1))
+      
+#       browser()
+#       library("numDeriv")
+#       lambda_prior<- 1
+#       grad(opt_func,c(0.1,0.9),method="simple")
+#       opt_grad(c(0.1,0.9))
+      
+        # Bounded optimization
+      opt_result <- optim(theta, opt_func, gr=opt_grad, method="L-BFGS-B", lower=0.0, upper=1.0, control=list(fnscale=1))
       theta<-opt_result$par
       
       unlabels<-theta
@@ -170,7 +185,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
           theta<-matrix(theta)
           w_semi <- matrix(C %*% t(Xe) %*% rbind(matrix(y),theta),ncol=1)
 
-          t(theta) %*% O1 %*% theta + 2 * t(theta) %*% O2 - 2 * t(theta) %*% O3
+          t(theta) %*% O1 %*% theta + 2 * t(theta) %*% O2 - 2 * t(theta) %*% O3 + lambda_prior*(mean(theta)-mean_y)^2
         }
         
         opt_grad_projection <- function(theta) {
@@ -178,8 +193,8 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
           # Check gradient
           #cbind(matrix(grad(opt_func_projection,theta),ncol=1), 
           #        2 * O1 %*% theta + 2 * O2 - 2 * O3)
-          
-          2 * O1 %*% theta + 2 * O2 - 2 * O3
+          reg3 <- lambda_prior*2*(mean(theta)-mean_y)/nrow(theta)
+          2 * O1 %*% theta + 2 * O2 - 2 * O3 + reg3
         }
 
       theta <- rep(0.5,nrow(X_u))
@@ -222,7 +237,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
             
             opt_grad_projection <- function(theta) {
               theta<-matrix(theta)
-              reg3<-lambda3*2*(rep(sum(theta),nrow(theta))-rep(nrow(theta)*mean_y,nrow(theta)))
+              reg3<-lambda_prior*2*(rep(sum(theta),nrow(theta))-rep(nrow(theta)*mean_y,nrow(theta)))
               
               # Check gradient
               # browser()
@@ -344,5 +359,3 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
 #       
 #       sol<-optim(rep(0,nrow(X_u)), fn=function(theta) { 0.5 * theta %*% Dmat %*% theta - theta %*% dvec}, gr=opt_grad, method="L-BFGS-B", lower=0, upper=1, control=list(fnscale=1))
 #       sol<-optim(rep(0,nrow(X_u)), fn=opt_func, gr=opt_grad, method="L-BFGS-B", lower=0, upper=1, control=list(fnscale=1))
-
-

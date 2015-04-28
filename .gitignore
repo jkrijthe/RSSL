@@ -5,3 +5,5 @@
 *.Rproj
 Rprof.out
 .Rproj.user
+*.so
+*.o

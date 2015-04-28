@@ -13,36 +13,36 @@ generatePerpendicular<-function(n=100) {
 # data <- generatePerpendicular(1000)
 # qplot(x=X1,y=X2,color=Class,data=data,alpha=0.2)+coord_fixed()
 
-reps <- 50
-results <- matrix(NA,reps,3)
-for (i in 1:reps) {
-  lab_data <- generatePerpendicular(1)
-  dmat <- as.matrix(lab_data[2:3])
-  tvec <- lab_data$Class
-  dmatU <- as.matrix(generatePerpendicular(500)[,2:3])
-  
-  t_mani <- ManifoldCorruptionLeastSquaresClassifier(X=dmat, y=tvec, X_u=dmatU, adjacency_kernel = rbfdot(1000000),k=150,samples=200,sigma=1000,scale=FALSE)
-  t_sup <- LeastSquaresClassifier(X=dmat,y=tvec)
-  t_reg <- LeastSquaresClassifier(X=dmat,y=tvec,lambda=10000000)
-  testset <- generatePerpendicular(10000)
-  dtest <- as.matrix(testset[,2:3])
-  ttest <- testset$Class
-  
-  results[i,1] <- mean(predict(t_sup,dtest)==ttest)
-  results[i,2] <- mean(predict(t_mani,dtest)==ttest)
-  results[i,3] <- mean(predict(t_reg,dtest)==ttest)
-}
-
-library(dplyr)
-library(magrittr)
-library(tidyr)
-p <- data.frame(results) %>%
-  set_colnames(c("Supervised","Corrupted","Regularized")) %>%
-  add_rownames %>% 
-  gather(Classifier,Error,-rowname) %>%
-  ggplot(aes(x=Classifier,y=Error,group=rowname)) +
-  geom_line(alpha=0.2)
-print(p)
+# reps <- 50
+# results <- matrix(NA,reps,3)
+# for (i in 1:reps) {
+#   lab_data <- generatePerpendicular(1)
+#   dmat <- as.matrix(lab_data[2:3])
+#   tvec <- lab_data$Class
+#   dmatU <- as.matrix(generatePerpendicular(500)[,2:3])
+#   
+#   t_mani <- ManifoldCorruptionLeastSquaresClassifier(X=dmat, y=tvec, X_u=dmatU, adjacency_kernel = rbfdot(1000000),k=150,samples=200,sigma=1000,scale=FALSE)
+#   t_sup <- LeastSquaresClassifier(X=dmat,y=tvec)
+#   t_reg <- LeastSquaresClassifier(X=dmat,y=tvec,lambda=10000000)
+#   testset <- generatePerpendicular(10000)
+#   dtest <- as.matrix(testset[,2:3])
+#   ttest <- testset$Class
+#   
+#   results[i,1] <- mean(predict(t_sup,dtest)==ttest)
+#   results[i,2] <- mean(predict(t_mani,dtest)==ttest)
+#   results[i,3] <- mean(predict(t_reg,dtest)==ttest)
+# }
+# 
+# library(dplyr)
+# library(magrittr)
+# library(tidyr)
+# p <- data.frame(results) %>%
+#   set_colnames(c("Supervised","Corrupted","Regularized")) %>%
+#   add_rownames %>% 
+#   gather(Classifier,Error,-rowname) %>%
+#   ggplot(aes(x=Classifier,y=Error,group=rowname)) +
+#   geom_line(alpha=0.2)
+# print(p)
 # Findings:
 # sigma seems to have little effect
 

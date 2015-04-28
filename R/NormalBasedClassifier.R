@@ -35,6 +35,7 @@ setMethod("predict", signature(object="NormalBasedClassifier"), function(object,
 setMethod("loss", signature(object="NormalBasedClassifier"), function(object, newdata, y=NULL) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,object@scaling,intercept=FALSE,classnames=object@classnames)
   X<-ModelVariables$X
+  y<-ModelVariables$y
   if (is.null(y)) { stop("No labels supplied.")}
   Y <- model.matrix(~as.factor(y)-1)
   

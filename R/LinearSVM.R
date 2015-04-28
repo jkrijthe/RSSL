@@ -3,7 +3,7 @@ NULL
 
 #' LinearSVM Class  
 setClass("LinearSVM",
-         representation(w="ANY",scaling="ANY",time="ANY"),
+         representation(w="ANY",scaling="ANY",time="ANY",opt_result="ANY"),
          prototype(name="Support Vector Machine"),
          contains="Classifier")
 
@@ -28,7 +28,7 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
   modelform <- ModelVariables$modelform
   Y <- ModelVariables$Y
   intercept <- TRUE
-  
+  opt_result <- NULL 
   y <- as.numeric((Y*2)-1)
 
   ## Start Implementation
@@ -65,54 +65,12 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
     w<-opt_result$solution[1:ncol(X)]
     
   } else if (method=="BGD") {
-    stop("Does not always converge to the correct value")
     w <- rep(0.0, ncol(X)) #Initial parameter values
     
-    opt_result <- optim(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C, method="CG", control=list(fnscale=1, maxit=1000, trace=0))
-    print(opt_result$convergence)
-    w<-opt_result$par
+    opt_result <- optimx(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C, method=c("BFGS"), control=list(fnscale=1, maxit=10000, trace=0,starttests=FALSE,reltol=1e-16,type=3,follow.on=TRUE,dowarn=FALSE))
+  
+    w<-coef(opt_result)
 
-  } else if (method=="SGD") {
-    stop("SGD has not been implemented yet")
-    w <- rep(0.0,ncol(X)) #Initial parameter values
-    
-    converged<-FALSE
-    i<-1
-    while (!converged) {
-      iv<-((i-1)%%nrow(X))+1 # Number in sample
-      alpha<-1/i
-      
-      w<-w-alpha*sgd_grad(w,X[iv,],y[iv])
-      
-      if (i==100000) {
-        converged<-TRUE
-      }
-      
-      i<-i+1
-    }
-  } else if (method=="Pegasos") {
-    stop("Implementation has not been implemented yet")
-    # TODO: fix bias term
-    
-    w <- rep(0.0,ncol(X)) #Initial parameter values
-    
-    lambda<-1/(nrow(X)*C) # Convert C to lambda
-    k<-nrow(X)
-    
-    for (i in 1:1000) {
-      
-      d <- 1 - y * (X %*% w)
-      
-      alpha<-1/(lambda*i)
-      if (!any(d>0)){break}
-      w <- (1-lambda*alpha)*w + alpha/k * colSums(diag(y[d>0]) %*% X[d>0,])
-      w<-matrix(w)
-      w <- min(1, (1/sqrt(lambda))/norm(w,"F"))*w# Project it back
-      w<-matrix(w)
-    }
-    print(i)
-    
- 
   } else {
     stop("Unknown optimization method.")
   }
@@ -124,7 +82,8 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
              scaling=scaling,
              modelform=modelform,
              classnames=classnames,
-             time=time.passed))
+             time=time.passed,
+             opt_result=opt_result))
 }
 
 #' decisionvalues for LinearSVM
@@ -175,7 +134,7 @@ setMethod("loss", signature(object="LinearSVM"), function(object, newdata, y=NUL
 svm_opt_func <- function(w, X, y, C) {
   d <- 1 - y * (X %*% w)
   l <- C * sum(d[d>0]) +  w[-1] %*% w[-1]
-  return(l)
+  return(as.numeric(l))
 }
 
 svm_opt_grad <- function(w, X, y, C) {
@@ -188,3 +147,4 @@ svm_opt_grad <- function(w, X, y, C) {
   }
   return(grad)
 }
+

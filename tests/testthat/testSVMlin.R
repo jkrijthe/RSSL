@@ -1,18 +1,19 @@
-context("TSVM Universvm classifier")
+context("SVMlin")
 
 # Simple dataset used in the tests
 data(testdata)
-modelform <- testdata_formula
-classname<-all.vars(modelform)[1] 
-D <- testdata_train
-D_test <- testdata_test
-X <- testdata_X
-X_u <- testdata_X_u
-y <- testdata_y
-X_test <- testdata_X_test
-y_test <- testdata_y_test
+# modelform <- testdata$modelform
+# classname<-all.vars(modelform)[1] 
+# D <- testdata$D
+# D_test <- testdata$D_test
+# X <- testdata$X
+# X_u <- testdata$X_u
+# y <- testdata$y
+# X_test <- testdata$X_test
+# y_test <- testdata$y_test
 
-# test_that("Reject incorrect inputs",{})
+test_that("Reject incorrect inputs", FALSE)
+test_that("Reject incorrect inputs", FALSE)
 # 
 # test_that("Formula and matrix formulation give same results",{
 #   g_matrix <- ICLeastSquaresClassifier(X,factor(y),X_u)
@@ -32,15 +33,16 @@ y_test <- testdata_y_test
 # cat("Classifier: ICLeastSquaresClassifier\n")
 # 
 # #Test Different input schemes
-g<-SVMlin(X,y,X_u,binary_path="~/Dropbox/Code/svmlin/",temp_path="/Volumes/Experiments/")
-g_2<-SVMlin(X,y,X_u,binary_path="~/Dropbox/Code/svmlin/",temp_path="/Volumes/Experiments/",type=1)
+# g<-SVMlin(X,y,X_u,binary_path="~/Dropbox/Code/svmlin/",temp_path="/Volumes/Experiments/")
+# g_2<-SVMlin(X,y,X_u,binary_path="~/Dropbox/Code/svmlin/",temp_path="/Volumes/Experiments/",type=1)
+# 
+# cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
+# cat("Loss: ",loss(g, X_test, y_test))
+# 
+# 
+# cat("Error:  ",1-mean(predict(g_2,X_test)==y_test),"\n")
+# cat("Loss: ",loss(g_2, X_test, y_test))
 
-cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
-cat("Loss: ",loss(g, X_test, y_test))
-
-
-cat("Error:  ",1-mean(predict(g_2,X_test)==y_test),"\n")
-cat("Loss: ",loss(g_2, X_test, y_test))
 # cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
 # cat("Loss:  ",loss(g, X_test, y_test),"\n")
 # 

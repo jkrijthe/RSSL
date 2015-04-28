@@ -6,6 +6,9 @@
 #'
 #' @param n number of observations to generate
 #' @param expected TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
+#' @examples
+#' D <- GenerateSlicedCookie(1000,expected=FALSE)
+#' clplot(as.matrix(D[,1:2]),factor(D$y))
 #' @return A data.frame with n objects from the sliced cookie example
 #' @export
 GenerateSlicedCookie<-function(n=100, expected=FALSE, gap=1) {
@@ -43,6 +46,9 @@ generateTwoCircles <- function(n=100, noise_var=0.2) {
 #' @param var numeric; size of the variance parameter
 #' @param expected logical; whether the decision boundary should be the expected or perpendicular
 #' 
+#' @examples
+#' D <- Generate2ClassGaussian(1000,expected=FALSE)
+#' clplot(as.matrix(D[,1:2]),factor(D$y))
 #' @export
 Generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
   X<-rbind(mvrnorm(n/2,rep(-1,d),diag(rep(var,d))),mvrnorm(n/2,rep(1,d),diag(rep(var,d))))
@@ -54,20 +60,16 @@ Generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
   return(data.frame(X,Class=factor(y)))
 }
 
-# D<-GenerateSlicedCookie(1000,expected=FALSE)
-# clplot(as.matrix(D[,1:2]),factor(D$y))
-#
-
 #' Generate Four Clusters dataset
 #'
 #' Generate a four clusters dataset
 #'
-#' @usage GenerateFourClusters(n=100,distance=6,expected=FALSE)
-#'
 #' @param n number of observations to generate
 #' @param distance Distance between clusters (default: 6)
 #' @param expected TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
-#'
+#' @examples
+#' D <- GenerateFourClusters(1000,distance=6,expected=TRUE)
+#' clplot(as.matrix(D[,1:2]),factor(D$y))
 #' @export
 GenerateFourClusters<-function(n=100,distance=6,expected=FALSE) {
   
@@ -82,20 +84,6 @@ GenerateFourClusters<-function(n=100,distance=6,expected=FALSE) {
   else { y[X[,1]>-X[,2]]<-1 }
   return(data.frame(X,Class=factor(y)))
 }
-# D<-GenerateFourClusters(1000,distance=6,expected=TRUE)
-# clplot(as.matrix(D[,1:2]),factor(D$y))
-# 
-# GenerateTwoGaussians<-function(n,distance,expected=FALSE) {
-#   Sigma<-matrix(c(2,0,0,2),2,2)
-#   X<-rbind(mvrnorm(n,c(-distance,0),Sigma),
-#            mvrnorm(n,c(distance,0),Sigma))
-#   y<-rep(-1,2*n)
-#   if (expected) { y[X[,1]<0]<-1 }
-#   else { y[X[,2]<0]<-1 }
-#   return(data.frame(X,y))
-# }
-# D<-GenerateTwoGaussians(1000,distance=6,expected=FALSE)
-# clplot(as.matrix(D[,1:2]),factor(D$y))
 
 #' Plot 2D classification problem with missing labels
 #'
@@ -121,31 +109,3 @@ clplot<-function(X,y) {
   p<-p+ylab(colnames(X)[2])
   return (p)
 }
-# 
-# SampleDatasetSSL<-function(model,D,p){
-#   classname<-all.vars(model)[1]
-#   n<-nrow(D)
-#   idx<-sample(1:n,floor(n*p))
-#   D[idx,classname]<-rep(NA,floor(n*p))
-#   return(D)
-# }
-# 
-# D<-GenerateSlicedCookie(1000)
-# 
-# Dssl<-SampleDatasetSSL(formula(y~.),D,0.99)
-# 
-# g<-SGDSVM(formula(y~.),Dssl)
-# g_sl<-LogisticRegression(formula(y~.),Dssl)
-# g_ssl<-EntropyRegularizedLogisticRegression(formula(y~.),Dssl,lambda2=10)
-# 
-# g_sl<-LeastSquaresClassifier(formula(y~.),Dssl)
-# g_ssl<-ICLeastSquaresClassifier(formula(y~.),Dssl)
-# 
-# p<-clplot(as.matrix(Dssl[,1:2]),factor(Dssl$y))
-# p
-# p<-boundaryplot(g_sl,p)
-# p
-# p<-boundaryplot(g_ssl,p)
-# p
-# p<-boundaryplot(g,p)
-# p

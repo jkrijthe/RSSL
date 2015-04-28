@@ -1,6 +1,5 @@
 context("Laplacian SVM")
 
-library(RSSL)
 library(ggplot2)
 library(kernlab)
 library("gridExtra")
@@ -14,7 +13,7 @@ t_svm@bias
 
 library("createdatasets")
 
-testdata <- generateCrescentMoon(1000,sigma=0.3)
+testdata <- generateCrescentMoon(100,sigma=0.3)
 testdata[-sample(1:nrow(testdata),10),]$Class <- NA
 tvec<-na.omit(testdata$Class)
 dmatU <- as.matrix(testdata[is.na(testdata$Class),2:3])
@@ -50,4 +49,4 @@ p_lapsvm <- ggplot(plotframe, aes(x=x,y=y)) +
 
 grid.arrange(p_svm, p_lapsvm, ncol=2)
 
-test_that("LaplacianSVM is the same as SVM when manifold term has weight 0",TRUE)
+test_that("LaplacianSVM is the same as SVM when manifold term has weight 0", FALSE)

@@ -9,7 +9,7 @@ test_that("Kernel and Linear give same result: 2 class", {
   g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,kernel=vanilladot(),lambda=0.000001,scale = TRUE)
   g_linear<-LeastSquaresClassifier(dmat[,1:2],tvec,intercept=TRUE)
   expect_equal(predict(g_kernel,dmat[,1:2]),  predict(g_linear,dmat[,1:2]))
-  expect_equal(loss(g_kernel,dmat[,1:2],tvec),  loss(g_linear,dmat[,1:2],tvec))
+  expect_equal(loss(g_kernel,dmat[,1:2],tvec),  loss(g_linear,dmat[,1:2],tvec),tolerance =10e-6)
 })
 
 test_that("Kernel and Linear give same result: 3 class", {
@@ -21,7 +21,7 @@ test_that("Kernel and Linear give same result: 3 class", {
   g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,kernel=vanilladot(),lambda=0.000001,scale = TRUE)
   g_linear<-LeastSquaresClassifier(dmat[,1:2],tvec,intercept=TRUE)
   expect_equal(predict(g_kernel,dmat[,1:2]),  predict(g_linear,dmat[,1:2]))
-  expect_equal(loss(g_kernel,dmat[,1:2],tvec),  loss(g_linear,dmat[,1:2],tvec))
+  expect_equal(loss(g_kernel,dmat[,1:2],tvec),  loss(g_linear,dmat[,1:2],tvec),tolerance =10e-6)
 })
 
  

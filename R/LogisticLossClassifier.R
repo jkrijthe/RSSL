@@ -27,13 +27,13 @@ LogisticLossClassifier <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, 
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
   X<-ModelVariables$X
   y<-ModelVariables$y
+  Y<-ModelVariables$Y
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
   
   if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
-  
-  y <- (y-1.5)*2
+  y <- (Y-1.5)*2
   
   opt_func <- function(w, X, y) {
     

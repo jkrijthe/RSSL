@@ -52,11 +52,11 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,ep
     
     opt_result <- solve.QP(Dmat, dvec, Amat, bvec, meq=1)
     alpha <- opt_result$solution*y
-    SVs <- (abs(alpha) > 0.00001) & (abs(alpha) < (C-0.00001))
+    SVs <- (abs(alpha) > 0.001) & (abs(alpha) < (C-0.001))
 
     bias <- -median(K[SVs,] %*% alpha - y[SVs])
     #TODO: check this: should we exclude objects not on the margin (alpha=1) in calculating b?
-       
+    #print(K[SVs,] %*% alpha - y[SVs])   
   }  else{
     stop("Unknown optimization method.")
   }

@@ -1,7 +1,7 @@
 #' @include Classifier.R
 setClass("TSVMcccp", 
-         representation(),
-         prototype(name="Transductive Support Vector Machine training using CCCP"), 
+         slots=c(alpha="ANY",b="ANY",K="ANY", beta="ANY"),
+         prototype=list(name="Transductive Support Vector Machine training using CCCP"), 
          contains="Classifier")
 
 #' @title CCCP Transductive SVM classifier
@@ -14,6 +14,7 @@ setClass("TSVMcccp",
 #' @param fracpos numeric; fraction of test points to assign to the first class
 #' @param intercept TRUE if an intercept should be added to the model
 #' @param scale If TRUE, apply a z-transform to all observations in X and X_u before running the regression
+#' @param verbose logical; print debugging messages (default: FALSE)
 #' @param ... additional arguments
 #' @return S4 object of class TSVM with the following slots:
 #' \item{theta}{weight vector}
@@ -24,7 +25,7 @@ setClass("TSVMcccp",
 #' \item{unlabels}{the labels assigned to the unlabeled objects}
 #' 
 #' @export
-TSVMcccp <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, eps=1e-6,verbose=TRUE,...) {
+TSVMcccp <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, eps=1e-9,verbose=FALSE, ...) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
@@ -65,7 +66,7 @@ TSVMcccp <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, e
   }
   w <- c((sup$alpha * y) %*% X, sup$b)
   
-  if (verbose) cat("Loss begin: ",loss(w),'\n')
+  if (verbose) cat("Loss  @ Start: ",loss(w),'\n')
   
   y_used <- c(y, rep(-1,U), rep(1,U),1) # The labeling that will be used, unlabeled objects are added twice, with both labels
   N <- L+2*U
@@ -104,10 +105,10 @@ TSVMcccp <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, e
       y[c(1:L,N+1)][(y*alpha)[c(1:L)]>eps & (y*alpha)[c(1:L)]<(C-eps)]*(1-(w*y)[c(1:L,N+1)][(y*alpha)[c(1:L)]>eps & (y*alpha)[c(1:L)]<(C-eps)]),
       y[(L+1):(N)][(y*alpha)[(L+1):(N)]>-beta+eps & (y*alpha)[(L+1):(N)]<Cstar-eps-beta]*(1-(w*y)[(L+1):(N)][(y*alpha)[(L+1):(N)]>-beta+eps & (y*alpha)[(L+1):(N)]<Cstar-eps-beta])
     )
-    b<-median(vals)
-    print(vals)
-    #w <- c((alpha) %*% Xe, b)
-    #if (verbose) cat("Loss @ iteration ",iterations,": ",loss(w),'\n')
+    b <- median(vals)
+    if (verbose) cat("Possible Bias values: ", vals, "\n")
+    if (verbose) w <- c((alpha[-length(alpha)]) %*% Xe, b)
+    if (verbose) cat("Loss @ iteration ",iterations,": ",loss(w),'\n')
     #if (verbose) cat("w    @ iteration ",iterations,": ",w,'\n')
     
     # Update Beta
@@ -129,10 +130,11 @@ setMethod("predict", signature(object="TSVMcccp"), function(object, newdata, pro
   
 })
 
-# SVM solve.QP implementation
+#' SVM solve.QP implementation
+#' @export
 solve_svm <- function(K, y, C=1) {
   n <- nrow(K)
-
+  
   Dmat <- t(y*K)*y
   Dmat <- Dmat + 0.0000001*diag(n)
   dvec <- c(rep(1,n))
@@ -145,13 +147,89 @@ solve_svm <- function(K, y, C=1) {
   bvec<-c(0,rep(0,n),rep(-C,n))
   
   solution<-solve.QP(Dmat = Dmat,dvec = dvec,Amat = t(Amat),bvec = bvec,meq=1)
-  print(solution$value)
+  if (FALSE) cat(solution$value,"\n")
   alpha<-solution$solution
   w <- alpha %*% (y*K)
-  print(y[alpha>0.0001 & alpha<C]*(1-(w*y)[alpha>0.0001 & alpha<C]))
+  if (FALSE)  cat(y[alpha>0.0001 & alpha<C]*(1-(w*y)[alpha>0.0001 & alpha<C]),"\n")
   bias <- median(y[alpha>0.0001 & alpha<C]*(1-(w*y)[alpha>0.0001 & alpha<C]))
   
   object<-list(b=bias,alpha=solution$solution)
   class(object)<-"SVM"
   return(object)
+}
+
+#' @title Linear CCCP Transductive SVM classifier
+#'
+#' This method is mostly for debugging purposes, since its updates are done using numerical gradient calculations.
+#'
+#' @param X matrix; Design matrix, intercept term is added within the function
+#' @param y vector; Vector or factor with class assignments
+#' @param X_u matrix; Design matrix of the unlabeled data, intercept term is added within the function
+#' @param Clabeled numeric; Cost parameter of the SVM
+#' @param Cunlabeled numeric; Cost parameter of the unlabeled objects
+#' @param fracpos numeric; fraction of test points to assign to the first class
+#' @param intercept logical; TRUE if an intercept should be added to the model
+#' @param scale logical; If TRUE, apply a z-transform to all observations in X and X_u before running the regression
+#' @param verbose logical; print debugging messages (default: FALSE)
+#' @param ... additional arguments
+#' @return S4 object of class TSVM with the following slots:
+#' \item{theta}{weight vector}
+#' \item{classnames}{the names of the classes}
+#' \item{modelform}{formula object of the model used in regression}
+#' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
+#' \item{optimization}{the object returned by the optim function}
+#' \item{unlabels}{the labels assigned to the unlabeled objects}
+#' 
+#' @export
+TSVMcccp_lin <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, eps=1e-6, verbose=FALSE, init=NULL, ...) {
+  
+  ## Preprocessing to correct datastructures and scaling  
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
+  X<-ModelVariables$X
+  #y<-ModelVariables$y
+  Y <- ModelVariables$Y
+  X_u<-ModelVariables$X_u
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  
+  y <- as.numeric(Y*2-1)
+
+  
+  L <- nrow(X)
+  U <- nrow(X_u)
+  
+  yu<-c(rep(-1,U),rep(1,U))
+  Xe<-rbind(X,X_u,X_u)
+  
+  K <- X %*% t(X)
+  sup <- solve_svm(K,y,C=C)
+  if (is.null(init)) {
+    w <- c((sup$alpha * y) %*% X, sup$b)
+  } else {
+    w <- init
+  }
+  w_prev <- rep(Inf,length(w))
+  iterations <- 1 
+  X<-cbind(X,1)
+  X_u<-cbind(X_u,1)
+  
+  hs <- function(x,s) {sapply(x,function(x,s){max(s-x,0)},s=s)} # Adaptable Hinge Loss
+  loss <- function(w) { 0.5 * (t(w) %*% w) + C * sum(hs(y *(X %*% w),s=1)) + Cstar * sum(hs(yu *rbind(X_u,X_u) %*% w,s=1)) - sum(hs(yu*rbind(X_u,X_u) %*% w, s=0))}
+  
+  if (verbose) cat("Loss @ Start   :", loss(w),"\n")
+  
+  while (norm(matrix(w-w_prev))>eps) {
+    objective <- function(w, w_now) {
+      w <- matrix(w,length(w))
+      w_now <- matrix(w,length(w_now))
+      (0.5 * (t(w[-length(w)]) %*% w[-length(w)]) + C * sum(hs(y *(X %*% w),s=1)) + Cstar * sum(hs(yu *(rbind(X_u,X_u) %*% w),s=1)) - colSums(-(yu *(rbind(X_u,X_u)))[hs(yu*(rbind(X_u,X_u) %*% w_now), s=0)>0,1:3]) %*% w)
+    }
+
+    w_prev<-w
+    w<-optim(w, objective, w_now=w)$par
+    if (verbose) cat("Loss @ iter ",iterations,": ", loss(w),"\n")
+    iterations <- iterations + 1
+  }
+  b<-w[length(w)]
+  return(list(w=w[-length(w)],b=b))
 }

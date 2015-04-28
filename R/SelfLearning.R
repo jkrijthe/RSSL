@@ -43,7 +43,7 @@ SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, 
   y_unlabelled <- predict(model, X_u, prob)
   y_unlabelled_old <- rep(NA,length(y_unlabelled))
   
-  # Retrain and retrain until convergence
+  # Retrain until convergence
   i_labels <- list()
   i_labels[[1]] <- y_unlabelled
   n_iter<-0

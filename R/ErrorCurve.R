@@ -506,3 +506,71 @@ sample_k_per_level <- function(y,k) {
   }
   return(sample_idx)
 }
+
+#' Generate Learning Curve for losses at different fractions of objects labeled
+#' @export
+learningcurve_fraction_labeled <- function(X,y,classifiers,fracs=seq(0.1,0.9,by=0.1), with_replacement=FALSE,repeats=10,verbose=FALSE,n_min=1, test_fraction=NULL) {
+  if (!is.factor(y)) { stop("Labels are not a factor.") }
+  K <- length(levels(y))
+  
+  results<-array(NA, dim=c(repeats, length(fracs), length(classifiers), 4))
+  if (is.null(names(classifiers))) {
+    classifier_names <- lapply(classifiers, function(c) {as.character(body(c))[[2]]})
+  } else {
+    classifier_names <- names(classifiers) 
+  }
+  dimnames(results)<-list(1:repeats,fracs,classifier_names,c("Error", "Avg. Loss Test", "Avg. Loss Train","Avg. Loss Lab+Unlab"))
+  
+  n <- nrow(X)
+  
+  if (verbose) cat("Number of features: ", ncol(X),"\n")
+  if (verbose) cat("Number of objects:  ", nrow(X),"\n")
+  if (verbose) pb <- txtProgressBar(0,repeats) # Display a text progress bar
+  
+  for (i in 1:repeats) {
+    if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
+    sample.guaranteed <- sample_k_per_level(y,n_min)
+    if (!is.null(test_fraction)) { 
+      idx_test <- sample((1:nrow(X))[-sample.guaranteed], size=ceiling(n*test_fraction))
+      sampleorder <- c(sample.guaranteed,sample((1:nrow(X))[-c(sample.guaranteed,idx_test)]))
+    } else {
+      sampleorder <- c(sample.guaranteed,sample((1:nrow(X))[-c(sample.guaranteed)]))
+    }
+    
+    for (s in 1:length(fracs)) {
+      idx_lab <- sampleorder[1:ceiling(length(sampleorder)*fracs[s])]
+      
+      X_l <- X[idx_lab,,drop=FALSE]
+      y_l <- y[idx_lab]
+      if (!is.null(test_fraction)) {
+        #Separate test set
+        X_u <- X[-c(idx_lab,idx_test),,drop=FALSE]
+        y_u <- y[-c(idx_lab,idx_test)]
+        
+        X_test <- X[idx_test,,drop=FALSE]
+        y_test <- y[idx_test]
+      } else {
+        #test on unlabeled data
+        X_u <- X[-c(idx_lab),,drop=FALSE]
+        y_u <- y[-c(idx_lab)]
+        
+        X_test <- X_u
+        y_test <- y_u
+      }
+      
+      for (c in 1:length(classifiers)) {
+
+        trained_classifier<-do.call(classifiers[[c]],list(X=X_l, y=y_l, X_u=X_u, y_u=y_u))
+        
+        results[i,s,c,1] <- 1-mean(y_test==predict(trained_classifier,X_test))
+        results[i,s,c,2] <- mean(loss(trained_classifier, X_test, y_test))
+        results[i,s,c,3] <- mean(loss(trained_classifier, X_l, y_l))
+        results[i,s,c,4] <- mean(loss(trained_classifier, rbind(X_l,X_u), unlist(list(y_l,y_u))))
+      }
+    }
+  }
+  if (verbose) cat("\n")
+  object<-list(call="Not known", results=results, independent="Fraction of labeled objects")
+  class(object)<-"ErrorCurve"
+  return(object)
+}

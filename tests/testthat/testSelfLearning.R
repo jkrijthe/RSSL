@@ -1,4 +1,4 @@
-context("Least Squares Classifier")
+context("Self Learning")
 
 data(testdata)
 
@@ -13,7 +13,6 @@ test_that("Formula and matrix formulation give same results", {
   expect_that(loss(g_matrix, testdata$X_test, testdata$y_test),is_equivalent_to(loss(g_model, testdata$D_test))) 
   expect_that(g_matrix@classnames,is_equivalent_to(g_model@classnames)) # Class names the same?
 })
-
 
 test_that("Example with Nearest Mean", {
   g<-SelfLearning(testdata$X,testdata$y,testdata$X_u,method=NearestMeanClassifier)

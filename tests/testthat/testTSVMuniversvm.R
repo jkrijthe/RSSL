@@ -2,15 +2,15 @@ context("TSVM Universvm classifier")
 
 # Simple dataset used in the tests
 data(testdata)
-modelform <- testdata_formula
+modelform <- testdata$modelform
 classname<-all.vars(modelform)[1] 
-D <- testdata_train
-D_test <- testdata_test
-X <- testdata_X
-X_u <- testdata_X_u
-y <- testdata_y
-X_test <- testdata_X_test
-y_test <- testdata_y_test
+D <- testdata$D
+D_test <- testdata$D_test
+X <- testdata$X
+X_u <- testdata$X_u
+y <- testdata$y
+X_test <- testdata$X_test
+y_test <- testdata$y_test
 
 # test_that("Reject incorrect inputs",{})
 # 
@@ -32,9 +32,9 @@ y_test <- testdata_y_test
 # cat("Classifier: ICLeastSquaresClassifier\n")
 # 
 # #Test Different input schemes
-g<-TSVMuniversvm(X,y,X_u,binary_path="~/Dropbox/Code/universvm1.22/",temp_path="/Volumes/Experiments/")
-
-cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
+# g<-TSVMuniversvm(X,y,X_u,binary_path="~/Dropbox/Code/universvm1.22/",temp_path="/Volumes/Experiments/")
+# 
+# cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
 # cat("Error:  ",1-mean(predict(g,X_test)==y_test),"\n")
 # cat("Loss:  ",loss(g, X_test, y_test),"\n")
 # 

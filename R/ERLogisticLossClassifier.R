@@ -25,12 +25,14 @@ ERLogisticLossClassifier <- function(X,y,X_u=NULL,lambda=0.0,lambda_entropy=1.0,
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
-  y<-ModelVariables$y
+  Y<-ModelVariables$Y
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
   
   m<-ncol(X)
+  
+  y <- (Y-1.5)*2
   
   opt_func <- function(w,X,y,X_u) {
     w <- matrix(w,nrow=ncol(X))

@@ -10,15 +10,11 @@ using namespace Rcpp;
 arma::mat harmonic_function_cpp(const arma::mat& W, const arma::mat& Y);
 RcppExport SEXP RSSL_harmonic_function_cpp(SEXP WSEXP, SEXP YSEXP) {
 BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP );
-        Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP );
-        arma::mat __result = harmonic_function_cpp(W, Y);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat& >::type W(WSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type Y(YSEXP);
+    __result = Rcpp::wrap(harmonic_function_cpp(W, Y));
+    return __result;
 END_RCPP
 }

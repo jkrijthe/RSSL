@@ -91,13 +91,13 @@ ManifoldCorruptionLeastSquaresClassifier <- function(X, y, X_u, lambda=0, adjace
     
   } else {
       M <- matrix(NA,nrow(X),ncol(X))
-      Sigma <- matrix(0,ncol(X),ncol(X))
+      Sigma <- diag(ncol(X))*lambda #matrix(0,ncol(X),ncol(X))
       for (r in 1:nrow(X)) {
-        closeX <- Xtrain[order(sqrt(colSums((t(Xtrain)-X[r,])^2)))[1:(2*k)],]
-        distmat<- kernelMatrix(adjacency_kernel,rbind(X[r,],closeX),rbind(X[r,],closeX))
-        pat <- list()
-        pat$length<-distmat
-        Xlocal <- closeX[order(pat$length[1,-1])[1:k],]
+        closeX <- Xtrain[order(sqrt(colSums((t(Xtrain)-X[r,])^2)))[1:(k*(nrow(Xtrain)))],]
+        #distmat<- kernelMatrix(adjacency_kernel,rbind(X[r,],closeX),rbind(X[r,],closeX))
+        #pat <- list()
+        #pat$length<-distmat
+        Xlocal <- closeX #[order(pat$length[1,-1])[1:k],]
         M[r,] <- colMeans(Xlocal)
         Sigma <- Sigma + cov(Xlocal)*sigma
       }
