@@ -559,13 +559,14 @@ learningcurve_fraction_labeled <- function(X,y,classifiers,fracs=seq(0.1,0.9,by=
       }
       
       for (c in 1:length(classifiers)) {
-
+        try({
         trained_classifier<-do.call(classifiers[[c]],list(X=X_l, y=y_l, X_u=X_u, y_u=y_u))
         
         results[i,s,c,1] <- 1-mean(y_test==predict(trained_classifier,X_test))
         results[i,s,c,2] <- mean(loss(trained_classifier, X_test, y_test))
         results[i,s,c,3] <- mean(loss(trained_classifier, X_l, y_l))
         results[i,s,c,4] <- mean(loss(trained_classifier, rbind(X_l,X_u), unlist(list(y_l,y_u))))
+        })
       }
     }
   }

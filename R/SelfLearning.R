@@ -26,7 +26,7 @@ setClass("SelfLearning",
 #' 1-mean(predict(t_sup, testdata$X_test)==testdata$y_test) 
 #' loss(t_self, testdata$X_test, testdata$y_test)
 #' @export
-SelfLearning<-Yarowsky<-function(X, y, X_u, method, prob=FALSE, cautious=FALSE, scale=FALSE, ...) {
+SelfLearning <- function(X, y, X_u=NULL, method, prob=FALSE, cautious=FALSE, scale=FALSE, ...) {
 
   # Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=FALSE,intercept=FALSE,x_center=FALSE)

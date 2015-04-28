@@ -104,7 +104,7 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE)
         if (!is.null(X_u)) { X_u<-cbind(matrix(1,nrow(X_u),1),X_u) }
       }
     }
-
+    
     classnames<-levels(y)
     if (length(classnames)>2) {
       Y <- model.matrix(~y-1, data.frame(y))

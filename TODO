@@ -8,7 +8,6 @@ TSVM debuggen
 S4VM implementeren
 Entropy Regularization (derivative check and param=0 geeft juiste antwoord)
 IWLeastSquaresClassifier
-Describe testdata
 ImputedLeastSquaresClassifier
 
 TransductiveSVM implementation
@@ -39,7 +38,6 @@ ICNM
 RSSL: Regression
 RSSL: DensityAdaptive
 RSSL: DensitySensitive
-
 RSSL: Yarowsky cautious algorithm
 
 There is a problem using ginv when using PCs as inputs: the problems seem to be rescaled such that the bias term is no longer correct

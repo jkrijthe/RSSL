@@ -4,7 +4,7 @@
 \alias{SelfLearning}
 \title{Self Learning Semi-supervised Learning}
 \usage{
-SelfLearning(X, y, X_u, method, prob = FALSE, cautious = FALSE,
+SelfLearning(X, y, X_u = NULL, method, prob = FALSE, cautious = FALSE,
   scale = FALSE, ...)
 }
 \arguments{

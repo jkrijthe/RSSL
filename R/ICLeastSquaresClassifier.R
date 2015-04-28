@@ -39,8 +39,7 @@ setClass("ICLeastSquaresClassifier",
 #' @export
 ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda_prior=0,trueprob=NULL,eps=10e-10,y_scale=FALSE) {
   
-  if (!(nrow(X)==length(y))) { stop("Length of y and number of rows in X should be the same.")}
-  if (!is.factor(y)) { stop("Input labels should be a factor!")}
+  #   if (!is.factor(y)) { stop("Input labels should be a factor!")}
   #if (length(levels(y))!=2) { stop("We need a two class problem.")}
   
   ## Preprocessing to correct datastructures and scaling  
@@ -51,6 +50,8 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
   y <- ModelVariables$Y
+  
+  if (!(nrow(X)==length(y))) { stop("Length of y and number of rows in X should be the same.")}
   
   if (y_scale) {
     y_scale <- mean(y)
