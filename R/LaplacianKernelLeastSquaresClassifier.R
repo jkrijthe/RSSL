@@ -3,11 +3,6 @@
 #' @example tests/examples/exampleLaplacianKernelLeastSquaresClassifier.R
 #' @export
 LaplacianKernelLeastSquaresClassifier <- function(X, y, X_u, lambda=0, gamma=0, kernel=vanilladot(), adjacency_kernel=rbfdot(1/4), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
-  
-  stopifnot(require(kernlab))
-  stopifnot(require(Matrix))
-  
-  ## Preprocessing to correct datastructures and scaling  
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X <- ModelVariables$X
@@ -41,7 +36,7 @@ LaplacianKernelLeastSquaresClassifier <- function(X, y, X_u, lambda=0, gamma=0, 
       W <- kernelMatrix(adjacency_kernel,Xtrain,Xtrain)
       L <- diag(rowSums(W)) - W
       Y <- rbind(Y,matrix(0,u,ncol(Y)))
-      theta <- solve(bdiag(diag(l),0*diag(u)) %*% K + lambda*diag(n)*l + (gamma*l/((l+u)^2))*L%*%K, Y)
+      theta <- solve(Matrix::bdiag(diag(l),0*diag(u)) %*% K + lambda*diag(n)*l + (gamma*l/((l+u)^2))*L%*%K, Y)
       theta<-matrix(theta)
     } else {
       Xtrain <- X

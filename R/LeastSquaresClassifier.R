@@ -153,24 +153,10 @@ setMethod("decisionvalues", signature(object="LeastSquaresClassifier"), function
   return(expscore)
 })
 
-#' @rdname plot-methods
-#' @aliases plot,LeastSquaresClassifier,missing-method
 setMethod("show", signature(object="LeastSquaresClassifier"), function(object) {
   print(object@theta)
 })
 
-#' @rdname plot-methods
-#' @aliases plot,LeastSquaresClassifier,missing-method
-setMethod("plot", signature(x="LeastSquaresClassifier",y="missing"), function(x) {
-  object<-x
-  #p<-qplot(object@D[is.na(object@D[,object@classname]),1],object@D[is.na(object@D[,object@classname]),2],color=object@unlabels)
-  p<-qplot(object@D[,1],object@D[,2],color=object@D[,object@classname])
-  p<-p+geom_abline(intercept = (1.5-x@theta[1])/x@theta[3], slope = -x@theta[2]/x@theta[3])
-  return(p)
-})
-
-#' @rdname boundaryplot-methods
-#' @aliases boundaryplot,LeastSquaresClassifier-method
 setMethod("boundaryplot", signature(object="LeastSquaresClassifier"), function(object, p) {
   p+geom_abline(intercept = (-(object@theta[1]-0.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
 })

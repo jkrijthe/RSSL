@@ -41,7 +41,7 @@ LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=van
       L <- diag(rowSums(W)) - W
       Y <- diag(y)
       J <- cbind(diag(l),matrix(0,l,u))
-      #theta <- solve(bdiag(diag(l),0*diag(u)) %*% K + lambda*diag(n)*l + (gamma*l/((l+u)^2))*L%*%K, Y)
+      #theta <- solve(Matrix::bdiag(diag(l),0*diag(u)) %*% K + lambda*diag(n)*l + (gamma*l/((l+u)^2))*L%*%K, Y)
       #theta<-matrix(theta)
       # Find beta
       Qprime <-  solve(2 * lambda * diag(l+u) + 2 * (gamma/((l+u)^2)) * L %*% K, t(J) %*% Y)

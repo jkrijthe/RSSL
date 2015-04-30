@@ -14,7 +14,6 @@ Laplacian Regularized Least Squares Classifier
 \examples{
 library(RSSL)
 library(ggplot2)
-library(createdatasets)
 
 testdata <- generateTwoCircles(1000,noise=0.05)
 testdata[-sample(1:nrow(testdata),6),]$Class <- NA

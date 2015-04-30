@@ -10,9 +10,9 @@ TSVMuniversvm<-function(X, y, X_u=NULL, x_center=FALSE,scale=FALSE,binary_path=N
   } else if (is.null(binary_path)) {
     stop("Path to temp directory is not given")
   }
-  require(e1071)
-  require(SparseM)
-  
+
+  stopifnot(requireNamespace("e1071", quietly = TRUE))
+  stopifnot(requireNamespace("SparseM", quietly = TRUE))
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X<-ModelVariables$X

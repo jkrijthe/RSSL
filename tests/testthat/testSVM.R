@@ -1,7 +1,7 @@
 context("SVM and Linear SVM")
 
-testdata <- GenerateSlicedCookie(100,expected=FALSE)
-extra_testdata <- GenerateSlicedCookie(100,expected=TRUE)
+testdata <- generateSlicedCookie(100,expected=FALSE)
+extra_testdata <- generateSlicedCookie(100,expected=TRUE)
 
 g1 <- SVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10)
 g2 <- LinearSVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10)

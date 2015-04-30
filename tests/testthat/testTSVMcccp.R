@@ -13,7 +13,7 @@ split_dataset_ssl<-function(X, y, frac_train=0.8, frac_ssl=0.8) {
   )
 }
 
-data <- GenerateSlicedCookie(300,expected=TRUE,gap=1)
+data <- generateSlicedCookie(300,expected=TRUE,gap=1)
 X <- model.matrix(Class~.-1,data)
 y <- factor(data$Class)
 X<-X[,2:1]

@@ -18,7 +18,7 @@ library(RSSL)
 The following code generates a simple dataset, trains a supervised and two semi-supervised classifiers and evaluates their performance:
 ```
 # Generate dataset
-df <- Generate2ClassGaussian(d=2,expected=TRUE)
+df <- generate2ClassGaussian(d=2,expected=TRUE)
 df_lab <- df[sample(nrow(df),10),]
 df_unlab <- df[sample(nrow(df),1000),]
 df_unlab$Class <- NA

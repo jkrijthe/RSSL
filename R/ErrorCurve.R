@@ -263,9 +263,9 @@ c.ErrorCurve <- function(x,...,recursive=FALSE) {}
 #' 
 #' @export
 plotErrorCurve<-function(x, measurement=1,legendsetting="right",dataset_names=NULL,classifier_names=NULL,ncol=2,...) {
-  require(data.table)
-  require(reshape)
-  require(ggplot2)
+  stopifnot(requireNamespace("data.table", quietly = TRUE))
+  stopifnot(requireNamespace("reshape", quietly = TRUE))
+  stopifnot(requireNamespace("ggplot2", quietly = TRUE))
   
   data<-x
   
@@ -347,9 +347,9 @@ plotErrorCurve<-function(x, measurement=1,legendsetting="right",dataset_names=NU
 #' 
 #' @export
 DifferencePlot<-function(data,measurement=1,legendsetting="right",dataset_names=NULL,classifier_names=NULL) {
-  require(data.table)
-  require(reshape)
-  require(ggplot2)
+  stopifnot(requireNamespace("data.table", quietly = TRUE))
+  stopifnot(requireNamespace("reshape", quietly = TRUE))
+  stopifnot(requireNamespace("ggplot2", quietly = TRUE))
   
   # Check for input object
   if (class(data)=="ErrorCurve") { 
@@ -410,9 +410,9 @@ dataframes.merged[[i]]<-rbindlist(data.frame(res_dif=res_dif1,Dataset=dataset_na
 #' 
 #' @export
 plotErrorCurve2<-function(x,measurement=1,legendsetting="right",dataset_names=NULL,classifier_names=NULL,ncol=2,...) {
-  require(data.table)
-  require(reshape)
-  require(ggplot2)
+  stopifnot(requireNamespace("data.table", quietly = TRUE))
+  stopifnot(requireNamespace("reshape", quietly = TRUE))
+  stopifnot(requireNamespace("ggplot2", quietly = TRUE))
   
   data <- x
   # Check for input object

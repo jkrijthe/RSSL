@@ -34,7 +34,6 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
   ## Start Implementation
   time.begin<-Sys.time()
   if (method=="Dual") {
-    if (!require(quadprog)) {stop("quadprog package is required to solve the dual formulation of LinearSVM")}
     
     if (intercept) X <- X[,2:ncol(X)]
     Dmat <- (diag(y) %*% X %*% t(diag(y) %*% X)) + eps*diag(nrow(X)) #Add small constant to diagonal to ensure numerical PSD
@@ -52,10 +51,8 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
     w<-c(b, w)
     
   } else if (method=="Primal") {
-    if (!require(quadprog)) {stop("quadprog package is required to solve the primal formulation of LinearSVM")}
-    if (!require(Matrix)) {stop("Matrixs package is required to solve the primal formulation of LinearSVM")}
     
-    Dmat<-bdiag(matrix(0,1,1),diag(ncol(X)-1),matrix(0,nrow(X),nrow(X))) + eps*diag(ncol(X)+nrow(X))
+    Dmat<-Matrix::bdiag(matrix(0,1,1),diag(ncol(X)-1),matrix(0,nrow(X),nrow(X))) + eps*diag(ncol(X)+nrow(X))
     dvec <- c(rep(0,ncol(X)), rep(C,nrow(X)))
     Amat <- cbind(matrix(0,nrow(X),ncol(X)),diag(nrow(X))) #Slack variable bigger than 0
     Amat <- rbind(Amat,cbind(diag(y) %*% X, diag(nrow(X))))
@@ -67,9 +64,10 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
   } else if (method=="BGD") {
     w <- rep(0.0, ncol(X)) #Initial parameter values
     
-    opt_result <- optimx(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C, method=c("BFGS"), control=list(fnscale=1, maxit=10000, trace=0,starttests=FALSE,reltol=1e-16,type=3,follow.on=TRUE,dowarn=FALSE))
-  
-    w<-coef(opt_result)
+    #opt_result <- optimx(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C, method=c("BFGS"), control=list(fnscale=1, maxit=10000, trace=0,starttests=FALSE,reltol=1e-16,type=3,follow.on=TRUE,dowarn=FALSE))
+    opt_result <- optim(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C)
+    
+    w<-opt_result$par
 
   } else {
     stop("Unknown optimization method.")

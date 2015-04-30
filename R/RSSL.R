@@ -38,6 +38,7 @@
 #' Generate2ClassGaussian
 #' 
 #' 
+#' 
 #' @docType package
 #' @name RSSL
 NULL

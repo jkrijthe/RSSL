@@ -1,17 +1,16 @@
 context("Laplacian SVM")
 
 library(ggplot2)
-library(kernlab)
 library("gridExtra")
 
-testdata <- GenerateSlicedCookie(expected=TRUE)
+testdata <- generateSlicedCookie(expected=TRUE)
 testdata$Class[sample(1:nrow(testdata),nrow(testdata)-10)] <- NA
 t_svm <- SVM(Class~.,testdata, C=1,kernel=rbfdot(0.25),scale=FALSE)
 t_lapsvm <- LaplacianSVM(Class~., testdata, kernel=rbfdot(0.25), lambda=0.05, gamma=100,scale=FALSE)
 t_lapsvm@bias
 t_svm@bias
 
-library("createdatasets")
+# library("createdatasets")
 
 testdata <- generateCrescentMoon(100,sigma=0.3)
 testdata[-sample(1:nrow(testdata),10),]$Class <- NA

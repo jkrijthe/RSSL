@@ -6,7 +6,6 @@ output: html_document
 ---
 ```{r echo=FALSE, include=FALSE}
 library(RSSL)
-library(createdatasets)
 library(dplyr)
 library(ggplot2)
 library(ggthemes)
@@ -101,7 +100,7 @@ In this document we will investigate the behaviour of different semi-supervised 
 
 In the first dataset, there are two clearly separated gaussian clusters belonging to two separate classes. Different assumptions made various semi-supervised learning approaches hold for this dataset: clusters correspond to classes, the classes are separated by a boundary through a region of low data density and the labels vary smoothly over the manifolds where the data lives.
 ```{r echo=FALSE}
-data_2gauss <- data.frame(generateGaussianClass(100,var=0.2)) %>% 
+data_2gauss <- data.frame(generate2ClassGaussian(n=100,d=2,var=0.2)) %>% 
   add_missinglabels_mar(formula=Class~.,prob=0.9)
 problem_2gauss <-  data_2gauss %>% df_to_matrices(Class~.)
 
@@ -121,7 +120,7 @@ print(p1)
 
 In the second example, we consider a single gaussian sliced through the middle by a region of low density. The decision boundary, does not overlap with the region of low density. Rather, it is perpendicular to it. This example violates many semi-supervised learning assumptions. The decision boundary is not in a region of low data density, the classes do not correspond to clusters and the labels do not vary smoothly over the data manifold.
 ```{r echo=FALSE}
-data_slicedcookie <- data.frame(GenerateSlicedCookie(100))[sample(1:100),] %>% 
+data_slicedcookie <- data.frame(generateSlicedCookie(100))[sample(1:100),] %>% 
   add_missinglabels_mar(prob=0.9,formula=Class~.)
 problem_slicedcookie <- data_slicedcookie %>% df_to_matrices
 

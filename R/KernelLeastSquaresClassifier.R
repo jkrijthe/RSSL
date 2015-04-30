@@ -66,8 +66,6 @@ setClass("KernelLeastSquaresClassifier",
 #' @export
 KernelLeastSquaresClassifier <- function(X, y, lambda=0, gamma=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
   
-  stopifnot(require(kernlab))
-  
   ## Preprocessing to correct datastructures and scaling  
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=FALSE,x_center=x_center)

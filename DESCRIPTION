@@ -1,6 +1,6 @@
 Package: RSSL
 Version: 0.4
-Date: 2014-01-14
+Date: 2015-04-30
 Title: Implementations of semi-supervised learning approaches for classification
     and regression
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
@@ -8,18 +8,18 @@ Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
 Author: Jesse Krijthe <jkrijthe@gmail.com>
 Maintainer: Jesse Krijthe <jkrijthe@gmail.com>
 Depends:
-    RcppArmadillo,
-    MASS
+    MASS,
+    kernlab,
+    quadprog,
+    Matrix
 Imports:
-    Rcpp,
-    RcppArmadillo
+    Rcpp
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     class,
     quadprog,
     ggplot2,
     SparseM,
-    klaR,
     sampling,
     e1071,
     foreign,
@@ -28,7 +28,9 @@ Suggests:
     plyr,
     animation,
     reshape,
-    testthat
+    testthat,
+    Matrix,
+    data.table
 Description: Implementations of semi-supervised learning approaches for
     classification and regression. Serves as benchmarks to new approaches and
     contains implementations of the authors' own methods.
@@ -39,13 +41,11 @@ Roxygen: list(wrap = FALSE)
 Collate:
     'Generics.R'
     'Classifier.R'
+    'CrossValidation.R'
     'LeastSquaresClassifier.R'
-    'CPLeastSquaresClassifier.R'
+    'EMLeastSquaresClassifier.R'
     'NormalBasedClassifier.R'
     'LinearDiscriminantClassifier.R'
-    'CPLinearDiscriminantAnalysis.R'
-    'CrossValidation.R'
-    'EMLeastSquaresClassifier.R'
     'EMLinearDiscriminantClassifier.R'
     'NearestMeanClassifier.R'
     'EMNearestMeanClassifier.R'
@@ -59,8 +59,6 @@ Collate:
     'HelperFunctions.R'
     'ICLeastSquaresClassifier.R'
     'ICLinearDiscriminantClassifier.R'
-    'ICLogisticLossClassifier.R'
-    'ICLogisticRegression.R'
     'ICNearestMeanClassifier.R'
     'ICSVM.R'
     'KernelLeastSquaresClassifier.R'
@@ -71,23 +69,17 @@ Collate:
     'MCLinearDiscriminantClassifier.R'
     'MCNearestMeanClassifier.R'
     'MajorityClassClassifier.R'
-    'ManifoldCorruptionLeastSquaresClassifier.R'
     'NormalizedLinearDiscriminantClassifier.R'
     'QuadraticDiscriminantClassifier.R'
     'RSSL.R'
     'RcppExports.R'
     'S3VM.R'
-    'S4VM.R'
-    'SGT.R'
-    'SGTlight.R'
     'SVM.R'
     'SVMlin.R'
     'SelfLearning.R'
     'TSVM.R'
     'TSVMcccp.R'
-    'TSVMlight.R'
     'TSVMuniversum.R'
     'USMLeastSquaresClassifier.R'
-    'caretModels.R'
     'scaleMatrix.R'
     'testdata-data.R'

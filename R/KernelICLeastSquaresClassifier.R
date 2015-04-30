@@ -7,8 +7,6 @@ setClass("KernelICLeastSquaresClassifier",
 #' @export
 KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE, lambda_prior=0, classprior=NULL, method="LBFGS", projection="semisupervised") {
   
-  stopifnot(require(kernlab))
-  
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X <- ModelVariables$X

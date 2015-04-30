@@ -66,9 +66,7 @@ setGeneric("decisionvalues",function(object, newdata)
 #' @param ... Additional parameters
 #' 
 #' @export
-#' @docType methods
-#' @rdname plot-methods
-setGeneric("plot",function(x, y, ...) {standardGeneric("plot")})
+setGeneric("plot", function(x, y, ...) standardGeneric("plot"))
 
 #' Decision Boundary plot of a classifier
 #' 

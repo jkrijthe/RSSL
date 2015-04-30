@@ -1,5 +1,4 @@
 context("Gaussian Random Field Classifier")
-library(kernlab)
 
 testdata <- generateTwoCircles(1000,0.1)
 testdata[-sample(1:nrow(testdata),10),]$Class <- NA

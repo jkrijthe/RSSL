@@ -1,4 +1,4 @@
-#' @include LinearDiscriminantClassifier.R
+#' @include LeastSquaresClassifier.R
 setClass("EMLeastSquaresClassifier",
          representation(responsibilities="ANY"),
          prototype(name="Expectation Maximization Least Squares Classifier"),

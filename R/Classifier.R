@@ -17,3 +17,10 @@ setMethod("show", signature(object="Classifier"), function(object) {
   cat(object@name,"\n")
   cat("Classnames:\n",object@classnames,"\n")
 })
+
+setClass("LinearClassifier",
+         representation(w="ANY"),
+         prototype(w=NULL)
+)
+
+

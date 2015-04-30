@@ -95,19 +95,19 @@ setMethod("loss", signature(object="SelfLearning"), function(object,newdata,y=NU
   return(loss(object@model,X,y,...))
 })
 
-#' Plot method for SelfLearning Classifier
-#' The plot function plot the label assignments in each iteration
-#' 
-#' @param X Design matrix, intercept term is added within the function
-#' @param X_u Design matrix unlabeled data
-#' 
-#' @rdname plot-methods
-#' @aliases plot,SelfLearning,ANY-method 
-setMethod("plot", signature(x="SelfLearning"), function(x, X, y, X_u) {
-  #Plot the label assignments in each iteration
-  library(animation)
-  X_e<-rbind(X,X_u)
-  saveGIF({
-    for (i in 1:x@n_iter) { print(qplot(X_e[,1],X_e[,2],color=factor(c(y,x@i_labels[,i])))) }
-  })
-})
+# #' Plot method for SelfLearning Classifier
+# #' The plot function plot the label assignments in each iteration
+# #' 
+# #' @param X Design matrix, intercept term is added within the function
+# #' @param X_u Design matrix unlabeled data
+# #' 
+# #' @rdname plot-methods
+# #' @aliases plot,SelfLearning,ANY-method 
+# setMethod("plot", signature(x="SelfLearning"), function(x, X, y, X_u) {
+#   #Plot the label assignments in each iteration
+#   library(animation)
+#   X_e<-rbind(X,X_u)
+#   saveGIF({
+#     for (i in 1:x@n_iter) { print(qplot(X_e[,1],X_e[,2],color=factor(c(y,x@i_labels[,i])))) }
+#   })
+# })

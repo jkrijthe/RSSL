@@ -113,9 +113,9 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
   
     # Multiclass
     if (ncol(y)>1) {
-      Dmat <- bdiag(rep(list(Dmat),ncol(y)))
+      Dmat <- Matrix::bdiag(rep(list(Dmat),ncol(y)))
       bvec <- rep(bvec,ncol(y))
-      Amat <- bdiag(rep(list(Amat),ncol(y)))
+      Amat <- Matrix::bdiag(rep(list(Amat),ncol(y)))
       Amat <- cbind(kronecker(matrix(1,ncol(y),1),diag(nrow(X_u))), as.matrix(Amat))
       bvec <-  c(rep(1,nrow(X_u)),bvec)
       meq <- nrow(X_u)

@@ -31,10 +31,8 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,ep
   ## Start Implementation
   time.begin<-Sys.time()
   if (method=="Dual") {
-    if (!require(quadprog)) {stop("quadprog package is required to solve the dual formulation of LinearSVM")}
     
     if (!is.null(kernel)) {
-      require(kernlab)
       if (inherits(kernel,"kernel")) {
         Xtrain<-X
         K<-kernelMatrix(kernel,X,X)
