@@ -27,4 +27,5 @@ r_github_packages:
   - jimhester/covr
 
 after_success:
+  - ./travis-tool.sh install_github jimhester/covr
   - Rscript -e 'library(covr);codecov()'
