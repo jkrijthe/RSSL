@@ -1,27 +1,23 @@
 Package: RSSL
 Version: 0.4
 Date: 2015-04-30
-Title: Implementations of semi-supervised learning approaches for classification
-    and regression
+Title: Implementations of Semi-Supervised Learning Approaches for Classification
+    and Regression
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
-Author: Jesse Krijthe <jkrijthe@gmail.com>
-Maintainer: Jesse Krijthe <jkrijthe@gmail.com>
-Depends:
+Imports:
+    Rcpp,
     MASS,
     kernlab,
     quadprog,
-    Matrix
-Imports:
-    Rcpp
+    Matrix,
+    ggplot2
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
+    e1071,
     class,
-    quadprog,
-    ggplot2,
     SparseM,
     sampling,
-    e1071,
     foreign,
     bootstrap,
     methods,
@@ -29,8 +25,8 @@ Suggests:
     animation,
     reshape,
     testthat,
-    Matrix,
-    data.table
+    data.table,
+    gridExtra
 Description: Implementations of semi-supervised learning approaches for
     classification and regression. Serves as benchmarks to new approaches and
     contains implementations of the authors' own methods.
