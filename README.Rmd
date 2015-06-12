@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 [![CRAN version](http://www.r-pkg.org/badges/version/RSSL)](http://cran.rstudio.com/web/packages/RSSL/index.html)
 [![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL)
 [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master)
-[![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/Rtsne)](http://cran.rstudio.com/web/packages/RSSL/index.html)
+[![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](http://cran.rstudio.com/web/packages/RSSL/index.html)
 
 #R Semi-Supervised Learning package
 This R package provides implementations of several semi-supervised learning methods, in particular, our of own work involving constraint based semi-supervised learning. 
