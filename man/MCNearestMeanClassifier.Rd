@@ -4,7 +4,8 @@
 \alias{MCNearestMeanClassifier}
 \title{Moment Constrained Nearest Mean Classifier (Semi-Supervised)}
 \usage{
-MCNearestMeanClassifier(X, y, X_u, method="closedform", scale=FALSE, ...)
+MCNearestMeanClassifier(X, y, X_u, method = "closedform", scale = FALSE,
+  ...)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -27,5 +28,9 @@ S4  object; a list consisting of
 }
 \description{
 To fit a true nearest mean classifier, set prior to equal class priors. Based on Loog (2010)
+}
+\seealso{
+Other RSSL classifiers: \code{\link{MCLinearDiscriminantClassifier}};
+  \code{\link{TSVMuniversvm}}
 }
 

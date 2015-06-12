@@ -14,9 +14,6 @@
 #' EMLinearDiscriminantClassifier
 #' SelfLearning
 #' 
-#' 
-#' Semi-Supervised Regression
-#' 
 #' Supervised Classifiers
 #' 
 #' NearestMeanClassifier
@@ -37,8 +34,16 @@
 #' GenerateSlicedCookie
 #' Generate2ClassGaussian
 #' 
-#' 
-#' 
+#' @import MASS
+#' @import kernlab
+#' @import quadprog
+#' @import Matrix
+#' @import ggplot2
+#' @import Rcpp
+#' @import dplyr
+#' @import reshape2
+#' @useDynLib RSSL
+#' @importFrom Rcpp sourceCpp
 #' @docType package
 #' @name RSSL
 NULL

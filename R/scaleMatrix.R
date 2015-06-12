@@ -27,6 +27,9 @@ scaleMatrix<-function(x,center=TRUE,scale=TRUE) {
 }
 
 #' Predict for matrix scaling inspired by stdize from the PLS package
+#' @param object scaleMatrix object
+#' @param newdata data to be scaled
+#' @param ... Not used
 #' @export
 setMethod("predict",signature=c("scaleMatrix"), function(object,newdata,...) {
   if (!is.matrix(newdata)) { error("Incorrect newdata")}

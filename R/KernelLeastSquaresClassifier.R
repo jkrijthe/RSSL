@@ -8,16 +8,14 @@ setClass("KernelLeastSquaresClassifier",
 #'
 #' Use least squares regression as a classification technique using classes as targets (1 for one class, 2 for the other). Implemented using matrix inversions, not the more numerically stable Singular Value Decomposition method. Note this method minimizes quadratic loss, not the truncated quadratic loss.
 #'
-#' @usage KernelLeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
-#'
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param lambda Regularization parameter of the l2 penalty in regularized least squares
 #' @param gamma numeric; Parameter for the Laplacian term in Laplacian RLSC
-#' @param intercept TRUE if an intercept should be added to the model
+#' @param kernel kernlab kernel function
+#' @param y_scale TRUE center the target vector
 #' @param x_center TRUE, whether the dependent variables (features) should be centered
 #' @param scale If TRUE, apply a z-transform to the design matrix X before running the regression
-#' @param ... additional arguments
 #' @return S4 object of class LeastSquaresClassifier with the following slots:
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}
@@ -111,8 +109,7 @@ KernelLeastSquaresClassifier <- function(X, y, lambda=0, gamma=0, kernel=vanilla
 }
 
 #' @rdname loss-methods
-#' @aliases loss,LeastSquaresClassifier-method
-#' @export
+#' @aliases loss,KernelLeastSquaresClassifier-method
 setMethod("loss", signature(object="KernelLeastSquaresClassifier"), function(object, newdata, y=NULL,...) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
   X<-ModelVariables$X
@@ -125,7 +122,7 @@ setMethod("loss", signature(object="KernelLeastSquaresClassifier"), function(obj
   return(rowSums((expscore - Y)^2))
 })
 
-#' @rdname predict-methods
+#' @rdname rssl-predict
 #' @aliases predict,LeastSquaresClassifier-method
 setMethod("predict", signature(object="KernelLeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
@@ -145,8 +142,7 @@ setMethod("predict", signature(object="KernelLeastSquaresClassifier"), function(
   return(classes)
 })
 
-#' @aliases predict,LeastSquaresClassifier-method
-#' @export
+#' @rdname decisionvalues-methods
 setMethod("decisionvalues", signature(object="KernelLeastSquaresClassifier"), function(object, newdata) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
   

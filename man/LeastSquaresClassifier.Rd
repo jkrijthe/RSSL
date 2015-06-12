@@ -4,14 +4,15 @@
 \alias{LeastSquaresClassifier}
 \title{Least Squares Classifier}
 \usage{
-LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
+LeastSquaresClassifier(X, y, lambda = 0, intercept = TRUE,
+  x_center = FALSE, scale = FALSE, method = "inverse", y_scale = FALSE)
 }
 \arguments{
-\item{X}{Design matrix, intercept term is added within the function}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{Vector or factor with class assignments}
+\item{y}{factor or integer vector; Label vector}
 
-\item{lambda}{Regularization parameter of the l2 penalty in regularized least squares}
+\item{lambda}{Regularization parameter of the l2 penalty}
 
 \item{intercept}{TRUE if an intercept should be added to the model}
 
@@ -19,7 +20,9 @@ LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ..
 
 \item{scale}{If TRUE, apply a z-transform to the design matrix X before running the regression}
 
-\item{...}{additional arguments}
+\item{method}{Method to use for fitting. One of c("inverse","Normal","QR","BFGS")}
+
+\item{y_scale}{If True scale the target vector}
 }
 \value{
 S4 object of class LeastSquaresClassifier with the following slots:

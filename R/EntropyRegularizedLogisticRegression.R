@@ -100,7 +100,7 @@ EntropyRegularizedLogisticRegression <- function(X,y,X_u=NULL,lambda=0.0,lambda_
       scaling=NULL)
 }
 
-erlr_loss <- function(theta,X,y,X_u) {
+erlr_loss <- function(theta,X,y,X_u,lambda,lambda_entropy) {
   #     object<-new("LogisticRegression", theta=theta)
   #     return(loss(object,X,y) + lambda * object@theta %*% object@theta)
   theta <- matrix(theta,nrow=ncol(X))
@@ -115,11 +115,11 @@ erlr_loss <- function(theta,X,y,X_u) {
   min_inner <- - X_u %*% theta
   expscore <- cbind(rep(1,nrow(X_u)), min_inner)
   sum_exp <- rowSums(expscore)
-  ent <- -sum(log(sum_exp)/sum_exp) + sum(exp_score[,2]*(min_inner-log(sum_exp))/sum_exp)
+  ent <- -sum(log(sum_exp)/sum_exp) + sum(expscore[,2]*(min_inner-log(sum_exp))/sum_exp)
   
   
   ent<-0
-  for (c in 1:length(classnames)) {
+  for (c in 1:ncol(expscore)) {
     #TODO: is the +1 correct?
     ent <- ent + sum( (1+(exp(expscore[,c])/sum_exp)) * (expscore[,c]-log(sum_exp))) # Sum the numerators for each class
   }

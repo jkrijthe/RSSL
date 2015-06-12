@@ -34,6 +34,10 @@ ICLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
 
 \item{trueprob}{numeric; true mean y for all data}
 
+\item{eps}{numeric; Stopping criterion for the maximinimization}
+
+\item{y_scale}{logical; whether the target vector should be centered}
+
 \item{...}{additional arguments}
 }
 \value{

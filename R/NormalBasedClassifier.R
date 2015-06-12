@@ -5,13 +5,15 @@ setClass("NormalBasedClassifier",
          contains="Classifier")
 
 
-#' @export
+
+#' @rdname rssl-formatting
+#' @aliases show,NormalBasedClassifier-method
 setMethod("show", signature(object="NormalBasedClassifier"), function(object) {
   print(object@name)
   print(object@means)
 })
 
-#' @rdname predict-methods
+#' @rdname rssl-predict
 #' @aliases predict,NormalBasedClassifier-method
 setMethod("predict", signature(object="NormalBasedClassifier"), function(object,newdata,probs=FALSE) {
   
@@ -58,6 +60,10 @@ setMethod("loss", signature(object="NormalBasedClassifier"), function(object, ne
   return(-losses)
 })
 
+#' @param newdata design matrix
+#' @param Y class responsibility matrix
+#' @rdname losspart-methods
+#' @aliases losspart,NormalBasedClassifier-method
 setMethod("losspart", signature(object="NormalBasedClassifier"), function(object, newdata, Y) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,object@scaling,intercept=FALSE)
   X<-ModelVariables$X
@@ -77,6 +83,12 @@ setMethod("losspart", signature(object="NormalBasedClassifier"), function(object
   return(-ll)
 })
 
+#' @param newdata Design matrix of labeled objects
+#' @param Y label matrix of labeled objects
+#' @param X_u Design matrix of unlabeled objects
+#' @param Y_u label matrix of unlabeled objects
+#' @rdname losslogsum-methods
+#' @aliases losslogsum,NormalBasedClassifier-method
 setMethod("losslogsum", signature(object="NormalBasedClassifier"), function(object, newdata, Y, X_u, Y_u) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,object@scaling,intercept=FALSE)
   X<-ModelVariables$X
@@ -105,7 +117,10 @@ setMethod("losslogsum", signature(object="NormalBasedClassifier"), function(obje
   return(-ll)
 })
 
-setMethod("posterior", signature(object="NormalBasedClassifier"), function(object,newdata,prob=FALSE) {
+#' @param newdata matrix of dataframe of objects to be classified
+#' @rdname posterior-methods
+#' @aliases posterior,NormalBasedClassifier-method
+setMethod("posterior", signature(object="NormalBasedClassifier"), function(object,newdata) {
   
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,object@scaling,intercept=FALSE)
   X<-ModelVariables$X

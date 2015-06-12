@@ -82,7 +82,7 @@ setMethod("loss", signature(object="USMLeastSquaresClassifier"), function(object
   return((X %*% object@theta + object@y_scale - Y)^2)
 })
 
-#' @rdname predict-methods
+#' @rdname rssl-predict
 #' @aliases predict,USMLeastSquaresClassifier-method
 setMethod("predict", signature(object="USMLeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)

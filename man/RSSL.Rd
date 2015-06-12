@@ -21,8 +21,6 @@ ICLinearDiscriminantClassifier
 EMLinearDiscriminantClassifier
 SelfLearning
 
-Semi-Supervised Regression
-
 Supervised Classifiers
 
 NearestMeanClassifier

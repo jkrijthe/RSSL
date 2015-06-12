@@ -6,6 +6,13 @@
 \usage{
 generateCrescentMoon(n = 100, d = 2, sigma = 1)
 }
+\arguments{
+\item{n}{Number of objects to generate}
+
+\item{d}{Dimensionality of the dataset}
+
+\item{sigma}{Noise added}
+}
 \description{
 Generate Crescent Moon dataset
 }

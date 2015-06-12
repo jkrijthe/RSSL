@@ -8,8 +8,6 @@ setClass("MCNearestMeanClassifier",
 #'
 #' To fit a true nearest mean classifier, set prior to equal class priors. Based on Loog (2010)
 #'
-#' @usage MCNearestMeanClassifier(X, y, X_u, method="closedform", scale=FALSE, ...)
-#'
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector with class assignments
 #' @param X_u Design matrix of the unlabeled objects, intercept term is added within the function
@@ -20,6 +18,8 @@ setClass("MCNearestMeanClassifier",
 #' \item{means}{the approximation of piel}
 #' \item{prior}{the number of trials}
 #' \item{sigma}{the number of hits}
+#' @family RSSL classifiers
+#' 
 #' @export
 MCNearestMeanClassifier <- function(X, y, X_u, method="closedform",scale=FALSE, ...) {
   ## Preprocessing to correct datastructures and scaling  

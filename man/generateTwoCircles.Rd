@@ -10,8 +10,6 @@ generateTwoCircles(n = 100, noise_var = 0.2)
 \item{n}{integer; Number of examples to generate}
 
 \item{noise_var}{numeric; size of the variance parameter}
-
-\item{expected}{logical; whether the decision boundary should be the expected or perpendicular}
 }
 \description{
 One circle circumscribes the other

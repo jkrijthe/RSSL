@@ -110,7 +110,7 @@ setMethod("loss", signature(object="LogisticRegression"), function(object, newda
 #   loss(object,object@D)
 # })
 
-#' @rdname predict-methods
+#' @rdname rssl-predict
 #' @aliases predict,LogisticRegression-method  
 setMethod("predict", signature(object="LogisticRegression"), function(object, newdata,probs=FALSE) {
 ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept)

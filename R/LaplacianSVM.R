@@ -6,10 +6,9 @@ setClass("LaplacianSVM",
 
 #' SVM Classifier
 #'
-#' @param X Design matrix
-#' @param y Labels of the observations
-#' @param C Cost variable
-#' @param scale Whether a z-transform should be applied (default: TRUE)
+#' @param adjacency_kernel kernlab::kernel to use as adjacency kernel
+#' @param gamma numeric; Weight of the unlabeled data
+#' @inheritParams BaseClassifier
 #' @return S4 object of type LaplacianSVM
 #' @export
 LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=vanilladot(), adjacency_kernel=rbfdot(1/4)) {

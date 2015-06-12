@@ -14,6 +14,8 @@ PreProcessingPredict(modelform, newdata, y = NULL, classnames = NULL,
 
 \item{y}{Vector or factor with class assignments (default: NULL)}
 
+\item{classnames}{Vector with class names}
+
 \item{scaling}{Apply a given z-transform to the design matrix X (default: NULL)}
 
 \item{intercept}{Whether to include an intercept in the design matrices}

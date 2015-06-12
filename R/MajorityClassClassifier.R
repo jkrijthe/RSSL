@@ -35,12 +35,12 @@ MajorityClassClassifier <- function(X, y, ...) {
   )
 }
 
-
+#' @rdname loss-methods
 setMethod("loss", signature(object="MajorityClassClassifier"), function(object, newdata, y=NULL) {
   return(0)
 })
 
-
+#' @rdname rssl-predict
 setMethod("predict", signature(object="MajorityClassClassifier"), function(object, newdata, probs=FALSE) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=NULL,intercept=FALSE)
   

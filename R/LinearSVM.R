@@ -9,12 +9,11 @@ setClass("LinearSVM",
 
 #' Linear SVM Classifier
 #'
-#' @param X Design matrix
-#' @param y Labels of the observations
 #' @param C Cost variable
 #' @param method Estimation procedure c("Dual","Primal","BGD","SGD","Pegasos")
 #' @param scale Whether a z-transform should be applied (default: TRUE)
-#' @param intercept Whether an intercept should be added (default: TRUE)
+#' @param eps Small value to ensure positive definiteness of the matrix in QP formulation
+#' @inheritParams BaseClassifier
 #' @return S4 object of type LinearSVM
 #' @export
 LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
@@ -84,8 +83,6 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
              opt_result=opt_result))
 }
 
-#' decisionvalues for LinearSVM
-#'
 #' @rdname decisionvalues-methods
 #' @aliases decisionvalues,LinearSVM-method
 setMethod("decisionvalues", signature(object="LinearSVM"), function(object, newdata) {
@@ -96,10 +93,8 @@ setMethod("decisionvalues", signature(object="LinearSVM"), function(object, newd
   return(as.numeric(X %*% w))
 })
 
-#' predict method for LinearSVM
-#'
-#' Predict class of new observations using a LinearSVM
-#' @rdname predict-methods
+
+#' @rdname rssl-predict
 #' @aliases predict,LinearSVM-method
 setMethod("predict", signature(object="LinearSVM"), function(object, newdata) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=TRUE)

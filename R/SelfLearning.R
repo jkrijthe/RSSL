@@ -72,9 +72,8 @@ SelfLearning <- function(X, y, X_u=NULL, method, prob=FALSE, cautious=FALSE, sca
   return(object)
 }
 
-#' Predict method for SelfLearning Classifier
-#' The Predict Method delegates prediction to the specific model object
-#' @rdname predict-methods
+#' For the SelfLearning Classifier the Predict Method delegates prediction to the specific model object
+#' @rdname rssl-predict
 #' @aliases predict,SelfLearning-method
 setMethod("predict", signature(object="SelfLearning"), function(object,newdata,...) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)

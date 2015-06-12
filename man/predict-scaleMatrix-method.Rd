@@ -7,6 +7,13 @@
 \usage{
 \S4method{predict}{scaleMatrix}(object, newdata, ...)
 }
+\arguments{
+\item{object}{scaleMatrix object}
+
+\item{newdata}{data to be scaled}
+
+\item{...}{Not used}
+}
 \description{
 Predict for matrix scaling inspired by stdize from the PLS package
 }

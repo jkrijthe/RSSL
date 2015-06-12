@@ -14,19 +14,21 @@ TSVMcccp(X, y, X_u, C, Cstar, s = -0.3, x_center = FALSE, scale = FALSE,
 
 \item{X_u}{matrix; Design matrix of the unlabeled data, intercept term is added within the function}
 
+\item{C}{numeric; Cost parameter of the SVM}
+
+\item{Cstar}{numeric; Cost parameter of the unlabeled objects}
+
+\item{s}{numeric; parameter controlling the loss function of the unlabeled objects}
+
+\item{x_center}{logical;  Should the features be centered?}
+
 \item{scale}{If TRUE, apply a z-transform to all observations in X and X_u before running the regression}
+
+\item{eps}{numeric; Stopping criterion for the maximinimization}
 
 \item{verbose}{logical; print debugging messages (default: FALSE)}
 
 \item{...}{additional arguments}
-
-\item{Clabeled}{numeric; Cost parameter of the SVM}
-
-\item{Cunlabeled}{numeric; Cost parameter of the unlabeled objects}
-
-\item{fracpos}{numeric; fraction of test points to assign to the first class}
-
-\item{intercept}{TRUE if an intercept should be added to the model}
 }
 \value{
 S4 object of class TSVM with the following slots:

@@ -1,5 +1,8 @@
 #' Laplacian Regularized Least Squares Classifier
 #' 
+#' @param adjacency_kernel kernlab::kernel to use as adjacency kernel
+#' @param gamma numeric; Weight of the unlabeled data
+#' @inheritParams BaseClassifier
 #' @example tests/examples/exampleLaplacianKernelLeastSquaresClassifier.R
 #' @export
 LaplacianKernelLeastSquaresClassifier <- function(X, y, X_u, lambda=0, gamma=0, kernel=vanilladot(), adjacency_kernel=rbfdot(1/4), x_center=TRUE, scale=TRUE, y_scale=TRUE) {

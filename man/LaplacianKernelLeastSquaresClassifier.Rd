@@ -8,6 +8,27 @@ LaplacianKernelLeastSquaresClassifier(X, y, X_u, lambda = 0, gamma = 0,
   kernel = vanilladot(), adjacency_kernel = rbfdot(1/4), x_center = TRUE,
   scale = TRUE, y_scale = TRUE)
 }
+\arguments{
+\item{X}{matrix; Design matrix for labeled data}
+
+\item{y}{factor or integer vector; Label vector}
+
+\item{X_u}{matrix; Design matrix for unlabeled data}
+
+\item{lambda}{numeric; L2 regularization parameter}
+
+\item{gamma}{numeric; Weight of the unlabeled data}
+
+\item{kernel}{kernlab::kernel to use}
+
+\item{adjacency_kernel}{kernlab::kernel to use as adjacency kernel}
+
+\item{x_center}{logical;  Should the features be centered?}
+
+\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+
+\item{y_scale}{logical; whether the target vector should be centered}
+}
 \description{
 Laplacian Regularized Least Squares Classifier
 }

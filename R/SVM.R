@@ -12,6 +12,8 @@ setClass("SVM",
 #' @param method Estimation procedure c("Dual","Primal","BGD","SGD","Pegasos")
 #' @param scale Whether a z-transform should be applied (default: TRUE)
 #' @param intercept Whether an intercept should be added (default: FALSE)
+#' @param eps Small value to ensure positive definiteness of the matrix in the QP formulation
+#' @inheritParams BaseClassifier
 #' @return S4 object of type SVM
 #' @export
 SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,eps=1e-9) {
@@ -73,11 +75,8 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,ep
              time=time.passed))
 }
 
-#' return decision values
-#'
-#' Predict class of new observations using a LinearSVM
-#' @rdname predict-methods
-#' @aliases predict,LinearSVM-method
+#' @rdname decisionvalues-methods
+#' @aliases decisionvalues,SVM-method
 setMethod("decisionvalues", signature(object="SVM"), function(object, newdata) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
   X <- ModelVariables$X
@@ -91,11 +90,9 @@ setMethod("decisionvalues", signature(object="SVM"), function(object, newdata) {
   return(as.numeric(output))
 })
 
-#' prediction for SVM
-#'
-#' Predict class of new observations using a LinearSVM
-#' @rdname predict-methods
-#' @aliases predict,LinearSVM-method
+
+#' @rdname rssl-predict
+#' @aliases predict,SVM-method
 setMethod("predict", signature(object="SVM"), function(object, newdata) {
   output <- decisionvalues(object,newdata)
   factor(as.numeric(output>0),levels=0:1,labels=object@classnames)

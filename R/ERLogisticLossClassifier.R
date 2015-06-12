@@ -1,5 +1,4 @@
 #' @include LogisticLossClassifier.R
-#' @export
 setClass("ERLogisticLossClassifier",
          representation(w="numeric"),
          prototype(name="Entropy Regularized Logistic Loss Classifier"), 

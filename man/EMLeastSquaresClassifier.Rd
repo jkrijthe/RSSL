@@ -9,17 +9,23 @@ EMLeastSquaresClassifier(X, y, X_u, method = "inverse", x_center = FALSE,
   eps = 1e-09)
 }
 \arguments{
-\item{X}{design matrix of the labeled objects}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{vector with labels}
+\item{y}{factor or integer vector; Label vector}
 
-\item{X_u}{design matrix of the labeled objects}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
 \item{method}{character; Currently only "EM"}
+
+\item{x_center}{logical;  Should the features be centered?}
 
 \item{scale}{Should the features be normalized? (default: FALSE)}
 
 \item{verbose}{logical; Controls the verbosity of the output}
+
+\item{intercept}{logical; Whether an intercept should be included}
+
+\item{lambda}{numeric; L2 regularization parameter}
 
 \item{eps}{Stopping criterion for the maximinimization}
 

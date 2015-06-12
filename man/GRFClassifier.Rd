@@ -5,7 +5,7 @@
 \title{Gaussian Random Fields and Harmonic functions}
 \usage{
 GRFClassifier(X, y, X_u, adjacency_kernel = NULL, sigma = 0.1, eta = 0.1,
-  CMN = TRUE, scale = FALSE, x_center = FALSE)
+  CMN = TRUE, scale = FALSE, x_center = FALSE, y_u = NULL)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -16,11 +16,17 @@ GRFClassifier(X, y, X_u, adjacency_kernel = NULL, sigma = 0.1, eta = 0.1,
 
 \item{adjacency_kernel}{kernlab::kernel; kernel object}
 
+\item{sigma}{parameter for kernel if no kernel is given}
+
 \item{eta}{The influence of the external classifier (not currently used)}
 
 \item{CMN}{Should the Class Mass Normalization heuristic be applied? (default: TRUE)}
 
-\item{y_u}{Labels given by external classifier}
+\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+
+\item{x_center}{logical;  Should the features be centered?}
+
+\item{y_u}{Labels given by external classifier (Not used)}
 }
 \description{
 Gaussian Random Fields and Harmonic functions

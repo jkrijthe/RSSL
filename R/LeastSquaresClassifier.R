@@ -8,15 +8,13 @@ setClass("LeastSquaresClassifier",
 #'
 #' Use least squares regression as a classification technique using class indicators as targets. Note this method minimizes quadratic loss, not the truncated quadratic loss.
 #'
-#' @usage LeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
-#'
-#' @param X Design matrix, intercept term is added within the function
-#' @param y Vector or factor with class assignments
-#' @param lambda Regularization parameter of the l2 penalty in regularized least squares
+#' @param lambda Regularization parameter of the l2 penalty
 #' @param intercept TRUE if an intercept should be added to the model
 #' @param x_center TRUE, whether the dependent variables (features) should be centered
 #' @param scale If TRUE, apply a z-transform to the design matrix X before running the regression
-#' @param ... additional arguments
+#' @param y_scale If True scale the target vector
+#' @param method Method to use for fitting. One of c("inverse","Normal","QR","BFGS")
+#' @inheritParams BaseClassifier
 #' @return S4 object of class LeastSquaresClassifier with the following slots:
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}
@@ -24,6 +22,8 @@ setClass("LeastSquaresClassifier",
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 #' @export
 LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, method="inverse", y_scale=FALSE) {
+  
+  if (!is.numeric(lambda) | lambda<0) { stop("Incorrect alpha.") }
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
@@ -74,19 +74,16 @@ LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALS
     # BFGS gradient descent
     theta<-rep(0,ncol(X))
     theta<-matrix(optim(theta,fn=function(w,X,Y) { squared_objective(matrix(w),X,matrix(Y)) },gr=function(w,X,Y) { squared_gradient(matrix(w),X,matrix(Y)) },X=X,Y=Y,method="BFGS")$par,m,k)
-  } 
-  else if (method=="CPP") {
-    theta<-squared_solution(X,matrix(Y))
   } else if (method=="CG") {
     # Conjugate gradient method
     theta <- rep(0,ncol(X))
-    theta <- matrix(optim(theta,fn=objective,gr=gradient,X=X,y=Y,method="CG")$par)
+    theta <- matrix(optim(theta,fn=squared_objective,gr=squared_gradient,X=X,y=Y,method="CG")$par)
   } else if (method=="Newton") {
     
     returnfunction<-function(w,X,Y) {
-      val<-objective(w,X,Y)
-      attr(val,"gradient")<-gradient(w,X,Y)
-      attr(val,"hessian")<-hessian(w,X,Y)
+      val<-squared_objective(w,X,Y)
+      attr(val,"gradient")<-squared_gradient(w,X,Y)
+      attr(val,"hessian")<-squared_hessian(w,X,Y)
       return(val)
     }
     theta <- rep(0,ncol(X))
@@ -119,7 +116,7 @@ setMethod("loss", signature(object="LeastSquaresClassifier"), function(object, n
   return(rowSums((X %*% object@theta - Y)^2))
 })
 
-#' @rdname predict-methods
+#' @rdname rssl-predict
 #' @aliases predict,LeastSquaresClassifier-method
 setMethod("predict", signature(object="LeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
@@ -142,6 +139,8 @@ setMethod("predict", signature(object="LeastSquaresClassifier"), function(object
   }
 })
 
+#' @rdname decisionvalues-methods
+#' @aliases decisionvalues,SVM-method
 setMethod("decisionvalues", signature(object="LeastSquaresClassifier"), function(object, newdata) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
   X <- ModelVariables$X
@@ -153,6 +152,8 @@ setMethod("decisionvalues", signature(object="LeastSquaresClassifier"), function
   return(expscore)
 })
 
+#' @rdname rssl-formatting
+#' @aliases show,LeastSquaresClassifier-method
 setMethod("show", signature(object="LeastSquaresClassifier"), function(object) {
   print(object@theta)
 })
@@ -161,20 +162,23 @@ setMethod("boundaryplot", signature(object="LeastSquaresClassifier"), function(o
   p+geom_abline(intercept = (-(object@theta[1]-0.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
 })
 
+squared_objective <- function(w,X,y) {
+  w <- matrix(w,nrow=ncol(X))
+  sum((X%*%w-y)^2)
+}
+
+
+squared_gradient<-function(w,X,y) {
+  w <- matrix(w,nrow=ncol(X))
+  2 * t(X) %*% X %*% w - 2 * t(X) %*% y
+}
+
+squared_hessian<-function(w,X,y) {
+  2 * t(X) %*% X
+}
+
 solve_quadratic_bfgs <- function(X,y,lambda) {
   warning("No regularization implemented.")
-  
-  objective<-function(w,X,y) {
-    w <- matrix(w,m,k)
-    sum((X%*%w-y)^2)
-  }
-  gradient<-function(w,X,y) {
-    w <- matrix(w,m,k)
-    2 * t(X) %*% X %*% w - 2 * t(X) %*% y
-  }
-  hessian<-function(w,X,y) {
-    2 * t(X) %*% X
-  }
-  
-  optim(theta,fn=objective,gr=gradient,X=X,y=y,method="BFGS")$par
+  theta <- rep(0.0,ncol(X))
+  optim(theta,fn=squared_objective,gr=squared_gradient,X=X,y=y,method="BFGS")$par
 }

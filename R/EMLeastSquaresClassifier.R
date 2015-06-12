@@ -8,13 +8,11 @@ setClass("EMLeastSquaresClassifier",
 #' 
 #' Minimize the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.
 #' 
-#' @param X design matrix of the labeled objects
-#' @param y vector with labels
-#' @param X_u design matrix of the labeled objects
 #' @param method character; Currently only "EM"
 #' @param scale Should the features be normalized? (default: FALSE)
 #' @param eps Stopping criterion for the maximinimization
 #' @param verbose logical; Controls the verbosity of the output
+#' @inheritParams BaseClassifier
 #' @param ... Additional Parameters, Not used
 #' 
 #' @export

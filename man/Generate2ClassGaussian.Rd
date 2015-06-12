@@ -20,6 +20,6 @@ Generate data from 2 gaussian distributed datasets
 }
 \examples{
 D <- generate2ClassGaussian(1000,expected=FALSE)
-clplot(as.matrix(D[,1:2]),factor(D$y))
+plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 

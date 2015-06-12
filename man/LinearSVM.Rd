@@ -7,9 +7,9 @@
 LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09)
 }
 \arguments{
-\item{X}{Design matrix}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{Labels of the observations}
+\item{y}{factor or integer vector; Label vector}
 
 \item{C}{Cost variable}
 
@@ -17,7 +17,7 @@ LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09)
 
 \item{scale}{Whether a z-transform should be applied (default: TRUE)}
 
-\item{intercept}{Whether an intercept should be added (default: TRUE)}
+\item{eps}{Small value to ensure positive definiteness of the matrix in QP formulation}
 }
 \value{
 S4 object of type LinearSVM

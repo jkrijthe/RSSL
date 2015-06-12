@@ -22,6 +22,8 @@ TSVM(X, y, X_u, Clabeled = 0, Cunlabeled = 0, fracpos = 0.5,
 
 \item{intercept}{TRUE if an intercept should be added to the model}
 
+\item{x_center}{logical;  Should the features be centered?}
+
 \item{scale}{If TRUE, apply a z-transform to all observations in X and X_u before running the regression}
 
 \item{...}{additional arguments}

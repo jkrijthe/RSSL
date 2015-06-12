@@ -15,6 +15,7 @@ setClass("TSVM",
 #' @param intercept TRUE if an intercept should be added to the model
 #' @param scale If TRUE, apply a z-transform to all observations in X and X_u before running the regression
 #' @param ... additional arguments
+#' @inheritParams BaseClassifier
 #' @return S4 object of class TSVM with the following slots:
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}
@@ -27,7 +28,7 @@ setClass("TSVM",
 TSVM <- function(X, y, X_u, Clabeled=0, Cunlabeled=0, fracpos=0.5, intercept=TRUE, x_center=TRUE, scale=TRUE, ...) {
   
   ## Preprocessing to correct datastructures and scaling  
-#   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=interceptx_center=x_center)
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center)
   X<-ModelVariables$X
   y<-ModelVariables$y
   X_u<-ModelVariables$X_u

@@ -8,15 +8,15 @@ DifferencePlot(data, measurement = 1, legendsetting = "right",
   dataset_names = NULL, classifier_names = NULL)
 }
 \arguments{
-\item{data}{ErrorCurve object}
+\item{data}{LearningCurve object}
 
 \item{measurement}{Index of the measurement to be plotted}
 
 \item{legendsetting}{Where the legend should be placed}
 
-\item{dataset_names}{Names of the datasets in the ErrorCurve object}
+\item{dataset_names}{Names of the datasets in the LearningCurve object}
 
-\item{classifier_names}{Names of the classifiers in the ErrorCurve object}
+\item{classifier_names}{Names of the classifiers in the LearningCurve object}
 }
 \description{
 Plot of difference between supervised and semi-supervised errors

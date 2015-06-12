@@ -4,18 +4,17 @@ setClass("GRFClassifier",
          prototype(name="GRFClassifier",scaling=NULL), 
          contains="Classifier")
 
-#' @title Gaussian Random Fields and Harmonic functions
+#' Gaussian Random Fields and Harmonic functions
 #' 
-#' @param X matrix; Design matrix for labeled data
-#' @param y factor or integer vector; Label vector
-#' @param X_u matrix; Design matrix for unlabeled data
 #' @param adjacency_kernel kernlab::kernel; kernel object
+#' @param sigma parameter for kernel if no kernel is given
 #' @param eta The influence of the external classifier (not currently used)
-#' @param y_u Labels given by external classifier
+#' @param y_u Labels given by external classifier (Not used)
 #' @param CMN Should the Class Mass Normalization heuristic be applied? (default: TRUE)
+#' @inheritParams BaseClassifier
 #' @example tests/examples/exampleGRFClassifier.R
 #' @export
-GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,CMN=TRUE,scale=FALSE,x_center=FALSE) {
+GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,CMN=TRUE,scale=FALSE,x_center=FALSE,y_u=NULL) {
   #only do evaluation if we need predictions
   #TODO: include external classifier scores
   
@@ -54,6 +53,8 @@ GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,CMN=TRUE
              ))
 }
 
+#' @rdname rssl-predict
+#' @aliases predict,GRFClassifier-method
 setMethod("predict", signature(object="GRFClassifier"),function(object,newdata,...) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
   X<-ModelVariables$X
@@ -62,13 +63,6 @@ setMethod("predict", signature(object="GRFClassifier"),function(object,newdata,.
   t_class <- GRFClassifier(object@Xtrain,object@ytrain,X,object@sigma,object@eta)
   class_ind <- as.integer(t_class@unlabels < 0.5)
   factor(class_ind,levels=0:1,labels=object@classnames)
-})
-
-setMethod("loss", signature(object="GRFClassifier"),function(object,newdata,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y,scaling=object@scaling,intercept=FALSE)
-  X<-ModelVariables$X
-  
-  rep(0,nrow(X))
 })
 
 # Direct R Translation of Xiaojin Zhu's Matlab code

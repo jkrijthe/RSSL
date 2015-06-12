@@ -6,6 +6,13 @@
 \usage{
 solve_svm(K, y, C = 1)
 }
+\arguments{
+\item{K}{Kernel matrix}
+
+\item{y}{Output vector}
+
+\item{C}{Cost parameter}
+}
 \description{
 SVM solve.QP implementation
 }

@@ -4,13 +4,11 @@ setClass("MCLinearDiscriminantClassifier",
          prototype(name="Moment Constrained Linear Discriminant Classifier"),
          contains="LinearDiscriminantClassifier")
 
-#' Moment constrained semi-supervised linear discriminant analysis
+#' Moment Constrained Semi-Supervised Linear Discriminant Analysis.
 #'
 #' Using an update of the estimated means and covariance proposed by \cite{Loog}. 
-#' Using the method="closedform" option, uses the ad hoc parameter update proposed in \cite{Loog}, 
-#' while for method="ml" the better (but slower) constrained maximum likelihood estimation proposed in \cite{Loog} is used.
+#' Using the method="closedform" option, uses the ad hoc parameter update proposed in \cite{Loog}. The alternative way to minimize this objective function directly has not been implemented yet.
 #'
-#' @usage MCLinearDiscriminantClassifier(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...)
 #'
 #' @param X Matrix with n objects for m features
 #' @param y factor with labels for n objects
@@ -19,6 +17,8 @@ setClass("MCLinearDiscriminantClassifier",
 #' @param prior Matrix (k by 1) of class prior probabilities. If NULL, estimated from data
 #' @param scale logical Whether scaling should be apply
 #' @param ... Additional parameters, not used
+#' 
+#' @family RSSL classifiers
 #' @export
 MCLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...) {
   ## Preprocessing to correct datastructures and scaling  
@@ -66,7 +66,7 @@ MCLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform",prior=
     sigma<-lapply(1:ncol(Y),function(c){sigma})
     
   } else if (method=="ml") {
-    
+    stop("Not implemented yet")
 #     maxIterations<-10000
 #     eps<-1e-2
 #     stepFactor = 1e-1

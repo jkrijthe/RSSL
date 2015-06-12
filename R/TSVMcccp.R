@@ -9,13 +9,13 @@ setClass("TSVMcccp",
 #' @param X matrix; Design matrix, intercept term is added within the function
 #' @param y vector; Vector or factor with class assignments
 #' @param X_u matrix; Design matrix of the unlabeled data, intercept term is added within the function
-#' @param Clabeled numeric; Cost parameter of the SVM
-#' @param Cunlabeled numeric; Cost parameter of the unlabeled objects
-#' @param fracpos numeric; fraction of test points to assign to the first class
-#' @param intercept TRUE if an intercept should be added to the model
+#' @param C numeric; Cost parameter of the SVM
+#' @param Cstar numeric; Cost parameter of the unlabeled objects
+#' @param s numeric; parameter controlling the loss function of the unlabeled objects
 #' @param scale If TRUE, apply a z-transform to all observations in X and X_u before running the regression
 #' @param verbose logical; print debugging messages (default: FALSE)
 #' @param ... additional arguments
+#' @inheritParams BaseClassifier
 #' @return S4 object of class TSVM with the following slots:
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}
@@ -126,11 +126,16 @@ TSVMcccp <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALSE, e
              beta=beta))
 }
 
+#' @rdname rssl-predict
+#' @aliases predict,TSVMcccp-method
 setMethod("predict", signature(object="TSVMcccp"), function(object, newdata, probs=FALSE) {
   
 })
 
 #' SVM solve.QP implementation
+#' @param K Kernel matrix
+#' @param y Output vector
+#' @param C Cost parameter
 #' @export
 solve_svm <- function(K, y, C=1) {
   n <- nrow(K)
@@ -165,13 +170,15 @@ solve_svm <- function(K, y, C=1) {
 #' @param X matrix; Design matrix, intercept term is added within the function
 #' @param y vector; Vector or factor with class assignments
 #' @param X_u matrix; Design matrix of the unlabeled data, intercept term is added within the function
-#' @param Clabeled numeric; Cost parameter of the SVM
-#' @param Cunlabeled numeric; Cost parameter of the unlabeled objects
-#' @param fracpos numeric; fraction of test points to assign to the first class
-#' @param intercept logical; TRUE if an intercept should be added to the model
+#' @param C numeric; Cost parameter of the SVM
+#' @param Cstar numeric; Cost parameter of the unlabeled objects
+#' @param s numeric; parameter controlling the loss function of the unlabeled objects
 #' @param scale logical; If TRUE, apply a z-transform to all observations in X and X_u before running the regression
 #' @param verbose logical; print debugging messages (default: FALSE)
+#' @param eps numeric; Convergence criterion
+#' @param init numeric; Initial classifier parameters to start the convex concave procedure
 #' @param ... additional arguments
+#' @inheritParams BaseClassifier
 #' @return S4 object of class TSVM with the following slots:
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}

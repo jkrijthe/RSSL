@@ -150,6 +150,7 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE)
 #' @param y Vector or factor with class assignments (default: NULL)
 #' @param scaling Apply a given z-transform to the design matrix X (default: NULL)
 #' @param intercept Whether to include an intercept in the design matrices
+#' @param classnames Vector with class names
 #' @return list object with the following objects:
 #' \item{X}{design matrix of the labeled data}
 #' \item{y}{integer vector indicating the labels of the labeled data}

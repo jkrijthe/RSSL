@@ -4,9 +4,10 @@
 #'
 #' @param n number of observations to generate
 #' @param expected TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
+#' @param gap Size of the gap
 #' @examples
 #' D <- generateSlicedCookie(1000,expected=FALSE)
-#' clplot(as.matrix(D[,1:2]),factor(D$y))
+#' plot(data[,1],data[,2],col=data$Class,asp=1)
 #' @return A data.frame with n objects from the sliced cookie example
 #' @export
 generateSlicedCookie<-function(n=100, expected=FALSE, gap=1) {
@@ -27,7 +28,6 @@ generateSlicedCookie<-function(n=100, expected=FALSE, gap=1) {
 #' 
 #' @param n integer; Number of examples to generate
 #' @param noise_var numeric; size of the variance parameter
-#' @param expected logical; whether the decision boundary should be the expected or perpendicular
 #' 
 #' @export
 generateTwoCircles <- function(n=100, noise_var=0.2) {
@@ -46,7 +46,7 @@ generateTwoCircles <- function(n=100, noise_var=0.2) {
 #' 
 #' @examples
 #' D <- generate2ClassGaussian(1000,expected=FALSE)
-#' clplot(as.matrix(D[,1:2]),factor(D$y))
+#' plot(data[,1],data[,2],col=data$Class,asp=1)
 #' @export
 generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
   X<-rbind(mvrnorm(n/2,rep(-1,d),diag(rep(var,d))),mvrnorm(n/2,rep(1,d),diag(rep(var,d))))
@@ -67,7 +67,7 @@ generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
 #' @param expected TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
 #' @examples
 #' D <- generateFourClusters(1000,distance=6,expected=TRUE)
-#' clplot(as.matrix(D[,1:2]),factor(D$y))
+#' plot(data[,1],data[,2],col=data$Class,asp=1)
 #' @export
 generateFourClusters<-function(n=100,distance=6,expected=FALSE) {
   
@@ -85,6 +85,9 @@ generateFourClusters<-function(n=100,distance=6,expected=FALSE) {
 
 #' Generate Crescent Moon dataset
 #'
+#' @param n Number of objects to generate 
+#' @param d Dimensionality of the dataset
+#' @param sigma Noise added 
 #' @examples
 #' data<-generateCrescentMoon(150,1)
 #' plot(data[,1],data[,2],col=data$Class,asp=1)

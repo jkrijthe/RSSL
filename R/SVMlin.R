@@ -11,6 +11,10 @@ SVMlin<-function(X, y, X_u=NULL, x_center=FALSE,scale=FALSE,binary_path=NULL,tem
     stop("Path to temp directory is not given")
   }
   
+  if (!(requireNamespace("e1071", quietly = TRUE) & requireNamespace("SparseM", quietly = TRUE))) {
+    stop("packages e1071 and SparseM are required for this function")
+  } else {
+    
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X<-ModelVariables$X
@@ -21,7 +25,7 @@ SVMlin<-function(X, y, X_u=NULL, x_center=FALSE,scale=FALSE,binary_path=NULL,tem
   modelform<-ModelVariables$modelform
 
   frac_pos<-prop.table(table(y))[2]
-  write.matrix.csr(x=as.matrix.csr(rbind(X,X_u)), file=paste(temp_path,"tempfile.train",sep=""))
+  e1071::write.matrix.csr(x=SparseM::as.matrix.csr(rbind(X,X_u)), file=paste(temp_path,"tempfile.train",sep=""))
   write(c(2*(y-1.5),rep(0,nrow(X_u))), file=paste(temp_path,"tempfile.labels",sep=""),ncolumns=1)
   
   system(paste("cd ",temp_path,"; ", binary_path,"svmlin -W 1 -U ",lambda_u," -A ",type," -R ",frac_pos," ",temp_path,"tempfile.train ",temp_path,"tempfile.labels",sep=""),intern=TRUE)
@@ -32,13 +36,16 @@ SVMlin<-function(X, y, X_u=NULL, x_center=FALSE,scale=FALSE,binary_path=NULL,tem
       binary_path=binary_path,
       temp_path=temp_path
   )
+  }
 }
 
+#' @rdname rssl-predict
+#' @aliases predict,SVMlin-method
 setMethod("predict", signature(object="SVMlin"), function(object, newdata, probs=FALSE) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
   X<-ModelVariables$X
   
-  write.matrix.csr(x=as.matrix.csr(X), file=paste(object@temp_path,"tempfile.test",sep=""))
+  #e1071::write.matrix.csr(x=SparseM::as.matrix.csr(X), file=paste(object@temp_path,"tempfile.test",sep=""))
   
   system(paste("cd ",object@temp_path,"; ", object@binary_path,"svmlin -f ",object@temp_path,"tempfile.train.weights ",object@temp_path,"tempfile.test",sep=""),intern=TRUE)
   
@@ -46,6 +53,7 @@ setMethod("predict", signature(object="SVMlin"), function(object, newdata, probs
   return((y>0)+1)
 })
 
+#' @rdname loss-methods
 setMethod("loss", signature(object="SVMlin"), function(object, newdata, y=NULL) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE)
   X<-ModelVariables$X
@@ -55,7 +63,7 @@ setMethod("loss", signature(object="SVMlin"), function(object, newdata, y=NULL) 
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
   X<-ModelVariables$X
   
-  write.matrix.csr(x=as.matrix.csr(X), file=paste(object@temp_path,"tempfile.test",sep=""))
+  e1071::write.matrix.csr(x=SparseM:as.matrix.csr(X), file=paste(object@temp_path,"tempfile.test",sep=""))
   
   system(paste("cd ",object@temp_path,"; ", object@binary_path,"svmlin -f ",object@temp_path,"tempfile.train.weights ",object@temp_path,"tempfile.test",sep=""),intern=TRUE)
   y<-2*(y-1.5)

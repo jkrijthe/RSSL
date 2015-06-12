@@ -4,7 +4,8 @@
 \alias{KernelLeastSquaresClassifier}
 \title{Kernelized Least Squares Classifier}
 \usage{
-KernelLeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FALSE, ...)
+KernelLeastSquaresClassifier(X, y, lambda = 0, gamma = 0,
+  kernel = vanilladot(), x_center = TRUE, scale = TRUE, y_scale = TRUE)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -15,13 +16,13 @@ KernelLeastSquaresClassifier(X, y, lambda=0, intercept=TRUE, x_center, scale=FAL
 
 \item{gamma}{numeric; Parameter for the Laplacian term in Laplacian RLSC}
 
+\item{kernel}{kernlab kernel function}
+
 \item{x_center}{TRUE, whether the dependent variables (features) should be centered}
 
 \item{scale}{If TRUE, apply a z-transform to the design matrix X before running the regression}
 
-\item{intercept}{TRUE if an intercept should be added to the model}
-
-\item{...}{additional arguments}
+\item{y_scale}{TRUE center the target vector}
 }
 \value{
 S4 object of class LeastSquaresClassifier with the following slots:

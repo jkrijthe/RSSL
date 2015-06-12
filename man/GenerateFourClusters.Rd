@@ -18,6 +18,6 @@ Generate a four clusters dataset
 }
 \examples{
 D <- generateFourClusters(1000,distance=6,expected=TRUE)
-clplot(as.matrix(D[,1:2]),factor(D$y))
+plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 

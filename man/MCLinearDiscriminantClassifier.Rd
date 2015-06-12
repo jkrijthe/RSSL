@@ -2,9 +2,10 @@
 % Please edit documentation in R/MCLinearDiscriminantClassifier.R
 \name{MCLinearDiscriminantClassifier}
 \alias{MCLinearDiscriminantClassifier}
-\title{Moment constrained semi-supervised linear discriminant analysis}
+\title{Moment Constrained Semi-Supervised Linear Discriminant Analysis.}
 \usage{
-MCLinearDiscriminantClassifier(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...)
+MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
+  prior = NULL, scale = FALSE, ...)
 }
 \arguments{
 \item{X}{Matrix with n objects for m features}
@@ -23,7 +24,10 @@ MCLinearDiscriminantClassifier(X, y, X_u, method="closedform",prior=NULL, scale=
 }
 \description{
 Using an update of the estimated means and covariance proposed by \cite{Loog}.
-Using the method="closedform" option, uses the ad hoc parameter update proposed in \cite{Loog},
-while for method="ml" the better (but slower) constrained maximum likelihood estimation proposed in \cite{Loog} is used.
+Using the method="closedform" option, uses the ad hoc parameter update proposed in \cite{Loog}. The alternative way to minimize this objective function directly has not been implemented yet.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{MCNearestMeanClassifier}};
+  \code{\link{TSVMuniversvm}}
 }
 

@@ -8,13 +8,21 @@ LaplacianSVM(X, y, X_u = NULL, lambda = 1, gamma = 1, scale = TRUE,
   kernel = vanilladot(), adjacency_kernel = rbfdot(1/4))
 }
 \arguments{
-\item{X}{Design matrix}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{Labels of the observations}
+\item{y}{factor or integer vector; Label vector}
 
-\item{scale}{Whether a z-transform should be applied (default: TRUE)}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{C}{Cost variable}
+\item{lambda}{numeric; L2 regularization parameter}
+
+\item{gamma}{numeric; Weight of the unlabeled data}
+
+\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+
+\item{kernel}{kernlab::kernel to use}
+
+\item{adjacency_kernel}{kernlab::kernel to use as adjacency kernel}
 }
 \value{
 S4 object of type LaplacianSVM

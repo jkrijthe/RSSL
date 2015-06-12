@@ -32,18 +32,6 @@ setGeneric("losspart",function(object, ...) {standardGeneric("losspart")})
 #' @rdname losslogsum-methods
 setGeneric("losslogsum",function(object, ...) {standardGeneric("losslogsum")})
 
-#' Predictions of a classifier or regression function
-#' 
-#' @param object Classification or Regression object
-#' @param newdata new data to predict
-#' @param probs logical; Whether probabilities should be returned
-#' @param ... Additional parameters
-#' 
-#' @export
-#' @docType methods
-#' @rdname predict-methods
-setGeneric("predict",function(object, ...) {standardGeneric("predict")})
-
 #' Class Posteriors of a classifier
 #' 
 #' @param object Classifier or Regression object
@@ -54,19 +42,19 @@ setGeneric("predict",function(object, ...) {standardGeneric("predict")})
 #' @rdname posterior-methods
 setGeneric("posterior",function(object, ...) {standardGeneric("posterior")})
 
+#' Decision values returned by a classifier for a set of objects
+#' 
+#' Returns decision values of a classifier
+#' 
+#' @param object Classifier object
+#' @param newdata new data to classify
+#' 
 #' @export
+#' @docType methods
+#' @rdname decisionvalues-methods
 setGeneric("decisionvalues",function(object, newdata)
   standardGeneric("decisionvalues")
 )
-
-#' Plot function
-#' 
-#' @param x Classifier or Regression object
-#' @param y TODO
-#' @param ... Additional parameters
-#' 
-#' @export
-setGeneric("plot", function(x, y, ...) standardGeneric("plot"))
 
 #' Decision Boundary plot of a classifier
 #' 
@@ -78,3 +66,17 @@ setGeneric("plot", function(x, y, ...) standardGeneric("plot"))
 #' @docType methods
 #' @rdname boundaryplot-methods
 setGeneric("boundaryplot",function(object,...) {standardGeneric("boundaryplot")})
+
+
+#' Show RSSL classifier
+#' @name rssl-formatting
+#' @param object classifier
+NULL
+
+#' Predict using RSSL classifier
+#' @name rssl-predict
+#' @param object classifier
+#' @param newdata objects to generate predictions for
+#' @param ... Other arguments
+#' @param probs Whether probabilities should be returned
+NULL

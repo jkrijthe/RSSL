@@ -81,7 +81,7 @@ setMethod("loss", signature(object="LogisticLossClassifier"), function(object, n
   sum(log(matrix(1,nrow(X),1)+exp(- y * (X %*% object@w))))
 })                                                                              
 
-#' @rdname predict-methods
+#' @rdname rssl-predict
 #' @aliases predict,LogisticLossClassifier-method  
 setMethod("predict", signature(object="LogisticLossClassifier"), function(object, newdata,probs=FALSE) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=TRUE)

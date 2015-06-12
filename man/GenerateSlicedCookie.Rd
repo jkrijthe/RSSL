@@ -10,6 +10,8 @@ generateSlicedCookie(n = 100, expected = FALSE, gap = 1)
 \item{n}{number of observations to generate}
 
 \item{expected}{TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin}
+
+\item{gap}{Size of the gap}
 }
 \value{
 A data.frame with n objects from the sliced cookie example
@@ -19,6 +21,6 @@ Generate a sliced cookie dataset: a circle with a large margin in the middle.
 }
 \examples{
 D <- generateSlicedCookie(1000,expected=FALSE)
-clplot(as.matrix(D[,1:2]),factor(D$y))
+plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 

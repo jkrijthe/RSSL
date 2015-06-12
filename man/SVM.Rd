@@ -19,6 +19,10 @@ SVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = FALSE,
 \item{scale}{Whether a z-transform should be applied (default: TRUE)}
 
 \item{intercept}{Whether an intercept should be added (default: FALSE)}
+
+\item{kernel}{kernlab::kernel to use}
+
+\item{eps}{Small value to ensure positive definiteness of the matrix in the QP formulation}
 }
 \value{
 S4 object of type SVM
