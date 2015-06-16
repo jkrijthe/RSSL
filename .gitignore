@@ -7,3 +7,4 @@ Rprof.out
 .Rproj.user
 *.so
 *.o
+inst/doc

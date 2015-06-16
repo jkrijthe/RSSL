@@ -1,8 +1,10 @@
 ---
 title: "Semi-Supervised Classifiers"
-author: "Jesse Krijthe"
-date: "January 21, 2015"
-output: html_document
+date: "`r Sys.Date()`"
+output: rmarkdown::html_document
+vignette: >
+  %\VignetteIndexEntry{Semi-Supervised Classifiers}
+  %\VignetteEngine{knitr::rmarkdown}
 ---
 ```{r echo=FALSE, include=FALSE}
 library(RSSL)
@@ -106,7 +108,7 @@ problem_2gauss <-  data_2gauss %>% df_to_matrices(Class~.)
 
 problem1 <- problem_2gauss
 
-p1 <- ggplot(data_2gauss,aes(x=V1,y=V2,shape=Class,color=Class)) +
+p1 <- ggplot(data_2gauss,aes(x=X1,y=X2,shape=Class,color=Class)) +
   geom_point(size=6,alpha=0.8) +
   coord_equal() +
   theme_tufte(base_family = "Avenir",base_size = 18) +
@@ -237,7 +239,7 @@ Transductive SVMs attempt to find a labeling of the unlabeled objects such that 
 
 ```{r}
 g_svm <- SVM(problem1$X,problem1$y)
-g_tsvm <- TSVM_CCCPlin(problem1$X,problem1$y,problem1$Xu,C=1,Cstar=1)
+g_tsvm <- TSVMcccp_lin(problem1$X,problem1$y,problem1$Xu,C=1,Cstar=1)
 ```
 
 ```{r}
@@ -246,7 +248,7 @@ g_tsvm <- TSVM_CCCPlin(problem1$X,problem1$y,problem1$Xu,C=1,Cstar=1)
 
 ### 'Safe' Semi-Supervised Learning (S4VM)
 ```{r}
-g_s4vm <- S4VM(problem1$X,problem1$y,problem1$Xu) # Returns NULL
+#g_s4vm <- S4VM(problem1$X,problem1$y,problem1$Xu) # Returns NULL
 ```
 
 ### Entropy Regularization (Logistic Regression)
