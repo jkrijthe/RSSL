@@ -42,6 +42,19 @@ setGeneric("losslogsum",function(object, ...) {standardGeneric("losslogsum")})
 #' @rdname posterior-methods
 setGeneric("posterior",function(object, ...) {standardGeneric("posterior")})
 
+#' Loss of a classifier or regression function
+#' 
+#' @param object TODO
+#' @param y Vector with true classes of the test data
+#' @param newdata data.frame object with test data
+#' @param ... additional parameters
+#' @return numeric of the total loss on the test data
+#' 
+#' @export
+#' @docType methods
+#' @rdname loss-methods
+setGeneric("line_coefficients",function(object, ...) {standardGeneric("line_coefficients")})
+
 #' Decision values returned by a classifier for a set of objects
 #' 
 #' Returns decision values of a classifier

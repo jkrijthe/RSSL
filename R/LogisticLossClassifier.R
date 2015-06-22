@@ -100,6 +100,6 @@ setMethod("predict", signature(object="LogisticLossClassifier"), function(object
 
 #' @rdname boundaryplot-methods
 #' @aliases boundaryplot,LogisticLossClassifier-method  
-setMethod("boundaryplot", signature(object="LogisticLossClassifier"), function(object, p) {
-  p+geom_abline(intercept = (-(object@w[1])/object@w[3]), slope = (-object@w[2]/object@w[3]))
+setMethod("line_coefficients", signature(object="LogisticLossClassifier"), function(object) {
+  return(coefficients_after_scaling(w0=object@w[1],w=object@w[2:3],scaling=object@scaling))
 })

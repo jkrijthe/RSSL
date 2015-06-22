@@ -4,8 +4,6 @@ setClass("NormalBasedClassifier",
          prototype(name="NormalBased Classifier"),
          contains="Classifier")
 
-
-
 #' @rdname rssl-formatting
 #' @aliases show,NormalBasedClassifier-method
 setMethod("show", signature(object="NormalBasedClassifier"), function(object) {
@@ -140,30 +138,11 @@ setMethod("posterior", signature(object="NormalBasedClassifier"), function(objec
   return(posteriors)
 })
 
-#' @rdname boundaryplot-methods
-#' @aliases boundaryplot,LeastSquaresClassifier-method
-#' @export
-setMethod("boundaryplot", signature(object="NormalBasedClassifier"), function(object, p,...) {
-#   w <- solve(object@sigma[[1]]) %*% t(object@means[1,, drop=FALSE]-object@means[2, drop=FALSE])
-#   w0<- -(log(object@prior[2]/object@prior[1])+0.5*(object@means[1,, drop=FALSE]+object@means[2, drop=FALSE])%*%w)
-#   
-#   xd<-c(0,-0.33)
-#   xd<-c(-1,-1.35)
-  cat("Note: Boundary plot currently does not take into account data scaling!\n")
-  w<- -(object@means[2,, drop=FALSE]-object@means[1,, drop=FALSE]) %*% solve(object@sigma[[1]])
+#'@export
+setMethod("line_coefficients",signature(object="NormalBasedClassifier"), function(object) {
+  w <- -(object@means[2,, drop=FALSE]-object@means[1,, drop=FALSE]) %*% solve(object@sigma[[1]])
   
-  w0<-(log(object@prior[1])-log(object@prior[2])- 0.5*object@means[1,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[1,, drop=FALSE]) + 0.5*object@means[2,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[2,, drop=FALSE]))
+  w0 <-(log(object@prior[1])-log(object@prior[2])- 0.5*object@means[1,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[1,, drop=FALSE]) + 0.5*object@means[2,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[2,, drop=FALSE]))
   
-#   log(object@prior[1])-0.5*object@means[1,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[1,, drop=FALSE]) + object@means[1,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% xd
-#   log(object@prior[2])-0.5*object@means[2,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[2,, drop=FALSE]) + object@means[2,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% xd
-  
-#   w0+w%*%c(-1,-1.35)
-#   abline(-(log(object@prior[1]/object@prior[2])-0.5*(object@means[1,, drop=FALSE]+object@means[2, drop=FALSE])%*%w)/w[2],-w[1]/w[2])
-  p<-p+scale_linetype_manual(aes(z),name="Classifier", values=c("C1"=2, "C2"="twodash"))
-#   p<-p+geom_abline(aes(="C2"),intercept = (log(object@prior[1]/object@prior[2])-0.5*(object@means[1,, drop=FALSE]+object@means[2, drop=FALSE])%*%w)/w[2], slope = -w[1]/w[2],linetype=1,...)
-
-
-
-  p+geom_abline(aes(z="C1"),intercept = -w0/w[2], slope = -w[1]/w[2],linetype=1,...)
-  
-  })
+  return(coefficients_after_scaling(w0=w0,w=w,scaling=object@scaling))
+})
