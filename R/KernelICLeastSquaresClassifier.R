@@ -1,6 +1,6 @@
 #' @include KernelLeastSquaresClassifier.R
 setClass("KernelICLeastSquaresClassifier", 
-         representation(unlabels="ANY"), 
+         representation(responsibilities="ANY"), 
          prototype(name="KernelICLeastSquaresClassifier"), 
          contains="KernelLeastSquaresClassifier")
 
@@ -13,7 +13,7 @@ setClass("KernelICLeastSquaresClassifier",
 #' @param classprior The classprior used to compare the estimated responsilibities to
 #' @inheritParams BaseClassifier
 #' @export
-KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE, lambda_prior=0, classprior=NULL, method="LBFGS", projection="semisupervised") {
+KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE, lambda_prior=0, classprior=0, method="LBFGS", projection="semisupervised") {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
@@ -23,6 +23,8 @@ KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanillado
   classnames <- ModelVariables$classnames
   modelform <- ModelVariables$modelform
   Y <- ModelVariables$Y
+  
+  stopifnot(ncol(Y)==1)
   
   ## Start Implementation
   n<-nrow(X)
@@ -41,28 +43,28 @@ KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanillado
   Y <- sweep(Y,2,y_scale) # Possibly center the numeric Y labels
   
   if (inherits(kernel,"kernel")) {
-    Ksup <- kernelMatrix(kernel,X,X)
-    alpha_sup <- solve(Ksup+lambda*diag(n)*n, Y)
     Xtrain <- rbind(X, X_u)
     K <- kernelMatrix(kernel,Xtrain,Xtrain)
+    alpha_sup <- solve(K[1:n,1:n,drop=FALSE]+lambda*diag(n), Y)
+    
     theta <- rep(0.5,nrow(X_u))
     if (method=="LBFGS") {
       if (projection=="supervised") {
-        
         Kinv <- inv(K+1e-6*diag(nrow(K)))
-        theta <- rep(0.5,nrow(X_u))
         
-        opt_result <- optim(theta, objective_kicls, gr=gradient_kicls, Kinv=Kinv, K=K, alpha_sup=alpha_sup, l=n, lambda_prior=lambda_prior,classprior=classprior,Y=Y, method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
-        theta<-opt_result$par
-        unlabels<-theta
+        opt_result <- optim(theta, objective_kicls, gr=gradient_kicls, 
+                            Kinv=Kinv, K=K, alpha_sup=alpha_sup, l=n, lambda_prior=lambda_prior,classprior=classprior,Y=Y, 
+                            method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
+        unlabels <- opt_result$par
         theta <- matrix(Kinv %*% c(as.numeric(Y), unlabels))
-      }
-      else if (projection=="semisupervised") {
-        theta <- rep(0.5,nrow(X_u))
-        
-        opt_result <- optim(theta, objective_kicls_semi, gr=gradient_kicls_semi, K=K, alpha_sup=alpha_sup, n=n, lambda_prior=lambda_prior,classprior=classprior, method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
-        unlabels <- theta
+      } else if (projection=="semisupervised") {
+        opt_result <- optim(theta, objective_kicls_semi, gr=gradient_kicls_semi, 
+                            K=K, alpha_sup=alpha_sup, n=n, lambda_prior=lambda_prior,classprior=classprior, 
+                            method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
+        unlabels <- opt_result$par
         theta <- matrix(solve(K+diag(nrow(K))*0.00000001, c(as.numeric(Y), unlabels)))
+      } else {
+        stop("Projection does not exist.")
       }
     }
     
@@ -79,7 +81,7 @@ KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanillado
       kernel=kernel,
       Xtrain=Xtrain,
       y_scale=y_scale,
-      unlabels=unlabels
+      responsibilities=unlabels
   )
 }
 

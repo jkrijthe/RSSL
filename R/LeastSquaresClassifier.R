@@ -1,6 +1,6 @@
 #' @include Classifier.R
 setClass("LeastSquaresClassifier",
-         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",y_scale="numeric"),
+         representation(theta="matrix",scaling="ANY",optimization="ANY",intercept="ANY",y_scale="numeric"),
          prototype(name="LeastSquaresClassifier",scaling=NULL,y_scale=0), 
          contains="Classifier")
 
@@ -98,7 +98,8 @@ LeastSquaresClassifier <- function(X, y, lambda=0, intercept=TRUE, x_center=FALS
       scaling=scaling,
       theta=theta,
       modelform=modelform,
-      intercept=intercept
+      intercept=intercept,
+      y_scale=y_scale
       )
 }
 
@@ -111,9 +112,8 @@ setMethod("loss", signature(object="LeastSquaresClassifier"), function(object, n
   Y <- ModelVariables$Y
 
   if (is.null(Y)) { stop("No labels supplied.")}
-  Y <- sweep(Y,2,object@y_scale,"-")
   
-  return(rowSums((X %*% object@theta - Y)^2))
+  return(rowSums((decisionvalues(object,newdata) - Y)^2))
 })
 
 #' @rdname rssl-predict
@@ -158,8 +158,8 @@ setMethod("show", signature(object="LeastSquaresClassifier"), function(object) {
   print(object@theta)
 })
 
-setMethod("boundaryplot", signature(object="LeastSquaresClassifier"), function(object, p) {
-  p+geom_abline(intercept = (-(object@theta[1]-0.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
+setMethod("line_coefficients", signature(object="LeastSquaresClassifier"), function(object) {
+  return(coefficients_after_scaling(w0=object@theta[1]-(0.5-object@y_scale),w=object@theta[2:3],scaling=object@scaling))
 })
 
 squared_objective <- function(w,X,y) {

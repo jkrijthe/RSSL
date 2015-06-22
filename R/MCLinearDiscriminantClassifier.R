@@ -15,12 +15,11 @@ setClass("MCLinearDiscriminantClassifier",
 #' @param X_u Matrix with n objects for m features for unlabeled data
 #' @param method either "ml" or "closedform"
 #' @param prior Matrix (k by 1) of class prior probabilities. If NULL, estimated from data
-#' @param scale logical Whether scaling should be apply
-#' @param ... Additional parameters, not used
+#' @inheritParams BaseClassifier
 #' 
 #' @family RSSL classifiers
 #' @export
-MCLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform",prior=NULL, scale=FALSE,  ...) {
+MCLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform",prior=NULL, scale=FALSE) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
   X<-ModelVariables$X

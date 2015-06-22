@@ -13,10 +13,11 @@ setClass("LinearSVM",
 #' @param method Estimation procedure c("Dual","Primal","BGD","SGD","Pegasos")
 #' @param scale Whether a z-transform should be applied (default: TRUE)
 #' @param eps Small value to ensure positive definiteness of the matrix in QP formulation
+#' @param reltol relative tolerance using during BFGS optimization
 #' @inheritParams BaseClassifier
 #' @return S4 object of type LinearSVM
 #' @export
-LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
+LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9,reltol=10e-14) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables <- PreProcessing(X,y,scale=scale,intercept=TRUE,x_center=TRUE)
@@ -64,7 +65,7 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9) {
     w <- rep(0.0, ncol(X)) #Initial parameter values
     
     #opt_result <- optimx(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C, method=c("BFGS"), control=list(fnscale=1, maxit=10000, trace=0,starttests=FALSE,reltol=1e-16,type=3,follow.on=TRUE,dowarn=FALSE))
-    opt_result <- optim(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C)
+    opt_result <- optim(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=2*C,method="BFGS",control=list(reltol=reltol))
     
     w<-opt_result$par
 

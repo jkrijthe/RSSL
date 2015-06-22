@@ -4,19 +4,18 @@ setClass("EMLinearDiscriminantClassifier",
          prototype(name="Expectation Maximization Linear Discriminant Classifier"),
          contains="LinearDiscriminantClassifier")
 
-#' Expectation Maximization Nearest Mean Classifier
+#' Semi-Supervised Linear Discriminant Analysis using Expectation Maximization
 #' 
-#' @param X design matrix of the labeled objects
-#' @param y vector with labels
-#' @param X_u design matrix of the labeled objects
+#' Expectation Maximization 
+#' 
 #' @param method character; Currently only "EM"
-#' @param scale Should the features be normalized? (default: FALSE)
 #' @param eps Stopping criterion for the maximinimization
 #' @param verbose logical; Controls the verbosity of the output
-#' @param ... Additional Parameters, Not used
+#' @inheritParams BaseClassifier
 #' 
 #' @export
-EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-8, verbose=FALSE, ...) {
+EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-8, verbose=FALSE) {
+  
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
   X<-ModelVariables$X
@@ -66,5 +65,9 @@ EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, e
       if (verbose) cat("Log of sum loss: ",losslogsum(g_iteration,X,Y,X_u,responsibilities),"\n")
     }
   }
-  new("EMLinearDiscriminantClassifier", modelform=modelform, means=means, prior=prior, sigma=sigma,classnames=classnames,scaling=scaling,responsibilities=responsibilities)
+  
+  new("EMLinearDiscriminantClassifier", modelform=modelform, 
+      means=means, prior=prior, sigma=sigma,
+      classnames=classnames,scaling=scaling,
+      responsibilities=responsibilities)
 }

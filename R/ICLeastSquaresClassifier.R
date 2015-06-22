@@ -1,6 +1,6 @@
 #' @include LeastSquaresClassifier.R
 setClass("ICLeastSquaresClassifier", 
-         representation(theta="matrix",optimization="ANY",unlabels="ANY"), 
+         representation(theta="matrix", optimization="ANY", responsibilities="ANY"), 
          prototype(name="ICLeastSquaresClassifier"), 
          contains="LeastSquaresClassifier")
 
@@ -37,6 +37,7 @@ setClass("ICLeastSquaresClassifier",
 #' points(testdata$X_u[,1],testdata$X_u[,2],col="darkgrey",pch=16,cex=0.5)
 #' abline((0.5-w1[1])/w1[3],-w1[2]/w1[3],lty=2)
 #' abline((0.5-w2[1])/w2[3],-w2[2]/w2[3],lty=1)
+#' @family RSSL LeastSquares
 #' @export
 ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda_prior=0,trueprob=NULL,eps=10e-10,y_scale=FALSE) {
   
@@ -51,15 +52,18 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
   y <- ModelVariables$Y
+  Y <- y
   
-  if (!(nrow(X)==length(y))) { stop("Length of y and number of rows in X should be the same.")}
+  
+  if (!(nrow(X)==nrow(y))) { stop("Length of y and number of rows in X should be the same.")}
   
   if (y_scale) {
-    y_scale <- mean(y)
-    y <- y-y_scale
+    y_scale <- colMeans(Y)
   } else {
-    y_scale <- 0
+    y_scale <- rep(0,ncol(Y))
   }
+  
+  y <- sweep(y,2,y_scale) # Possibly center the numeric Y labels
   
   if ((nrow(X)+nrow(X_u))<ncol(X)) inv <- function(M) { ginv(M) }
   else inv <- function(M) { ginv(M) } #Another possibility: chol2inv(chol(M))
@@ -145,8 +149,8 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       O3 <- 2/nrow(X) * X_u %*% t(F) %*% y
       
       if (lambda2>0) {
-        O4<- 2 * lambda2 * X_u %*% C %*% diag(c(0,rep(1,(m-1)))) %*% t(F) %*% y
-        O5<- 2 * lambda2 * X_u %*% C %*% diag(c(0,rep(1,(m-1)))) %*% C %*% t(X_u)
+        O4 <- 2 * lambda2 * X_u %*% C %*% diag(c(0,rep(1,(m-1)))) %*% t(F) %*% y
+        O5 <- 2 * lambda2 * X_u %*% C %*% diag(c(0,rep(1,(m-1)))) %*% C %*% t(X_u)
       }
       
       opt_grad <- function(theta) {
@@ -165,16 +169,17 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
 #       opt_grad(c(0.1,0.9))
       
         # Bounded optimization
-      opt_result <- optim(theta, opt_func, gr=opt_grad, method="L-BFGS-B", lower=0.0, upper=1.0, control=list(fnscale=1))
+      opt_result <- optim(theta, opt_func, gr=opt_grad, method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
       theta<-opt_result$par
       
       unlabels<-theta
-    }
-    else if (projection=="semisupervised") {
+    } else if (projection=="semisupervised") {
       m<-ncol(Xe)
-      
-      w_sup<- matrix(inv(t(X)%*%X+nrow(X)*lambda2*diag(c(0,rep(1,(m-1))))) %*% t(X) %*% y,ncol=1)
-      
+      if (intercept) {
+        w_sup<- matrix(inv(t(X)%*%X+nrow(X)*lambda2*diag(c(0,rep(1,(m-1))))) %*% t(X) %*% y,ncol=1)
+      } else {
+        w_sup<- matrix(inv(t(X)%*%X+nrow(X)*lambda2*diag(m)) %*% t(X) %*% y,ncol=1)
+      }
       C <- inv(t(Xe) %*% Xe + nrow(Xe)*lambda1*diag(c(0,rep(1,(m-1))))) # Check this
       F <- Xe %*% C 
       G <- X_u %*% t(F) %*% F
@@ -184,7 +189,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       
       opt_func_projection <- function(theta) {
           # Return a Mahanalobis type distance between the semi-supervised and supervised coefficients
-          theta<-matrix(theta)
+          theta <- matrix(theta)
           w_semi <- matrix(C %*% t(Xe) %*% rbind(matrix(y),theta),ncol=1)
 
           t(theta) %*% O1 %*% theta + 2 * t(theta) %*% O2 - 2 * t(theta) %*% O3 + lambda_prior*(mean(theta)-mean_y)^2
@@ -202,7 +207,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       theta <- rep(0.5,nrow(X_u))
 
       # Bounded optimization
-      opt_result <- optim(theta, opt_func_projection, gr=opt_grad_projection, method="L-BFGS-B", lower=0.0, upper=1.0, control=list(fnscale=1))
+      opt_result <- optim(theta, opt_func_projection, gr=opt_grad_projection, method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
       theta<-opt_result$par
       
       unlabels<-theta
@@ -250,13 +255,15 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
             }
       
       theta <- rep(0.5,nrow(X_u))
+      
       # Bounded optimization
-      opt_result <- optim(theta, opt_func_projection, gr=opt_grad_projection, method="L-BFGS-B", lower=0.0, upper=1.0, control=list(fnscale=1))
+      opt_result <- optim(theta, opt_func_projection, gr=opt_grad_projection, 
+                          method="L-BFGS-B", lower=0.0, upper=1.0, 
+                          control=list(fnscale=1))
       theta<-opt_result$par
       
       unlabels<-theta
-    } 
-    else if (projection=="euclidean") {
+    } else if (projection=="euclidean") {
       w_sup<- matrix(inv(t(X)%*%X) %*% t(X) %*% y,ncol=1)
       
       opt_func <- function(theta) {
@@ -279,7 +286,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       
       theta <- rep(0.5,nrow(X_u))
       # Bounded optimization
-      opt_result <- optim(theta, opt_func, gr=opt_grad, method="L-BFGS-B", lower=0.0, upper=1.0, control=list(fnscale=1))
+      opt_result <- optim(theta, opt_func, gr=opt_grad, method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
       theta<-opt_result$par
       
       unlabels<-theta
@@ -323,7 +330,6 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       theta<-matrix(theta)
       ws[i,] <- matrix(C %*% t(Xe) %*% rbind(matrix(y),theta),ncol=1)
       objectiveval[i]<-opt_func_projection(theta) # Save objective values
-      # Save
     }
     return(list(ws=ws,sg=searchgrid,w_sup=w_sup,objectiveval=objectiveval))
     
@@ -337,7 +343,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       classnames=classnames,
       modelform=modelform,
       theta=theta,
-      unlabels=unlabels,
+      responsibilities=unlabels,
       scaling=scaling,
       intercept=intercept,
       optimization=opt_result,

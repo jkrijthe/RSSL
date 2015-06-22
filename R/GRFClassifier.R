@@ -1,6 +1,6 @@
 #' @include Classifier.R
 setClass("GRFClassifier",
-         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",Xtrain="matrix",ytrain="ANY",eta="numeric",sigma="numeric",unlab_predictions="factor"),
+         representation(theta="matrix",responsibilities="ANY",scaling="ANY",optimization="ANY",intercept="ANY",Xtrain="matrix",ytrain="ANY",eta="numeric",sigma="numeric",unlab_predictions="factor"),
          prototype(name="GRFClassifier",scaling=NULL), 
          contains="Classifier")
 
@@ -43,7 +43,7 @@ GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,CMN=TRUE
   return(new("GRFClassifier",
              modelform=modelform,
              scaling=NULL,
-             unlabels=unlabels,
+             responsibilities=unlabels,
              unlab_predictions=unlab_predictions,
              Xtrain=X,
              classnames=classnames,

@@ -1,21 +1,19 @@
 #' @include NearestMeanClassifier.R
 setClass("EMNearestMeanClassifier",
-         representation(responsibilities="matrix"),
+         representation(responsibilities="matrix", iterations="numeric"),
          prototype(name="Expectation Maximization Nearest Mean Classifier"),
          contains="NearestMeanClassifier")
 
-#' Expectation Maximization Nearest Mean Classifier
+#' Semi-Supervised Nearest Mean Classifier using Expectation Maximization
 #' 
-#' @param X design matrix of the labeled objects
-#' @param y vector with labels
-#' @param X_u design matrix of the labeled objects
 #' @param method character; Currently only "EM"
 #' @param scale Should the features be normalized? (default: FALSE)
 #' @param eps Stopping criterion for the maximinimization
-#' @param ... Unused
+#' @inheritParams BaseClassifier
 #' 
 #' @export
-EMNearestMeanClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-4, ...) {
+EMNearestMeanClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-4) {
+  
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
   X<-ModelVariables$X
@@ -53,5 +51,9 @@ EMNearestMeanClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-4
 #       print(losspart(g_iteration,Xe,Ye))
     }
   }
-  new("EMNearestMeanClassifier", modelform=modelform, means=means, prior=prior, sigma=sigma,classnames=classnames,scaling=scaling,responsibilities=responsibilities)
+  new("EMNearestMeanClassifier", 
+      modelform=modelform, classnames=classnames,
+      means=means, prior=prior, sigma=sigma,
+      scaling=scaling,
+      responsibilities=responsibilities,iterations=iteration)
 }
