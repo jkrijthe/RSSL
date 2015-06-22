@@ -6,7 +6,7 @@
 \usage{
 KernelICLeastSquaresClassifier(X, y, X_u, lambda = 0, kernel = vanilladot(),
   x_center = TRUE, scale = TRUE, y_scale = TRUE, lambda_prior = 0,
-  classprior = NULL, method = "LBFGS", projection = "semisupervised")
+  classprior = 0, method = "LBFGS", projection = "semisupervised")
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}

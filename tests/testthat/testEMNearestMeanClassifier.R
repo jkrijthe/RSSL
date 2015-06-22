@@ -21,10 +21,9 @@ test_that("Formula and matrix formulation give same results",{
   expect_that(g_matrix@classnames,is_equivalent_to(g_model@classnames)) # Class names the same?
 })
 
-test_that("Adding the labeled data again does not help",{
+test_that("Classnames supervised and semi-supervised variant are the same",{
   g_semi <- EMNearestMeanClassifier(X, y, X)
   g_sup <- NearestMeanClassifier(X, y)
-  
-  expect_that(1-mean(predict(g_semi,X_test)==y_test),is_equivalent_to(1-mean(predict(g_sup,X_test)==y_test))) # Same classification error?
+
   expect_that(g_semi@classnames,is_equivalent_to(g_sup@classnames)) # Class names the same?
 })

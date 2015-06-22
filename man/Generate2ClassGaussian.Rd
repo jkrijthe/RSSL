@@ -2,7 +2,7 @@
 % Please edit documentation in R/GenerateSSLData.R
 \name{generate2ClassGaussian}
 \alias{generate2ClassGaussian}
-\title{Generate data from 2 gaussian distributed datasets}
+\title{Generate data from 2 gaussian distributed classes}
 \usage{
 generate2ClassGaussian(n = 10000, d = 100, var = 1, expected = TRUE)
 }
@@ -16,10 +16,10 @@ generate2ClassGaussian(n = 10000, d = 100, var = 1, expected = TRUE)
 \item{expected}{logical; whether the decision boundary should be the expected or perpendicular}
 }
 \description{
-Generate data from 2 gaussian distributed datasets
+Generate data from 2 gaussian distributed classes
 }
 \examples{
-D <- generate2ClassGaussian(1000,expected=FALSE)
+data <- generate2ClassGaussian(1000,expected=FALSE)
 plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 

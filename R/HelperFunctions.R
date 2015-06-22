@@ -7,57 +7,8 @@ cov_ml<-function(X) { ((nrow(X)-1)/nrow(X))*cov(X) }
 #' @title Standard Error of a vector
 #' @param x numeric; vector for which to calculate standard error
 #' @export
-stderror <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x))) # http://stackoverflow.com/questions/2676554/in-r-how-to-find-the-standard-error-of-the-mean
-
-#' @title Convert data.frame to matrices for semi-supervised learners
-#'
-#' Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations. Note: always removes the intercept
-#'
-#' @usage SSLDataFrameToMatrices(model,D)
-#'
-#' @param model Formula object with model
-#' @param D data.frame object with objects
-#' @return list object with the following objects:
-#' \item{X}{design matrix of the labeled data}
-#' \item{X_u}{design matrix of the unlabeled data}
-#' \item{y}{integer vector indicating the labels of the labeled data}
-#' \item{classnames}{names of the classes corresponding to the integers in y}
-#' @export
-SSLDataFrameToMatrices <- function(model,D) {
-  # Split labeled and unlabelled data
-  classname<-all.vars(model)[1] # determine the name of the dependent variable
-  
-  D_l <- D[!is.na(D[,classname]),] # labeled data
-  D_u <- D[is.na(D[,classname]),] # unlabeled data
-  
-  # Data.Frame to Matrices
-  
-  X <- model.matrix(model, D_l)
-  y <- as.factor(data.matrix(D_l[,classname]))
-  if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
-  
-  X_u<-NULL
-  if (nrow(D_u)>0) {
-    D_u[,classname] <- 1
-    X_u <- model.matrix(model, D_u)
-  }
-  
-  # Remove Intercept
-  selected.columns<-colnames(X) != "(Intercept)"
-  X <- X[, selected.columns]
-  if (nrow(D_u)>0) X_u <- X_u[, selected.columns,drop=FALSE]
-  
-  return(list(X=X, y=y, X_u=X_u))
-  
-  # Data.Frame to Matrices
-#   mf <- model.frame(formula=model, data=D)
-#   y <- model.response(mf)
-#   classnames<-levels(y)
-#   if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
-#   X <- model.matrix(attr(mf, "terms"), data=mf)
-#   X <- X[, colnames(X) != "(Intercept)"] # Remove intercept
-#   Y <- model.matrix(~y-1)
-}
+stderror <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
+# http://stackoverflow.com/questions/2676554/in-r-how-to-find-the-standard-error-of-the-mean
 
 #' Preprocess the input to a classification function
 #'

@@ -1,13 +1,13 @@
 data(testdata)
-modelform <- testdata_formula
+modelform <- testdata$modelform
 classname<-all.vars(modelform)[1] 
-D <- testdata_train
-D_test <- testdata_test
-X <- testdata_X
-X_u <- testdata_X_u
-y <- testdata_y
-X_test <- testdata_X_test
-y_test <- testdata_y_test
+D <- testdata$D
+D_test <- testdata$D_test
+X <- testdata$X
+X_u <- testdata$X_u
+y <- testdata$y
+X_test <- testdata$X_test
+y_test <- testdata$y_test
 
 #Test Different input schemes
 cat("Classifier: LinearDiscriminantClassifier\n")
@@ -26,3 +26,8 @@ g<-LinearDiscriminantClassifier(X,y,scale=TRUE)
 cat("Error: ", 1-mean(predict(g,X_test)==y_test),"\n")
 cat("Loss:  ", loss(g, X_test, y_test),"\n")
 cat("\n")
+
+g<-LinearDiscriminantClassifier(X,y)
+line_coefficients(g)
+g<-LinearDiscriminantClassifier(X,y,scale=TRUE)
+line_coefficients(g)

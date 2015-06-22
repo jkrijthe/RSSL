@@ -17,7 +17,7 @@ generateFourClusters(n = 100, distance = 6, expected = FALSE)
 Generate a four clusters dataset
 }
 \examples{
-D <- generateFourClusters(1000,distance=6,expected=TRUE)
+data <- generateFourClusters(1000,distance=6,expected=TRUE)
 plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 

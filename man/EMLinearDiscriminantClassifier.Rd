@@ -2,29 +2,27 @@
 % Please edit documentation in R/EMLinearDiscriminantClassifier.R
 \name{EMLinearDiscriminantClassifier}
 \alias{EMLinearDiscriminantClassifier}
-\title{Expectation Maximization Nearest Mean Classifier}
+\title{Semi-Supervised Linear Discriminant Analysis using Expectation Maximization}
 \usage{
 EMLinearDiscriminantClassifier(X, y, X_u, method = "EM", scale = FALSE,
-  eps = 1e-08, verbose = FALSE, ...)
+  eps = 1e-08, verbose = FALSE)
 }
 \arguments{
-\item{X}{design matrix of the labeled objects}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{vector with labels}
+\item{y}{factor or integer vector; Label vector}
 
-\item{X_u}{design matrix of the labeled objects}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
 \item{method}{character; Currently only "EM"}
 
-\item{scale}{Should the features be normalized? (default: FALSE)}
+\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
 
 \item{eps}{Stopping criterion for the maximinimization}
 
 \item{verbose}{logical; Controls the verbosity of the output}
-
-\item{...}{Additional Parameters, Not used}
 }
 \description{
-Expectation Maximization Nearest Mean Classifier
+Expectation Maximization
 }
 

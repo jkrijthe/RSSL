@@ -33,6 +33,7 @@ Gaussian Random Fields and Harmonic functions
 }
 \examples{
 library(ggplot2)
+library(kernlab)
 
 testdata <- generateTwoCircles(1000,noise=0.1)
 testdata[-sample(1:nrow(testdata),10),]$Class <- NA

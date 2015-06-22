@@ -1,18 +1,3 @@
-split_dataset_ssl<-function(X, y, frac_train=0.8, frac_ssl=0.8) {
-  n<-length(y)
-  idx_train<-sample(1:n,size=ceiling(frac_train*n))
-  n_lab<-length(idx_train) #Number of labeled objects
-  idx_labeled<-idx_train[sample(1:n_lab,size=ceiling((1-frac_ssl)*n_lab))]
-  
-  return(list(X=X[idx_labeled,,drop=FALSE],
-              y=y[idx_labeled], 
-              X_u=X[setdiff(idx_train,idx_labeled),,drop=FALSE],
-              y_u=y[setdiff(idx_train,idx_labeled)],
-              X_test=X[-idx_train,,drop=FALSE],
-              y_test=y[-idx_train])
-  )
-}
-
 data <- generateSlicedCookie(300,expected=TRUE,gap=1)
 X <- model.matrix(Class~.-1,data)
 y <- factor(data$Class)
@@ -38,9 +23,9 @@ yenum <- model.matrix(~y-1,data.frame(y=unlist(list(problem$y,problem$y_u))))[,1
 Xe<-rbind(X,X_u)
 
 g_sup <- solve_svm(X %*% t(X),ynum,C=1)
-g_trans <- TSVMcccp(X=X,y=y,X_u=X_u,C=1,Cstar=1,scale=FALSE,verbose=TRUE)
-g_trans2 <- TSVMcccp_lin(X=X,y=y,X_u=X_u,C=1,Cstar=1,scale=FALSE,verbose=TRUE)
-g_trans2 <- TSVMcccp_lin(X=X,y=y,X_u=X_u,C=1,Cstar=10,scale=FALSE,verbose=TRUE,init=c(-2,1,0),s=0)
+g_trans <- TSVMcccp(X=X,y=y,X_u=X_u,C=1,Cstar=1,scale=FALSE,verbose=FALSE)
+g_trans2 <- TSVMcccp_lin(X=X,y=y,X_u=X_u,C=1,Cstar=1,scale=FALSE,verbose=FALSE)
+g_trans2 <- TSVMcccp_lin(X=X,y=y,X_u=X_u,C=1,Cstar=10,scale=FALSE,verbose=FALSE,init=c(-2,1,0),s=0)
 #g_supext <- solve_svm(Xe %*% t(Xe),yenum,C=1)
 
 

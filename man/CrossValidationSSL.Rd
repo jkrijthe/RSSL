@@ -2,37 +2,62 @@
 % Please edit documentation in R/CrossValidation.R
 \name{CrossValidationSSL}
 \alias{CrossValidationSSL}
-\title{Semi-supervised cross-validation}
+\alias{CrossValidationSSL.list}
+\alias{CrossValidationSSL.matrix}
+\title{Cross-validation in semi-supervised setting}
 \usage{
-CrossValidationSSL(X, y, classifiers, n_labeled = 100,
-  measures = c("predict", "losstest"), groups = NULL, k = 2,
-  repeats = 1, verbose = FALSE, prop_unlabeled = 0.5)
+CrossValidationSSL(X, y, ...)
+
+\method{CrossValidationSSL}{list}(X, y, ..., verbose = FALSE)
+
+\method{CrossValidationSSL}{matrix}(X, y, classifiers, measures = list(Error =
+  measure_error), k = 10, repeats = 1, verbose = FALSE,
+  leaveout = "test", n_labeled = 10, prop_unlabeled = 0.5, time = TRUE,
+  pre_scale = FALSE, pre_pca = FALSE, n_min = 1, ...)
 }
 \arguments{
-\item{X}{Design matrix}
+\item{X}{design matrix of the labeled objects}
 
-\item{y}{label vector}
+\item{y}{vector with labels}
 
-\item{classifiers}{list with classification functions}
+\item{...}{arguments passed to underlying functions}
 
-\item{n_labeled}{number of labeled objects to use}
+\item{verbose}{logical; Controls the verbosity of the output}
 
-\item{measures}{which measures to use}
+\item{classifiers}{list; Classifiers to crossvalidate}
 
-\item{groups}{TODO: description or drop}
+\item{measures}{named list of functions giving the measures to be used}
 
-\item{k}{number of folds}
+\item{k}{integer; Number of folds in the cross-validation}
 
-\item{repeats}{number of repeats}
+\item{repeats}{integer; Number of repeated assignments to folds}
 
-\item{verbose}{Boolean: verbose output or not}
+\item{leaveout}{either "labeled" or "test", see details}
 
-\item{prop_unlabeled}{proportion of the non-labeled objects to be used as unlabeled objects vs. test objects}
+\item{n_labeled}{Number of labeled examples, used in both leavout modes}
+
+\item{prop_unlabeled}{numeric; proportion of unlabeled objects}
+
+\item{time}{logical; Whether execution time should be saved.}
+
+\item{pre_scale}{logical; Whether the features should be scaled before the dataset is used}
+
+\item{pre_pca}{logical; Whether the features should be preprocessed using a PCA step}
+
+\item{n_min}{integer; Minimum number of labeled objects per class}
 }
 \description{
-Semi-supervised cross-validation
+Cross-validation for semi-supervised learning, in which the dataset is split in three parts: labeled training object, unlabeled training object and validation objects. This can be used to evaluate different approaches to semi-supervised classification under the assumption the labels are missing at random. Different cross-validation schemes are implemented. See below for details.
 }
 \details{
-Labeled samples form the fold
+The input to this function can be either: a dataset in the form of a feature matrix and factor containing the labels, a dataset in the form of a formula and data.frame or a named list of these two options.
+
+
+There are two main modes in which the cross-validation can be carried out, controlled by the \code{leaveout} parameter.
+When leaveout is "labeled", the folds are formed by non-overlapping labeled training sets of a user specified size.
+Each of these folds is used as a labeled set, while the rest of the objects are split into the an unlabeled and the test set, controlled by \code{prop_unlabeled} parameter.
+Note that objects can be used multiple times in for testing, when training on a different fold, while other objects are never used for testing.
+
+The "test" option of \code{leaveout}, on the other hand, uses the folds as the test sets. This means every object will be used as a test object exactly once. The remaining objects in each training iteration are split randomly into a labeled and an unlabeled part, where the number of the labeled objects is controlled by the user through the n_labeled parameter.
 }
 

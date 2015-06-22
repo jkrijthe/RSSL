@@ -2,27 +2,25 @@
 % Please edit documentation in R/EMNearestMeanClassifier.R
 \name{EMNearestMeanClassifier}
 \alias{EMNearestMeanClassifier}
-\title{Expectation Maximization Nearest Mean Classifier}
+\title{Semi-Supervised Nearest Mean Classifier using Expectation Maximization}
 \usage{
 EMNearestMeanClassifier(X, y, X_u, method = "EM", scale = FALSE,
-  eps = 1e-04, ...)
+  eps = 1e-04)
 }
 \arguments{
-\item{X}{design matrix of the labeled objects}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{vector with labels}
+\item{y}{factor or integer vector; Label vector}
 
-\item{X_u}{design matrix of the labeled objects}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
 \item{method}{character; Currently only "EM"}
 
 \item{scale}{Should the features be normalized? (default: FALSE)}
 
 \item{eps}{Stopping criterion for the maximinimization}
-
-\item{...}{Unused}
 }
 \description{
-Expectation Maximization Nearest Mean Classifier
+Semi-Supervised Nearest Mean Classifier using Expectation Maximization
 }
 

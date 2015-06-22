@@ -94,6 +94,13 @@ setMethod("loss", signature(object="SelfLearning"), function(object,newdata,y=NU
   return(loss(object@model,X,y,...))
 })
 
+setMethod("line_coefficients", signature(object="SelfLearning"), function(object) {
+  if (!is.null(object@scaling)) { 
+    stop("Plotting decision boundaries for scaled self-learning is currently not implemented.")
+  }
+  line_coefficients(object@model)
+})
+
 # #' Plot method for SelfLearning Classifier
 # #' The plot function plot the label assignments in each iteration
 # #' 

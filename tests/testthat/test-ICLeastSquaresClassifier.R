@@ -24,3 +24,14 @@ test_that("Formula and matrix formulation give same results",{
 test_that("Expected results on simple benchmark dataset",{
   
 })
+
+test_that("Different settings return the same loss",{
+  g_1<-ICLeastSquaresClassifier(X,y,X_u,intercept=TRUE,scale=TRUE)
+  s1 <- mean(loss(g_1,X_test,y_test))
+  g_2<-ICLeastSquaresClassifier(X,y,X_u,intercept=TRUE,x_center=TRUE,scale=TRUE)
+  expect_equal(s1,mean(loss(g_2,X_test,y_test)),tolerance=10e-6)
+  g_3<-ICLeastSquaresClassifier(X,y,X_u,intercept=TRUE,x_center=TRUE,scale=TRUE,y_scale=TRUE)
+  expect_equal(s1,mean(loss(g_3,X_test,y_test)),tolerance=10e-6)
+  g_4<-ICLeastSquaresClassifier(X,y,X_u,intercept=TRUE,scale=TRUE,x_center=TRUE,y_scale=TRUE)
+  expect_equal(s1,mean(loss(g_4,X_test,y_test)),tolerance=10e-6)
+})

@@ -17,7 +17,7 @@ generateCrescentMoon(n = 100, d = 2, sigma = 1)
 Generate Crescent Moon dataset
 }
 \examples{
-data<-generateCrescentMoon(150,1)
-plot(data[,1],data[,2],col=data$Class,asp=1)
+data<-generateCrescentMoon(150,2,1)
+plot(data$X1,data$X2,col=data$Class,asp=1)
 }
 

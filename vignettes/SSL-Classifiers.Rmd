@@ -13,33 +13,7 @@ library(ggplot2)
 library(ggthemes)
 ```
 
-```{r echo=FALSE}
-line_coefficients <- function(object) {
-  stopifnot(is.null(object@scaling)) # Check the input has not been scaled
-  w<- -(object@means[2,, drop=FALSE]-object@means[1,, drop=FALSE]) %*% solve(object@sigma[[1]])
-  
-  w0<-(log(object@prior[1])-log(object@prior[2])- 0.5*object@means[1,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[1,, drop=FALSE]) + 0.5*object@means[2,, drop=FALSE] %*% solve(object@sigma[[1]]) %*% t(object@means[2,, drop=FALSE]))
-  list(intercept = -w0/w[2], slope = -w[1]/w[2])
-}
-
-line_coefficients_ls <- function(object) {
-  stopifnot(is.null(object@scaling)) # Check the input has not been scaled
-  list(intercept = (-(object@theta[1]-0.5)/object@theta[3]), slope = (-object@theta[2]/object@theta[3]))
-}
-
-line_coefficients_ll <- function(object) {
-  stopifnot(is.null(object@scaling)) # Check the input has not been scaled
-  list(intercept = (-(object@w[1])/object@w[3]), slope = (-object@w[2]/object@w[3]))
-}
-
-line_coefficients_fromdual <- function(object) {
-  stopifnot(is.null(object@scaling)) # Check the input has not been scaled
-  w <- c(object@bias, object@Xtrain %*% object@alpha)
-  list(intercept = (-(object@w[1])/object@w[3]), slope = (-object@w[2]/object@w[3]))
-}
-```
-
-The RSSL package contains mostly methods for semi-supervised classification. This vignette serves as an overview of the available classifiers and their example outputs using a simple 2D datasets to illustate their behaviour.
+The RSSL package contains a selection of methods for semi-supervised classification. This vignette serves as an overview of the available classifiers and their example outputs using a simple 2D datasets to illustate their behaviour.
 
 ## Overview of Available Classifiers
 * (Kernel) Least Squares Classifier
@@ -70,34 +44,6 @@ The RSSL package contains mostly methods for semi-supervised classification. Thi
     * Self-learning
 
 ### The example datasets
-```{r echo=FALSE}
-add_missinglabels_mar <- function(df,formula=NULL,prob=0.1) {
-  if (!is.null(formula)) {
-    df <- model.frame(formula,df)
-  }
-  n <- nrow(df)
-  yu <- df[sample(1:n,ceiling(prob*n)),1]
-  df[sample(1:n,ceiling(prob*n)),1] <- NA
-  attr(df,"yu") <- yu
-  return(df)
-}
-```
-
-```{r echo=FALSE}
-df_to_matrices <- function(df,formula=NULL) {
-  yu <- attr(df,"yu")
-  if (!is.null(formula)) {
-    df <- model.frame(formula,df,na.action=NULL)
-  }
-  d <- ncol(df)
-  
-  X <- model.matrix(~.-1, df[!is.na(df[,1]),2:d])
-  Xu <- model.matrix(~.-1, df[is.na(df[,1]),2:d])
-  y <- df[!is.na(df[,1]),1]
-  
-  return(list(X=X,Xu=Xu,y=y,yu=yu))
-}
-```
 In this document we will investigate the behaviour of different semi-supervised classifiers using two simple 2D datasets. In both datasets, labels are missing completely at random. This means the probability of an object missing a label does not depend on the value of its label or its features.
 
 In the first dataset, there are two clearly separated gaussian clusters belonging to two separate classes. Different assumptions made various semi-supervised learning approaches hold for this dataset: clusters correspond to classes, the classes are separated by a boundary through a region of low data density and the labels vary smoothly over the manifolds where the data lives.
@@ -148,17 +94,9 @@ g_self <- SelfLearning(problem1$X,problem1$y,problem1$Xu,LeastSquaresClassifier)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
-lines_ls <- data_frame(
-  intercept=c(-(g_ls@theta[1]-0.5)/g_ls@theta[3], 
-              -(g_self@model@theta[1]-0.5)/g_self@model@theta[3]
-              ),
-  slope=c(-g_ls@theta[2]/g_ls@theta[3],
-          -g_self@model@theta[2]/g_self@model@theta[3]
-          ),
-  Classifier=factor(c("LS","Self Learning"),levels=c("LS","Self Learning"),ordered=TRUE)
-)
 
-p1 + geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ls,show_guide = TRUE)
+
+p1 + geom_classifier("LS"=g_ls,"Self Learning"=g_self)
 ```
 
 ```{r}
@@ -167,17 +105,7 @@ g_self <- SelfLearning(problem2$X,problem2$y,problem2$Xu,LeastSquaresClassifier)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
-lines_ls <- data_frame(
-  intercept=c(-(g_ls@theta[1]-0.5)/g_ls@theta[3], 
-              -(g_self@model@theta[1]-0.5)/g_self@model@theta[3]
-              ),
-  slope=c(-g_ls@theta[2]/g_ls@theta[3],
-          -g_self@model@theta[2]/g_self@model@theta[3]
-          ),
-  Classifier=factor(c("LS","Self Learning"),levels=c("LS","Self Learning"),ordered=TRUE)
-)
-
-p2 + geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ls,show_guide = TRUE)
+p2 + geom_classifier("LS"=g_ls,"Self Learning"=g_self)
 ```
 Note that self-learning can be a very effective strategy, but it may also degrade performance if the initial labeling of the unlabeled objects is far from the true labeling. One solution to this problem is to only label object for which the classifier is very sure. This is currently not implemented in this package.
 
@@ -192,19 +120,7 @@ g_sllda <- SelfLearning(problem1$X,problem1$y,problem1$Xu,LinearDiscriminantClas
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
-lines_lda <- data_frame(
-  intercept=c(line_coefficients(g_lda)$intercept, 
-              line_coefficients(g_emlda)$intercept,
-              line_coefficients(g_sllda@model)$intercept
-              ),
-  slope=c(line_coefficients(g_lda)$slope,
-          line_coefficients(g_emlda)$slope,
-          line_coefficients(g_sllda@model)$slope
-          ),
-  Classifier=factor(c("LDA","EMLDA","SLLDA"),levels=c("LDA","EMLDA","SLLDA"),ordered=TRUE)
-)
-
-p1 +  geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_lda,show_guide = TRUE)
+p1 + geom_classifier("LDA"=g_lda,"EMLDA"=g_emlda,"SLLDA"=g_sllda)
 ```
 
 ```{r}
@@ -214,19 +130,7 @@ g_sllda <- SelfLearning(problem2$X,problem2$y,problem2$Xu,LinearDiscriminantClas
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
-lines_lda <- data_frame(
-  intercept=c(line_coefficients(g_lda)$intercept, 
-              line_coefficients(g_emlda)$intercept,
-              line_coefficients(g_sllda@model)$intercept
-              ),
-  slope=c(line_coefficients(g_lda)$slope,
-          line_coefficients(g_emlda)$slope,
-          line_coefficients(g_sllda@model)$slope
-          ),
-  Classifier=factor(c("LDA","EMLDA","SLLDA"),levels=c("LDA","EMLDA","SLLDA"),ordered=TRUE)
-)
-
-p2 +  geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_lda,show_guide = TRUE)
+p2 + geom_classifier("LDA"=g_lda,"EMLDA"=g_emlda,"SLLDA"=g_sllda)
 ```
 
 Note the similarity between Expectation Maximization and Self-Learning. In fact, Expectation Maximization can be considered a soft self-learning, where objects are assigned responsibilities, probabilities of belonging to one class or another. In self-learning, objects are assignment to a particular class, so only responsibilities of $0$ and $1$ are allowed. As is clear from the example above, when the classifier assigns large posterior probabilities (as in the first dataset), the two procedures are almost equivalent.
@@ -258,17 +162,7 @@ g_tsvm <- TSVMcccp_lin(problem1$X,problem1$y,problem1$Xu,C=1,Cstar=1)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
-lines_ll <- data_frame(
-  intercept=c(line_coefficients_ll(g_lr)$intercept, 
-              line_coefficients_ll(g_erlr)$intercept
-              ),
-  slope=c(line_coefficients_ll(g_lr)$slope,
-          line_coefficients_ll(g_erlr)$slope
-          ),
-  Classifier=factor(c("LL","ERLR"),levels=c("LL","ERLR"),ordered=TRUE)
-)
-
-p2 +  geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ll,show_guide = TRUE)
+p2 + geom_classifier("LL"=g_lr,"ERLR"=g_erlr)
 ```
 
 ## Manifold regularization
@@ -290,7 +184,7 @@ An example of the imputated labels for a given problem is
 
 ```{r}
 generateTwoCircles(200,0.05) %>%
-  ggplot(aes(X.1,X.2,color=Class)) %>%
+  ggplot(aes(X1,X2,color=Class)) %>%
   + geom_point() %>%
   + coord_equal()
 
@@ -302,7 +196,7 @@ W <- exp(-as.matrix(dist(Xin))^2/0.1)
 # u<-harmonic_function(W,yin)
 # 
 # data.frame(Xin, posterior=c(yin,u)) %>%
-#   ggplot(aes(X.1,X.2,colour=posterior)) %>%
+#   ggplot(aes(X1,X2,colour=posterior)) %>%
 #   + geom_point(size=5,alpha=0.8) %>%
 #   + coord_equal()
 
@@ -336,21 +230,7 @@ g_proj_euc <- ICLeastSquaresClassifier(problem1$X,problem1$y,problem1$Xu,project
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
-lines_ls <- data_frame(
-  intercept=c(line_coefficients_ls(g_sup)$intercept, 
-              line_coefficients_ls(g_proj_sup)$intercept,
-              line_coefficients_ls(g_proj_semi)$intercept,
-              line_coefficients_ls(g_proj_euc)$intercept
-              ),
-  slope=c(line_coefficients_ls(g_sup)$slope,
-          line_coefficients_ls(g_proj_sup)$slope,
-          line_coefficients_ls(g_proj_semi)$slope,
-          line_coefficients_ls(g_proj_euc)$slope
-          ),
-  Classifier=factor(c("LS","Proj_sup","Proj_semi","Proj_Euc"),levels=c("LS","Proj_sup","Proj_semi","Proj_Euc"),ordered=TRUE)
-)
-
-p1 +  geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),data=lines_ls,show_guide = TRUE)
+p1 + geom_classifier("LS"=g_sup,"Proj_sup"=g_proj_sup,"Proj_semi"=g_proj_semi,"Proj_Euc"=g_proj_euc)
 ```
 
 ### Implicitly Constrained Linear Discriminant Anaylsis
@@ -360,70 +240,47 @@ g_semi <- ICLinearDiscriminantClassifier(problem1$X,problem1$y,problem1$Xu)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
-lines_lda <- data_frame(
-  intercept=c(line_coefficients(g_sup)$intercept,
-              line_coefficients(g_semi)$intercept
-              ),
-  slope=c(line_coefficients(g_sup)$slope,
-          line_coefficients(g_semi)$slope
-          ),
-  Classifier=factor(c("LDA","ICLDA"),levels=c("LDA","ICLDA"))
-)
-
-p1 + geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),size=0.8,data=lines_lda,show_guide = TRUE)
+p1 + geom_classifier("LDA"=g_sup,"ICLDA"=g_semi)
 ```
 
 
 ### Testing improvements in the loss
-
 ```{r}
-# 
-# 
-# dataset<-Generate2ClassGaussian(n=1000,d = 2,var = 0.3,expected = TRUE)
-# dmat<-model.matrix(formula("y~.-1"),dataset)
-# tvec<-factor(dataset$y)
-# 
-# problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.98)
-# sum(loss(LeastSquaresClassifier(problem$X,problem$y),problem$X_test,problem$y_test))
-# sum(loss(UCLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
-# sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
-# sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection="semisupervised"),problem$X_test,problem$y_test))
-# sum(loss(CPLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
-# mean(predict(CPLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test)==problem$y_test)
-# mean(predict(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection="semisupervised"),problem$X_test)==problem$y_test)
-# mean(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test)==problem$y_test)
-# 
-# #TODO: are CP and IC the same?
-# 
-# sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=LeastSquaresClassifier),problem$X_test,problem$y_test))
-# 
-# # Nearest Mean
-# sum(loss(NearestMeanClassifier(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
-# sum(loss(ICNearestMeanClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
-# sum(loss(EMNearestMeanClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
-# sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=NearestMeanClassifier),problem$X_test,problem$y_test))
-# 
-# 
-# # LDA
-# sum(loss(LinearDiscriminantClassifier(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
-# sum(loss(ICLinearDiscriminantClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
-# sum(loss(EMLinearDiscriminantClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
-# sum(loss(CPLinearDiscriminantClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
-# sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=LinearDiscriminantClassifier),problem$X_test,problem$y_test))
-# 
-# 
-# # Logistic Regression
-# sum(loss(LogisticRegression(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
-# sum(loss(LogisticLossClassifier(X=problem$X,y=problem$y,x_center=TRUE),problem$X_test,problem$y_test))
-# sum(loss(ICLogisticLossClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
-# sum(loss(ERLogisticLossClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
-# mean(predict(LogisticLossClassifier(X=problem$X,y=problem$y),problem$X_test)==problem$y_test)
-# mean(predict(ERLogisticLossClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test)==problem$y_test)
-# 
-# # SVM
-# sum(loss(LinearSVM(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
+dataset<-generate2ClassGaussian(n=1000,d = 2,var = 0.3,expected = TRUE)
+dmat<-model.matrix(formula("Class~.-1"),dataset)
+tvec<-factor(dataset$Class)
+
+problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.98)
+sum(loss(LeastSquaresClassifier(problem$X,problem$y),problem$X_test,problem$y_test))
+sum(loss(USMLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
+sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
+sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection="semisupervised"),problem$X_test,problem$y_test))
+mean(predict(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,projection="semisupervised"),problem$X_test)==problem$y_test)
+mean(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test)==problem$y_test)
+
+sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=LeastSquaresClassifier),problem$X_test,problem$y_test))
+
+# Nearest Mean
+sum(loss(NearestMeanClassifier(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
+sum(loss(ICNearestMeanClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(EMNearestMeanClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=NearestMeanClassifier),problem$X_test,problem$y_test))
 
 
-# Graph based
-#GRF
+# LDA
+sum(loss(LinearDiscriminantClassifier(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
+sum(loss(ICLinearDiscriminantClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(EMLinearDiscriminantClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+sum(loss(SelfLearning(X=problem$X,y=problem$y,X_u=problem$X_u,method=LinearDiscriminantClassifier),problem$X_test,problem$y_test))
+
+
+# Logistic Regression
+sum(loss(LogisticRegression(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
+sum(loss(LogisticLossClassifier(X=problem$X,y=problem$y,x_center=TRUE),problem$X_test,problem$y_test))
+sum(loss(ERLogisticLossClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test,problem$y_test))
+mean(predict(LogisticLossClassifier(X=problem$X,y=problem$y),problem$X_test)==problem$y_test)
+mean(predict(ERLogisticLossClassifier(X=problem$X,y=problem$y,X_u=problem$X_u),problem$X_test)==problem$y_test)
+
+# SVM
+sum(loss(LinearSVM(X=problem$X,y=problem$y),problem$X_test,problem$y_test))
 ```

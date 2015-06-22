@@ -20,7 +20,7 @@ A data.frame with n objects from the sliced cookie example
 Generate a sliced cookie dataset: a circle with a large margin in the middle.
 }
 \examples{
-D <- generateSlicedCookie(1000,expected=FALSE)
+data <- generateSlicedCookie(1000,expected=FALSE)
 plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 

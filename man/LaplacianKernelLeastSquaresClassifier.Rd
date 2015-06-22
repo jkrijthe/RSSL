@@ -33,8 +33,8 @@ LaplacianKernelLeastSquaresClassifier(X, y, X_u, lambda = 0, gamma = 0,
 Laplacian Regularized Least Squares Classifier
 }
 \examples{
-library(RSSL)
 library(ggplot2)
+library(kernlab)
 
 testdata <- generateTwoCircles(1000,noise=0.05)
 testdata[-sample(1:nrow(testdata),6),]$Class <- NA
@@ -42,7 +42,7 @@ tvec<-na.omit(testdata$Class)
 dmatU <- as.matrix(testdata[is.na(testdata$Class),1:2])
 dmat <- as.matrix(testdata[!is.na(testdata$Class),1:2])
 
-precision<-100
+precision<-50
 xgrid<-seq(min(dmatU[,1]),max(dmatU[,1]),length.out=precision)
 ygrid<-seq(min(dmatU[,2]),max(dmatU[,2]),length.out=precision)
 gridmat <- expand.grid(xgrid,ygrid)
@@ -76,7 +76,7 @@ tvec<-na.omit(testdata$Class)
 dmatU <- as.matrix(testdata[is.na(testdata$Class),2:3])
 dmat <- as.matrix(testdata[!is.na(testdata$Class),2:3])
 
-precision<-100
+precision<-50
 xgrid<-seq(min(dmatU[,1]),max(dmatU[,1]),length.out=precision)
 ygrid<-seq(min(dmatU[,2]),max(dmatU[,2]),length.out=precision)
 gridmat <- expand.grid(xgrid,ygrid)

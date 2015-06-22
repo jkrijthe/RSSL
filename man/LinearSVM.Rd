@@ -4,7 +4,8 @@
 \alias{LinearSVM}
 \title{Linear SVM Classifier}
 \usage{
-LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09)
+LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09,
+  reltol = 1e-13)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -18,6 +19,8 @@ LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09)
 \item{scale}{Whether a z-transform should be applied (default: TRUE)}
 
 \item{eps}{Small value to ensure positive definiteness of the matrix in QP formulation}
+
+\item{reltol}{relative tolerance using during BFGS optimization}
 }
 \value{
 S4 object of type LinearSVM

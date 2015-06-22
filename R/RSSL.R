@@ -34,14 +34,13 @@
 #' GenerateSlicedCookie
 #' Generate2ClassGaussian
 #' 
-#' @import MASS
 #' @import kernlab
 #' @import quadprog
 #' @import Matrix
 #' @import ggplot2
-#' @import Rcpp
 #' @import dplyr
 #' @import reshape2
+#' @importFrom MASS mvrnorm ginv
 #' @useDynLib RSSL
 #' @importFrom Rcpp sourceCpp
 #' @docType package

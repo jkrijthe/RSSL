@@ -36,7 +36,7 @@ Use least squares regression as a classification technique using classes as targ
 }
 \examples{
 library(ggplot2)
-
+library(kernlab)
 # Two class problem
 
 dmat<-model.matrix(Species~.-1,iris[51:150,])

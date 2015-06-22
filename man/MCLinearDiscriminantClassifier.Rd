@@ -5,7 +5,7 @@
 \title{Moment Constrained Semi-Supervised Linear Discriminant Analysis.}
 \usage{
 MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
-  prior = NULL, scale = FALSE, ...)
+  prior = NULL, scale = FALSE)
 }
 \arguments{
 \item{X}{Matrix with n objects for m features}
@@ -18,9 +18,7 @@ MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
 
 \item{prior}{Matrix (k by 1) of class prior probabilities. If NULL, estimated from data}
 
-\item{scale}{logical Whether scaling should be apply}
-
-\item{...}{Additional parameters, not used}
+\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
 }
 \description{
 Using an update of the estimated means and covariance proposed by \cite{Loog}.

@@ -4,9 +4,8 @@
 \alias{EMLeastSquaresClassifier}
 \title{An Expectation Maximization like approach to Semi-Supervised Least Squares Classification}
 \usage{
-EMLeastSquaresClassifier(X, y, X_u, method = "inverse", x_center = FALSE,
-  scale = FALSE, verbose = FALSE, intercept = TRUE, lambda = 0,
-  eps = 1e-09)
+EMLeastSquaresClassifier(X, y, X_u, x_center = FALSE, scale = FALSE,
+  verbose = FALSE, intercept = TRUE, lambda = 0, eps = 1e-09)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -14,8 +13,6 @@ EMLeastSquaresClassifier(X, y, X_u, method = "inverse", x_center = FALSE,
 \item{y}{factor or integer vector; Label vector}
 
 \item{X_u}{matrix; Design matrix for unlabeled data}
-
-\item{method}{character; Currently only "EM"}
 
 \item{x_center}{logical;  Should the features be centered?}
 
@@ -27,11 +24,14 @@ EMLeastSquaresClassifier(X, y, X_u, method = "inverse", x_center = FALSE,
 
 \item{lambda}{numeric; L2 regularization parameter}
 
-\item{eps}{Stopping criterion for the maximinimization}
+\item{eps}{Stopping criterion for the minimization}
 
 \item{...}{Additional Parameters, Not used}
 }
 \description{
 Minimize the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.
+}
+\seealso{
+Other RSSL LeastSquares: \code{\link{ICLeastSquaresClassifier}}
 }
 
