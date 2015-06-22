@@ -8,15 +8,16 @@ setClass("EMLeastSquaresClassifier",
 #' 
 #' Minimize the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.
 #' 
-#' @param method character; Currently only "EM"
 #' @param scale Should the features be normalized? (default: FALSE)
-#' @param eps Stopping criterion for the maximinimization
+#' @param eps Stopping criterion for the minimization
 #' @param verbose logical; Controls the verbosity of the output
 #' @inheritParams BaseClassifier
 #' @param ... Additional Parameters, Not used
+#' @family RSSL LeastSquares
 #' 
 #' @export
-EMLeastSquaresClassifier <- function(X, y, X_u, method="inverse", x_center=FALSE, scale=FALSE, verbose=FALSE, intercept=TRUE,lambda=0,eps=10e-10) {
+EMLeastSquaresClassifier <- function(X, y, X_u, x_center=FALSE, scale=FALSE, verbose=FALSE, intercept=TRUE,lambda=0,eps=10e-10,y_scale=FALSE) {
+  
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=FALSE)
   X<-ModelVariables$X
@@ -25,15 +26,21 @@ EMLeastSquaresClassifier <- function(X, y, X_u, method="inverse", x_center=FALSE
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
-  
   Y <- Y
-
   
   n <- nrow(X)
   m <- ncol(X)
   k <- ncol(Y)
   
   Xe<-rbind(X,X_u)
+  
+  if (y_scale) {
+    y_scale <- colMeans(Y)
+  } else {
+    y_scale <- rep(0,ncol(Y))
+  }
+  
+  Y <- sweep(Y,2,y_scale)
   
   if (nrow(X)<ncol(X)) inv <- function(X) { ginv(X) }
   else inv <- function(X) { ginv(X) }
@@ -42,13 +49,12 @@ EMLeastSquaresClassifier <- function(X, y, X_u, method="inverse", x_center=FALSE
   
   iterations <- 0
   while (mean(abs(resp-resp_old))>eps) {
-    Ye <- c(Y,resp)
-    if (method=="inverse") {
-      if (intercept) {
-        theta <- inv(t(Xe) %*% Xe + n*lambda*diag(c(0,rep(1,(m-1))))) %*% (t(Xe) %*% t(t(Ye)))
-      } else {
-        theta <- inv(t(Xe) %*% Xe + n*lambda*diag(rep(1,m))) %*% (t(X) %*% t(t(Ye)))
-      }
+    Ye <- rbind(Y,matrix(resp,ncol=1))
+    
+    if (intercept) {
+      theta <- inv(t(Xe) %*% Xe + n*lambda*diag(c(0,rep(1,(m-1))))) %*% (t(Xe) %*% t(t(Ye)))
+    } else {
+      theta <- inv(t(Xe) %*% Xe + n*lambda*diag(rep(1,m))) %*% (t(X) %*% t(t(Ye)))
     }
     resp_old <- resp
     resp <- X_u %*% theta
@@ -64,5 +70,6 @@ EMLeastSquaresClassifier <- function(X, y, X_u, method="inverse", x_center=FALSE
       theta=theta,
       modelform=modelform,
       intercept=intercept,
-      responsibilities=as.numeric(resp))
+      responsibilities=as.numeric(resp),
+      y_scale=y_scale)
 }
