@@ -83,18 +83,7 @@ LearningCurve.matrix <- function(X, y, classifiers, with_replacement=FALSE, size
 #' 
 #' @param X design matrix
 #' @param y vector of labels
-#' @param classifiers list; Classifiers to crossvalidate
-#' @param n_l Number of labeled objects to be used in the experiments
-#' @param with_replacement Indicated whether the subsampling is done with replacement or not (default: FALSE)
-#' @param sizes vector with number of unlabeled objects for which to evaluate performance
-#' @param n_test Number of test points if with_replacement is TRUE
-#' @param repeats Number of learning curves to draw
-#' @param n_min Minimum number of labeled objects per class in
-#' @param verbose Print progressbar during execution (default: FALSE)
-#' @param dataset_name character; Name of the dataset
-#' @param type Type of learning curve, either "unlabeled" or "fraction"
-#' @param fracs list; fractions of labeled data to use
-#' @param test_fraction numeric; If not NULL a fraction of the object will be left out to serve as the test set
+#' @param ... arguments passed to underlying function
 #' 
 #' @return LearningCurve object
 #' 
@@ -114,18 +103,93 @@ LearningCurve.matrix <- function(X, y, classifiers, with_replacement=FALSE, size
 #' plot(lc)
 #' 
 #' @export
-LearningCurveSSL<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL) {
+LearningCurveSSL<-function(X, y, ...) {
   UseMethod("LearningCurveSSL")
 }
 
 #' @export
-LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1)) {
+LearningCurveSSL.list<-function(X,y,...,verbose=FALSE) {
+
+  if (is.matrix(X[[1]]) & is.factor(y[[1]])) {
+    curves <- lapply(names(X),function(dname){
+      if (verbose) cat(dname,"\n");
+      
+      Xd <- X[[dname]]
+      Xd <- Xd[,colnames(Xd)!="(Intercept)"]
+      Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
+      yd <- y[[dname]]
+      
+      LearningCurveSSL(Xd,yd,...)
+    })
+  } else if (is(X[[1]],"formula") & is.data.frame(y[[1]])) { 
+    curves <- lapply(names(X),function(dname){
+      if (verbose) cat(dname,"\n");
+      data <- data.frame(y[[dname]]) 
+      classname <- all.vars(X[[dname]])[1]
+      
+      Xd <- model.matrix(X[[dname]],y[[dname]])
+      Xd <- Xd[,colnames(Xd)!="(Intercept)"]
+      Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
+      yd <- data[,classname]
+      
+      LearningCurveSSL(Xd,yd,...)
+    })
+  } else {
+    stop("Unknown input. Should be either a list of matrices and label vectors or formulae and data frames.")
+  }
+  names(curves) <- names(X)
+  results <- dplyr::bind_rows(lapply(names(curves),function(x) {dplyr::mutate(curves[[x]]$results,Dataset=x)}))
+  object<-list(n_l=curves[[1]]$n_l,
+               results=results,
+               n_test=curves[[1]]$n_test)
+  class(object)<-"LearningCurve"
+  return(object)
+}
+
+#' @rdname LearningCurveSSL
+#' @param classifiers list; Classifiers to crossvalidate
+#' @param n_l Number of labeled objects to be used in the experiments
+#' @param with_replacement Indicated whether the subsampling is done with replacement or not (default: FALSE)
+#' @param sizes vector with number of unlabeled objects for which to evaluate performance
+#' @param n_test Number of test points if with_replacement is TRUE
+#' @param repeats Number of learning curves to draw
+#' @param n_min Minimum number of labeled objects per class in
+#' @param verbose Print progressbar during execution (default: FALSE)
+#' @param dataset_name character; Name of the dataset
+#' @param type Type of learning curve, either "unlabeled" or "fraction"
+#' @param fracs list; fractions of labeled data to use
+#' @param test_fraction numeric; If not NULL a fraction of the object will be left out to serve as the test set
+#' @param pre_scale logical; Whether the features should be scaled before the dataset is used
+#' @param pre_pca logical; Whether the features should be preprocessed using a PCA step
+#' @param measures named list of functions giving the measures to be used
+#' @param time logical; Whether execution time should be saved.
+#' @export
+LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE,...) {
   
   if (!is.factor(y)) { stop("Labels are not a factor.") }
   if (nrow(X)!=length(y)) { stop("Number of objects in X and y do not match.") }
   K <- length(levels(y))
   
-  results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), length(measures)))
+  # Pre-processing
+  if (pre_scale) X <- scale(X) # Pre-scale data
+  
+  if (pre_pca) {
+    t_pca <- princomp(X)
+    n_comp <- sum(cumsum(t_pca$sdev^2)/sum(t_pca$sdev^2)<0.99)
+    n_comp <- n_comp #min(c(n_comp,floor(n_labeled/2)))
+    X <- t_pca$scores[,1:n_comp]
+  }
+  
+  if (n_l=="enough") { n_l <- max(ncol(X)+5,20) }
+  else if (n_l=="d") { n_l <- ncol(X)+1 }
+  else if (n_l=="2d") { n_l <- ncol(X)*2 }
+  else {n_l<-n_l}
+  
+  # Set variables
+  
+  if (type=="fraction") { sizes <- fracs }
+  
+  results<-array(NA, dim=c(repeats, length(sizes), length(classifiers), length(measures)+time))
   if (is.null(names(classifiers))) {
     classifier_names <- lapply(classifiers, function(c) {as.character(body(c))[[2]]})
   } else {
@@ -138,11 +202,18 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
     measure_names <- names(measures) 
   }
   
-  dimnames(results)<-list("repeats"=1:repeats,
-                          "Number of unlabeled objects"=sizes,
-                          "Classifier"=classifier_names,
-                          "Measure"=measure_names
-                          )
+  if (time) { measure_names<-c(measure_names,"Time")}
+  name_list <- list("repeats"=1:repeats,
+                    "independent"=sizes,
+                    "Classifier"=classifier_names,
+                    "Measure"=measure_names
+  )
+  if (type=="fraction") {
+    names(name_list)[[2]] <- "Fraction of labeled objects"
+  } else {
+    names(name_list)[[2]] <- "Number of unlabeled objects"
+  }
+  dimnames(results)<- name_list
   
   if (verbose) cat("Number of features: ", ncol(X),"\n")
   if (verbose) cat("Number of objects:  ", nrow(X),"\n")
@@ -180,8 +251,13 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
         }
         
         for (c in 1:length(classifiers)) {
-          trained_classifier<-do.call(classifiers[[c]],
+          if (time) timed <- proc.time()
+            trained_classifier<-do.call(classifiers[[c]],
                                       list(X=X_l, y=y_l, X_u=X_u_s, y_u=y_u_s))
+          if (time) {
+            timed <- proc.time()-timed
+            results[i,s,c,length(measures)+1] <- timed[[3]]  
+          }
           for (m in 1:length(measures)) {
             results[i,s,c,m] <- do.call(measures[[m]],
                                         list(trained_classifier=trained_classifier,
@@ -227,8 +303,14 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
       }
       
       for (c in 1:length(classifiers)) {
+        if (time) timed <- proc.time()
         trained_classifier<-do.call(classifiers[[c]],
                                     list(X=X_l, y=y_l, X_u=X_u, y_u=y_u))
+        if (time) {
+          timed <- proc.time()-timed
+          results[i,s,c,length(measures)+1] <- timed[[3]]  
+        }
+        
         for (m in 1:length(measures)) {
           results[i,s,c,m] <- do.call(measures[[m]],
                                       list(trained_classifier=trained_classifier,
@@ -251,27 +333,8 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
   return(object)
 }
 
-#' Plot LearningCurve object
-#' 
-#' @description Plot LearningCurve object generated by the LearningCurve or LearningCurveSSL functions
-#' 
-#' @details If multiple LearningCurve objects are supplied, the metadata from the first object will be used to draw the curves. Dataset names should be distinct
-#' @param x LearningCurve object OR a list of LearningCurve objects TODO: fix for list
-#' @param measurement The number of the measurement that should be plotted
-#' @param legendsetting ggplot2 option Where the legend should be plotted (default: right)
-#' @param dataset_names A vector with dataset names corresponding to the LearningCurve objects
-#' @param classifier_names A vector with (usually shortened) classifier names
-#' @param ncol integer; Number of columns in the plot
-#' @param type integer; Type of graph (not currently used)
-#' @param ... Unused
-#' 
-#' @return a ggplot2 object containing the figure
-#' 
 #' @export
-plot.LearningCurve<-function(x, legendsetting="right", ...) {
-  stopifnot(requireNamespace("dplyr", quietly = TRUE))
-  stopifnot(requireNamespace("reshape", quietly = TRUE))
-  stopifnot(requireNamespace("ggplot2", quietly = TRUE))
+plot.LearningCurve <- function(x, y, ...) {
   
   data<-x
   
@@ -288,28 +351,41 @@ plot.LearningCurve<-function(x, legendsetting="right", ...) {
   #y_label <- dimnames(data[[1]]$results)[[4]][m]
 
   # Generate the dataset for plotting
-  plot_frame <-  x$results %>% 
-    dplyr::group_by_(x_label, quote(Classifier), quote(Measure)) %>%
-    summarize(Mean=mean(value,na.rm=TRUE),SE=sd(value,na.rm=TRUE)/sqrt(n())) %>% 
-    ungroup
+  if ("Dataset" %in% names(x$results)) {
+    plot_frame <-  x$results %>% 
+      dplyr::group_by_(x_label, quote(Classifier), quote(Measure), quote(Dataset)) %>%
+      summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=quote(sd(value,na.rm=TRUE)/sqrt(n()))) %>% 
+      ungroup
+    facet_used <- facet_wrap(~Measure + Dataset,scales="free")
+  } else {
+    plot_frame <-  x$results %>% 
+      dplyr::group_by_(x_label, quote(Classifier), quote(Measure)) %>%
+      summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=quote(sd(value,na.rm=TRUE)/sqrt(n()))) %>% 
+      ungroup
+    facet_used <- facet_wrap(~Measure,scales="free")
+  }
   
-  plot_frame %>% 
+  p <- plot_frame %>% 
     ggplot(aes_string(x=x_label,y="Mean",color="Classifier",shape="Classifier")) +
     geom_point(size=1) +
-    geom_line(aes(linetype=Classifier)) +
-    geom_ribbon(aes(ymax=Mean+1*SE,ymin=Mean-1*SE,fill=Classifier),size=0,alpha=0.3,color=0) +
+    geom_line(aes_string(linetype="Classifier")) +
+    geom_ribbon(aes_string(ymax="Mean+1*SE",ymin="Mean-1*SE",fill="Classifier"),size=0,alpha=0.3,color=0) +
     #geom_errorbar(aes(ymax=Mean+2*SE,ymin=Mean-2*SE,fill=Classifier),width=0.1) +
-    #scale_x_continuous(trans = log2_trans()) +
     theme_classic() +
-    ifelse("Dataset" %in% names(plot_frame),
-           facet_wrap(~Measure + Dataset,scales="free"),
-           facet_wrap(~Measure,scales="free")) +
+    facet_used +
+    ylab("") +
     theme(legend.position="bottom",
           strip.background=element_rect(size = 0),
           axis.title.y=element_text(angle = 0,size=rel(0.8)),
           axis.title.x=element_text(size=rel(0.8)),
           axis.text.y=element_text(size=rel(0.8)),
           axis.text.x=element_text(size=rel(0.8)))
+  if (x_label=="`Fraction of labeled objects`") {
+    p <- p + scale_x_continuous()
+  } else {
+    p <- p + scale_x_continuous(trans = scales::log2_trans())
+  }
+  
   return(p)
 }
 
@@ -323,9 +399,6 @@ plot.LearningCurve<-function(x, legendsetting="right", ...) {
 #' 
 #' @export
 DifferencePlot<-function(data,measurement=1,legendsetting="right",dataset_names=NULL,classifier_names=NULL) {
-  stopifnot(requireNamespace("data.table", quietly = TRUE))
-  stopifnot(requireNamespace("reshape", quietly = TRUE))
-  stopifnot(requireNamespace("ggplot2", quietly = TRUE))
   
   # Check for input object
   if (class(data)=="LearningCurve") { 
@@ -385,30 +458,3 @@ sample_k_per_level <- function(y,k) {
   }
   return(sample_idx)
 }
-
-#' Generate Learning Curve for losses at different fractions of objects labeled
-#' @param X design matrix
-#' @param y vector of labels
-#' @param classifiers list; Classifiers to crossvalidate
-#' @param fracs list; fractions of labeled data to use
-#' @param with_replacement Sample objects with replacement
-#' @param repeats integer; Number of learning curves to generate
-#' @param verbose logical; Should progress to printed?
-#' @param n_min integer; the minimum number of objects per class in the labeled set
-#' @param test_fraction numeric; If not NULL a fraction of the object will be left out to serve as the test set
-#' @export
-
-
-measure_accuracy <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
-  1-mean(y_test==predict(trained_classifier, X_test)) 
-}
-measure_losstest <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
-  mean(loss(trained_classifier, X_test, y_test)) 
-}
-measure_losslab <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
-  mean(loss(trained_classifier, X_l, y_l)) 
-}
-measure_losstrain <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
-  mean(loss(trained_classifier, rbind(X_l,X_u), unlist(list(y_l,y_u))))
-} 
-
