@@ -36,3 +36,12 @@ test_that("Expected Results on simple benchmark dataset",{
   t_matrix <- LeastSquaresClassifier(testdata$X,testdata$y)
   expect_equivalent(t_matrix@theta, matrix(c(0.50115100,0.05052317,-0.29484188),3))
 })
+
+test_that("Multiclass gives an output",{
+  dmat<-model.matrix(Species~.-1,iris[1:150,])
+  tvec<-droplevels(iris$Species[1:150])
+  set.seed(42)
+  problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.0)
+  expect_equal(length(levels(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test))),3)
+  expect_equal(sum(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test)==problem$y_test),61)
+})

@@ -11,7 +11,7 @@ coefficients_after_scaling <- function(w0,w,scaling) {
 }
 
 #' @export
-geom_classifier <- function(...) {
+geom_classifier <- function(...,show_guide=TRUE) {
   classifiers <- list(...)
   alt_names <-  eval(substitute(alist(...)))
   if (is.null(names(classifiers))) names(classifiers) <- alt_names
@@ -22,7 +22,7 @@ geom_classifier <- function(...) {
   }))
   boundaries$Classifier <- factor(names(classifiers),levels=names(classifiers),ordered=TRUE)
   geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),
-              data=boundaries,show_guide = TRUE)
+              data=boundaries,show_guide = show_guide)
 }
 
 #' @export

@@ -13,30 +13,45 @@
 #' @param X_test design matrix with test object
 #' @param y_test labels of test objects
 #' @export
-measure_accuracy <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
+measure_accuracy <- function(trained_classifier, 
+                             X_l=NULL, y_l=NULL, 
+                             X_u=NULL, y_u=NULL, 
+                             X_test=NULL, y_test=NULL) { 
   mean(y_test==predict(trained_classifier, X_test)) 
 }
 #' Classification error on test set
 #' @describeIn evaluation-measures
 #' @export
-measure_error <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
-  1-mean(loss(trained_classifier, X_test, y_test)) 
+measure_error <- function(trained_classifier, 
+                          X_l=NULL, y_l=NULL, 
+                          X_u=NULL, y_u=NULL, 
+                          X_test=NULL, y_test=NULL) { 
+  1-mean(y_test==predict(trained_classifier, X_test))
 }
 #' Average loss on test objects
 #' @describeIn evaluation-measures
 #' @export
-measure_losstest <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
+measure_losstest <- function(trained_classifier, 
+                             X_l=NULL, y_l=NULL, 
+                             X_u=NULL, y_u=NULL, 
+                             X_test=NULL, y_test=NULL) { 
   mean(loss(trained_classifier, X_test, y_test)) 
 }
 #' Average loss on labeled objects
 #' @describeIn evaluation-measures
 #' @export
-measure_losslab <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
+measure_losslab <- function(trained_classifier, 
+                            X_l=NULL, y_l=NULL, 
+                            X_u=NULL, y_u=NULL, 
+                            X_test=NULL, y_test=NULL) { 
   mean(loss(trained_classifier, X_l, y_l)) 
 }
 #' Arevage loss on labeled and unlabeled objects
 #' @describeIn evaluation-measures
 #' @export
-measure_losstrain <- function(trained_classifier, X_l,y_l,X_u,y_u,X_test,y_test) { 
+measure_losstrain <- function(trained_classifier, 
+                              X_l=NULL, y_l=NULL, 
+                              X_u=NULL, y_u=NULL, 
+                              X_test=NULL, y_test=NULL) { 
   mean(loss(trained_classifier, rbind(X_l,X_u), unlist(list(y_l,y_u))))
 } 

@@ -20,8 +20,6 @@ The RSSL package contains a selection of methods for semi-supervised classificat
     * (Kernel) Implicitly Constrained Least Squares Classifier
     * (Kernel) Laplacian Regularized Least Squares Classifier
     * Updated Second Moment Least Squares Classifier
-    * +(Contrastive Pessimistic Least Squares Classifier)
-    * +(Imputed Least Squares Classifier)
     * Self-learning
 * Linear Discriminant Analysis
     * Expectation Maximization Linear Discriminant Analysis
@@ -38,7 +36,6 @@ The RSSL package contains a selection of methods for semi-supervised classificat
     * Transductive SVM using concave convex programming
     * Laplacian SVM
     * Self-learning
-    * (S4VM)
 * Logistic Regression
     * Entropy Regularized Logistic Regression
     * Self-learning
@@ -68,7 +65,7 @@ print(p1)
 
 In the second example, we consider a single gaussian sliced through the middle by a region of low density. The decision boundary, does not overlap with the region of low density. Rather, it is perpendicular to it. This example violates many semi-supervised learning assumptions. The decision boundary is not in a region of low data density, the classes do not correspond to clusters and the labels do not vary smoothly over the data manifold.
 ```{r echo=FALSE}
-data_slicedcookie <- data.frame(generateSlicedCookie(100))[sample(1:100),] %>% 
+data_slicedcookie <- data.frame(generateSlicedCookie(100,expected=TRUE))[sample(1:100),] %>% 
   add_missinglabels_mar(prob=0.9,formula=Class~.)
 problem_slicedcookie <- data_slicedcookie %>% df_to_matrices
 
@@ -90,7 +87,7 @@ print(p2)
 Self-learning refers to the process of using the predictions of an initial learner as additional data for this learner in an iterative way. Here, for a given classifier, we initially train the classifier on only the labeled examples. We then use the predictions of this classifier on the unlabeled objects as the true labels and retrain the classifier with this additional data. This is iterated until the labels predicted by the classifier no longer change.
 ```{r}
 g_ls <- LeastSquaresClassifier(problem1$X,problem1$y)
-g_self <- SelfLearning(problem1$X,problem1$y,problem1$Xu,LeastSquaresClassifier)
+g_self <- SelfLearning(problem1$X,problem1$y,problem1$X_u,LeastSquaresClassifier)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
@@ -101,7 +98,7 @@ p1 + geom_classifier("LS"=g_ls,"Self Learning"=g_self)
 
 ```{r}
 g_ls <- LeastSquaresClassifier(problem2$X,problem2$y)
-g_self <- SelfLearning(problem2$X,problem2$y,problem2$Xu,LeastSquaresClassifier)
+g_self <- SelfLearning(problem2$X,problem2$y,problem2$X_u,LeastSquaresClassifier)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
@@ -115,8 +112,8 @@ For likelihood based models in particular, an obvious approach to semi-supervise
 
 ```{r}
 g_lda <- LinearDiscriminantClassifier(problem1$X,problem1$y)
-g_emlda <- EMLinearDiscriminantClassifier(problem1$X,problem1$y,problem1$Xu)
-g_sllda <- SelfLearning(problem1$X,problem1$y,problem1$Xu,LinearDiscriminantClassifier)
+g_emlda <- EMLinearDiscriminantClassifier(problem1$X,problem1$y,problem1$X_u)
+g_sllda <- SelfLearning(problem1$X,problem1$y,problem1$X_u,LinearDiscriminantClassifier)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
@@ -125,8 +122,8 @@ p1 + geom_classifier("LDA"=g_lda,"EMLDA"=g_emlda,"SLLDA"=g_sllda)
 
 ```{r}
 g_lda <- LinearDiscriminantClassifier(problem2$X,problem2$y)
-g_emlda <- EMLinearDiscriminantClassifier(problem2$X,problem2$y,problem2$Xu)
-g_sllda <- SelfLearning(problem2$X,problem2$y,problem2$Xu,LinearDiscriminantClassifier)
+g_emlda <- EMLinearDiscriminantClassifier(problem2$X,problem2$y,problem2$X_u)
+g_sllda <- SelfLearning(problem2$X,problem2$y,problem2$X_u,LinearDiscriminantClassifier)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
@@ -142,23 +139,37 @@ One possibly useful assumption to use unlabeled data in estimating a classifier 
 Transductive SVMs attempt to find a labeling of the unlabeled objects such that the margin between two classes is maximized. If points are outside the margin, assignment is easy: these points can be assigned to the class whose side of the margin they reside on. For unlabeled points inside the margin, a cost is incurred: assignment to either class still does not lead to $0$ error for this object. The transductive SVM thus attempts to move the decision boundary away from these object, looking for a region of low density such that the margin around the decision boundary contains as few unlabeled (and labeled) objects as possible.
 
 ```{r}
-g_svm <- SVM(problem1$X,problem1$y)
-g_tsvm <- TSVMcccp_lin(problem1$X,problem1$y,problem1$Xu,C=1,Cstar=1)
+g_svm <- LinearSVM(problem2$X,problem2$y,scale=TRUE)
+g_tsvm <- TSVMcccp_lin(problem2$X,problem2$y,problem2$X_u,C=1,Cstar=100)
+g_tsvm2 <- TSVMcccp(problem2$X,problem2$y,problem2$X_u,C=1,Cstar=1)
 ```
 
 ```{r}
+p2 + geom_classifier("SVM"=g_svm,"TSVM"=g_tsvm)
+
+g_ls <-LeastSquaresClassifier(problem2$X,problem2$y,scale=TRUE,y_scale=TRUE)
+
+Xt <- as.matrix(expand.grid(X1=seq(-4,4,length.out = 100),X2=seq(-4,4,length.out = 100)))
+data.frame(Xt,pred=decisionvalues(g_ls,Xt)) %>% 
+  ggplot(aes(x=X1,y=X2,z=pred)) + geom_contour(size=5,breaks=c(0.5)) +
+  geom_classifier(g_ls)
+
+Xt <- as.matrix(expand.grid(X1=seq(-4,4,length.out = 100),X2=seq(-4,4,length.out = 100)))
+data.frame(Xt,pred=decisionvalues(g_svm,Xt)) %>% 
+  ggplot(aes(x=X1,y=X2,z=pred)) + geom_contour(size=5,breaks=c(0)) +
+  geom_classifier(g_svm)
 
 ```
 
 ### 'Safe' Semi-Supervised Learning (S4VM)
 ```{r}
-#g_s4vm <- S4VM(problem1$X,problem1$y,problem1$Xu) # Returns NULL
+#g_s4vm <- S4VM(problem1$X,problem1$y,problem1$X_u) # Returns NULL
 ```
 
 ### Entropy Regularization (Logistic Regression)
 ```{r}
   g_lr <- LogisticLossClassifier(problem2$X,problem2$y)
-  g_erlr <- ERLogisticLossClassifier(problem2$X,problem2$y,problem2$Xu,lambda_entropy = 0,init = rnorm(3))
+  g_erlr <- ERLogisticLossClassifier(problem2$X,problem2$y,problem2$X_u,lambda_entropy = 0,init = rnorm(3))
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
@@ -174,13 +185,6 @@ If we fix the the $f(i)$'s for the labeled objects to their given values and min
 This solution can be found directly using:
 $$f_u=(D_{uu}-W_{uu})^{-1} W_{ul} f_l = (I-P_{uu})^{-1} P_{ul} f_l$$
 An example of the imputated labels for a given problem is
-```{r}
-# g_grf <- GRFClassifier(X,y,Xu)
-# data.frame(Xu,y=g_grf@unlabels[,1]) %>% 
-#   ggplot(aes(x=V1,y=V2,color=y))+
-#   geom_point()
-```
-
 
 ```{r}
 generateTwoCircles(200,0.05) %>%
@@ -188,24 +192,18 @@ generateTwoCircles(200,0.05) %>%
   + geom_point() %>%
   + coord_equal()
 
-data <- generateTwoCircles(200, 0.05) 
-Xin <- as.matrix(data[,1:2])
-yin <- model.matrix(~Class-1,data)[1:2,1,drop=FALSE]
-W <- exp(-as.matrix(dist(Xin))^2/0.1)
+problem_circle <- 
+  generateTwoCircles(200, 0.05) %>% 
+  SSLDataFrameToMatrices(Class~.,.) 
+problem_circle <- split_dataset_ssl(problem_circle$X, problem_circle$y,frac_ssl=0.98)
 
-# u<-harmonic_function(W,yin)
-# 
-# data.frame(Xin, posterior=c(yin,u)) %>%
-#   ggplot(aes(X1,X2,colour=posterior)) %>%
-#   + geom_point(size=5,alpha=0.8) %>%
-#   + coord_equal()
+g_grf <- GRFClassifier(problem_circle$X,problem_circle$y,problem_circle$X_u,sigma=0.0001)
 
-#W <- exp(-as.matrix(dist(Xin))^2/0.1)
-#u <- harmonic_function(W,yin)
-# data.frame(X=Xin,y=c(yin,u)) %>%
-# ggplot(aes(X.X.1,X.X.2,color=y)) %>%
-# + geom_point() %>%
-# + coord_equal()
+data.frame(problem_circle$X,Class=problem_circle$y) %>% 
+  ggplot(aes(x=X1,y=X2,color=Class)) +
+  geom_responsibilities(g_grf,problem_circle$X_u) +
+  geom_point(aes(shape=Class,color=Class),size=6) +
+  coord_equal()
 ```
 
 ## Metric based semi-supervised learning
@@ -224,9 +222,9 @@ where $X_e$ is the combined labeled and unlabeled data design matrix. This is a 
 The option "euclidean" corresponds to Euclidean projection and has the property that the Euclidean distance of $w$ to $w_{oracle}$ (the solution when we would have known all possible labelings) improves, although this might not translate into improved performance in quadratic loss sense.
 ```{r}
 g_sup <- LeastSquaresClassifier(problem1$X,problem1$y)
-g_proj_sup <- ICLeastSquaresClassifier(problem1$X,problem1$y,problem1$Xu,projection = "supervised")
-g_proj_semi <- ICLeastSquaresClassifier(problem1$X,problem1$y,problem1$Xu,projection = "semisupervised")
-g_proj_euc <- ICLeastSquaresClassifier(problem1$X,problem1$y,problem1$Xu,projection = "euclidean")
+g_proj_sup <- ICLeastSquaresClassifier(problem1$X,problem1$y,problem1$X_u,projection = "supervised")
+g_proj_semi <- ICLeastSquaresClassifier(problem1$X,problem1$y,problem1$X_u,projection = "semisupervised")
+g_proj_euc <- ICLeastSquaresClassifier(problem1$X,problem1$y,problem1$X_u,projection = "euclidean")
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
@@ -236,7 +234,7 @@ p1 + geom_classifier("LS"=g_sup,"Proj_sup"=g_proj_sup,"Proj_semi"=g_proj_semi,"P
 ### Implicitly Constrained Linear Discriminant Anaylsis
 ```{r}
 g_sup <- LinearDiscriminantClassifier(problem1$X, problem1$y)
-g_semi <- ICLinearDiscriminantClassifier(problem1$X,problem1$y,problem1$Xu)
+g_semi <- ICLinearDiscriminantClassifier(problem1$X,problem1$y,problem1$X_u)
 ```
 
 ```{r echo=FALSE, warning=FALSE, fig.width=8, fig.height=5, dev="svg"}
@@ -246,11 +244,11 @@ p1 + geom_classifier("LDA"=g_sup,"ICLDA"=g_semi)
 
 ### Testing improvements in the loss
 ```{r}
-dataset<-generate2ClassGaussian(n=1000,d = 2,var = 0.3,expected = TRUE)
-dmat<-model.matrix(formula("Class~.-1"),dataset)
-tvec<-factor(dataset$Class)
+problem <-
+  generate2ClassGaussian(n=1000,d = 2,var = 0.3,expected = TRUE) %>% 
+  SSLDataFrameToMatrices(Class~.,.) %>% 
+  {split_dataset_ssl(.$X,.$y,frac_train=0.5,frac_ssl=0.98) }
 
-problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.98)
 sum(loss(LeastSquaresClassifier(problem$X,problem$y),problem$X_test,problem$y_test))
 sum(loss(USMLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))
 sum(loss(ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u),problem$X_test,problem$y_test))

@@ -34,4 +34,39 @@ test_that("Different settings return the same loss",{
   expect_equal(s1,mean(loss(g_3,X_test,y_test)),tolerance=10e-6)
   g_4<-ICLeastSquaresClassifier(X,y,X_u,intercept=TRUE,scale=TRUE,x_center=TRUE,y_scale=TRUE)
   expect_equal(s1,mean(loss(g_4,X_test,y_test)),tolerance=10e-6)
+  
+  measure_losstrain(g_semi_sup,X_l=problem$X,y_l=problem$y,X_u=problem$X_u,y_u=problem$y_u)
+  mean(loss(g_semi_sup,rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
+  
+  measure_losstrain(g_semi,X_l=problem$X,y_l=problem$y,X_u=problem$X_u,y_u=problem$y_u)
+  mean(loss(g_semi,rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
+  
+  measure_losstrain(g_semi_old,X_l=problem$X,y_l=problem$y,X_u=problem$X_u,y_u=problem$y_u)
+  mean(loss(g_semi_old,rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
+  
+  measure_losstrain(g_semi_scaled,X_l=problem$X,y_l=problem$y,X_u=problem$X_u,y_u=problem$y_u)
+  mean(loss(g_semi_scaled,rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
+})
+
+test_that("Multi class gives an output", {
+  dmat<-model.matrix(Species~.-1,iris[1:150,])
+  tvec<-droplevels(iris$Species[1:150])
+  set.seed(42)
+  problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.5)
+  g_sup <- ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,
+                                    projection="supervised",method="QP",eps=10e-10)
+  g_semi <- ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,
+                                    projection="semisupervised",method="QP",eps=10e-10)
+  g_euc <- ICLeastSquaresClassifier(problem$X,problem$y,problem$X_u,
+                                    projection="euclidean",method="QP",eps=10e-10)
+  
+  # Output has three different classes
+  expect_equal(length(levels(predict(g_sup,problem$X_test))),3)
+  expect_equal(length(levels(predict(g_semi,problem$X_test))),3)
+  expect_equal(length(levels(predict(g_euc,problem$X_test))),3)
+  
+  # Correct number of correct predictions on example dataset
+  expect_equal(sum(predict(g_sup,problem$X_test)==problem$y_test),61)
+  expect_equal(sum(predict(g_semi,problem$X_test)==problem$y_test),61)
+  expect_equal(sum(predict(g_euc,problem$X_test)==problem$y_test),57)
 })

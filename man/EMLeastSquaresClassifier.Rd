@@ -5,7 +5,8 @@
 \title{An Expectation Maximization like approach to Semi-Supervised Least Squares Classification}
 \usage{
 EMLeastSquaresClassifier(X, y, X_u, x_center = FALSE, scale = FALSE,
-  verbose = FALSE, intercept = TRUE, lambda = 0, eps = 1e-09)
+  verbose = FALSE, intercept = TRUE, lambda = 0, eps = 1e-09,
+  y_scale = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -25,6 +26,8 @@ EMLeastSquaresClassifier(X, y, X_u, x_center = FALSE, scale = FALSE,
 \item{lambda}{numeric; L2 regularization parameter}
 
 \item{eps}{Stopping criterion for the minimization}
+
+\item{y_scale}{logical; whether the target vector should be centered}
 
 \item{...}{Additional Parameters, Not used}
 }

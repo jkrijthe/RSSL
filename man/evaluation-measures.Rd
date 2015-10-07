@@ -8,15 +8,20 @@
 \alias{measure_losstrain}
 \title{Performance measures used in classifier evaluation}
 \usage{
-measure_accuracy(trained_classifier, X_l, y_l, X_u, y_u, X_test, y_test)
+measure_accuracy(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
+  y_u = NULL, X_test = NULL, y_test = NULL)
 
-measure_error(trained_classifier, X_l, y_l, X_u, y_u, X_test, y_test)
+measure_error(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
+  y_u = NULL, X_test = NULL, y_test = NULL)
 
-measure_losstest(trained_classifier, X_l, y_l, X_u, y_u, X_test, y_test)
+measure_losstest(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
+  y_u = NULL, X_test = NULL, y_test = NULL)
 
-measure_losslab(trained_classifier, X_l, y_l, X_u, y_u, X_test, y_test)
+measure_losslab(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
+  y_u = NULL, X_test = NULL, y_test = NULL)
 
-measure_losstrain(trained_classifier, X_l, y_l, X_u, y_u, X_test, y_test)
+measure_losstrain(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
+  y_u = NULL, X_test = NULL, y_test = NULL)
 }
 \arguments{
 \item{trained_classifier}{the trained classifier object}
