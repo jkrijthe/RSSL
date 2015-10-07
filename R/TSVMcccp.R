@@ -238,5 +238,10 @@ TSVMcccp_lin <- function(X, y, X_u, C, Cstar, s=-0.3, x_center=FALSE, scale=FALS
     iterations <- iterations + 1
   }
   b<-w[length(w)]
-  return(list(w=w[-length(w)],b=b))
+  
+  return(new("LinearSVM",
+             w=c(b,w),
+             scaling=scaling,
+             modelform=NULL,
+             classnames=classnames))
 }

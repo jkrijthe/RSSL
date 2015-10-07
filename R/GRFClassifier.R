@@ -15,8 +15,7 @@ setClass("GRFClassifier",
 #' @example tests/examples/exampleGRFClassifier.R
 #' @export
 GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,CMN=TRUE,scale=FALSE,x_center=FALSE,y_u=NULL) {
-  #only do evaluation if we need predictions
-  #TODO: include external classifier scores
+
   
   mv <- PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X <- mv$X
@@ -33,17 +32,15 @@ GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,CMN=TRUE
   } else {
     W <- exp(-as.matrix(dist(Xin))^2/sigma) # A possible Kernel
   }
-  #TODO: Learn the kernel!
   
   unlabels <- harmonic_function(W,Y)
   class_ind <- as.integer(unlabels < 0.5)
   unlab_predictions <- factor(class_ind,levels=0:1,labels=classnames)
   
-  #TODO: What is the output?
   return(new("GRFClassifier",
              modelform=modelform,
-             scaling=NULL,
-             responsibilities=unlabels,
+             scaling=mv$scaling,
+             responsibilities=as.numeric(unlabels),
              unlab_predictions=unlab_predictions,
              Xtrain=X,
              classnames=classnames,

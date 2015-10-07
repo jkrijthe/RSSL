@@ -125,6 +125,11 @@ setMethod("loss", signature(object="LinearSVM"), function(object, newdata, y=NUL
   return(as.numeric(d))
 })
 
+
+setMethod("line_coefficients", signature(object="LinearSVM"), function(object) {
+  return(coefficients_after_scaling(w0=object@w[1],w=object@w[2:3],scaling=object@scaling))
+})
+
 svm_opt_func <- function(w, X, y, C) {
   d <- 1 - y * (X %*% w)
   l <- C * sum(d[d>0]) +  w[-1] %*% w[-1]
