@@ -60,9 +60,9 @@ CrossValidationSSL <- function(X, y,...) {
 
 #' @rdname CrossValidationSSL
 #' @export
-CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE) {
+CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE,mc.cores=1) {
   if (is.matrix(X[[1]]) & is.factor(y[[1]])) {
-    curves <- lapply(names(X),function(dname){
+    curves <- clapply(names(X),function(dname){
       if (verbose) cat(dname,"\n");
       
       Xd <- X[[dname]]
@@ -70,10 +70,10 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE) {
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- y[[dname]]
       
-      CrossValidationSSL(Xd,yd,...)
-    })
+      CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose)
+    },mc.cores=mc.cores)
   } else if (is(X[[1]],"formula") & is.data.frame(y[[1]])) { 
-    curves <- lapply(names(X),function(dname){
+    curves <- clapply(names(X),function(dname){
       if (verbose) cat(dname,"\n");
       data <- data.frame(y[[dname]]) 
       classname <- all.vars(X[[dname]])[1]
@@ -83,8 +83,8 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE) {
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- data[,classname]
       
-      CrossValidationSSL(Xd,yd,...)
-    })
+      CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose)
+    },mc.cores=mc.cores)
   } else {
     stop("Unknown input. Should be either a list of matrices and label vectors or formulae and data frames.")
   }
@@ -249,7 +249,7 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
 #' @param classifier_names character vector; (Shortened) Names of the classifiers
 #' 
 #' @export
-xtable.CrossValidation<-function(object,caption="",classifier_names=NULL) {
+xtable.CrossValidation<-function(object,caption="",benchmark_method=NULL,exclude_methods=NULL) {
   # overfolds<-apply(object$results,c(1,3:4),mean,na.rm=T)
   if (is.list(object)) {
     if ("results" %in% names(object)) {

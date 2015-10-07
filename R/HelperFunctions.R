@@ -10,6 +10,20 @@ cov_ml<-function(X) { ((nrow(X)-1)/nrow(X))*cov(X) }
 stderror <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
 # http://stackoverflow.com/questions/2676554/in-r-how-to-find-the-standard-error-of-the-mean
 
+#' Use mclapply conditional on not being in RStudio
+#' @param X vector
+#' @param FUN function to be aplpied to the elements of X
+#' @param ... optional arguments passed to FUN
+#' @param mc.cores number of cores to use
+#' @export
+clapply <- function(X,FUN,...,mc.cores=getOption("mc.cores", 2L)) {
+  if (Sys.getenv("RSTUDIO") == 1 | mc.cores == 1) {
+    lapply(X,FUN,...)
+  } else {
+    mclapply(X,FUN,...,mc.cores=mc.cores)
+  }
+}
+
 #' Preprocess the input to a classification function
 #'
 #' The following actions are carried out: 1. data.frames are converted to matrix form and labels converted to an indicator matrix 2. An intercept column is added if requested 3. centering and scaling is applied if requested.

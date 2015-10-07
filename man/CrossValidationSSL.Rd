@@ -8,7 +8,7 @@
 \usage{
 CrossValidationSSL(X, y, ...)
 
-\method{CrossValidationSSL}{list}(X, y, ..., verbose = FALSE)
+\method{CrossValidationSSL}{list}(X, y, ..., verbose = FALSE, mc.cores = 1)
 
 \method{CrossValidationSSL}{matrix}(X, y, classifiers, measures = list(Error =
   measure_error), k = 10, repeats = 1, verbose = FALSE,

@@ -35,7 +35,7 @@ LearningCurve.matrix <- function(X, y, classifiers, with_replacement=FALSE, size
   } else {
     classifier_names <- names(classifiers) 
   }
-  browser()
+  
   dimnames(results)<-list(1:repeats, sizes, classifier_names, c("Error", "Loss Test", "Loss Train"))
   
   sample.test<-sample(1:nrow(X), n_test, replace=TRUE)
@@ -108,10 +108,10 @@ LearningCurveSSL<-function(X, y, ...) {
 }
 
 #' @export
-LearningCurveSSL.list<-function(X,y,...,verbose=FALSE) {
+LearningCurveSSL.list<-function(X,y,...,verbose=FALSE,mc.cores=1) {
 
   if (is.matrix(X[[1]]) & is.factor(y[[1]])) {
-    curves <- lapply(names(X),function(dname){
+    curves <- clapply(names(X),function(dname){
       if (verbose) cat(dname,"\n");
       
       Xd <- X[[dname]]
@@ -119,10 +119,10 @@ LearningCurveSSL.list<-function(X,y,...,verbose=FALSE) {
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- y[[dname]]
       
-      LearningCurveSSL(Xd,yd,...)
-    })
+      LearningCurveSSL(Xd,yd,...,verbose=verbose)
+    },mc.cores=mc.cores)
   } else if (is(X[[1]],"formula") & is.data.frame(y[[1]])) { 
-    curves <- lapply(names(X),function(dname){
+    curves <- clapply(names(X),function(dname){
       if (verbose) cat(dname,"\n");
       data <- data.frame(y[[dname]]) 
       classname <- all.vars(X[[dname]])[1]
@@ -132,8 +132,8 @@ LearningCurveSSL.list<-function(X,y,...,verbose=FALSE) {
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- data[,classname]
       
-      LearningCurveSSL(Xd,yd,...)
-    })
+      LearningCurveSSL(Xd,yd,...,verbose=verbose)
+    },mc.cores=mc.cores)
   } else {
     stop("Unknown input. Should be either a list of matrices and label vectors or formulae and data frames.")
   }
@@ -275,7 +275,7 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
     for (i in 1:repeats) {
     sample.guaranteed <- sample_k_per_level(y,n_min)
     if (!is.null(test_fraction)) { 
-      idx_test <- sample((1:nrow(X))[-sample.guaranteed], size=ceiling(n*test_fraction))
+      idx_test <- sample((1:nrow(X))[-sample.guaranteed], size=ceiling(nrow(X)*test_fraction))
       sampleorder <- c(sample.guaranteed,sample((1:nrow(X))[-c(sample.guaranteed,idx_test)]))
     } else {
       sampleorder <- c(sample.guaranteed,sample((1:nrow(X))[-c(sample.guaranteed)]))
@@ -356,7 +356,7 @@ plot.LearningCurve <- function(x, y, ...) {
       dplyr::group_by_(x_label, quote(Classifier), quote(Measure), quote(Dataset)) %>%
       summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=quote(sd(value,na.rm=TRUE)/sqrt(n()))) %>% 
       ungroup
-    facet_used <- facet_wrap(~Measure + Dataset,scales="free")
+    facet_used <- facet_wrap(~ Dataset + Measure,scales="free",ncol=length(unique(plot_frame$Measure)))
   } else {
     plot_frame <-  x$results %>% 
       dplyr::group_by_(x_label, quote(Classifier), quote(Measure)) %>%

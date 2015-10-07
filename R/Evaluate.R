@@ -31,7 +31,7 @@ SSLDataFrameToMatrices <- function(model,D) {
   if (!is.null(model)) {
     mf <- model.frame(model, data=D, na.action=NULL)
   } else {
-    mf <- model.frame(1~., data=D, na.action=NULL)
+    mf <- model.frame(paste0(names(D)[[1]],"~."), data=D, na.action=NULL)
   }
   y <- model.response(mf)
   classnames<-levels(y)
@@ -51,7 +51,7 @@ df_to_matrices <- function(df,formula=NULL) {
 
 #' @export
 split_dataset_ssl<-function(X, y, frac_train=0.8, frac_ssl=0.8) {
-  n<-length(y)
+  n <- length(y)
   idx_train<-sample(1:n,size=ceiling(frac_train*n))
   n_lab<-length(idx_train) #Number of labeled objects
   idx_labeled<-idx_train[sample(1:n_lab,size=ceiling((1-frac_ssl)*n_lab))]
