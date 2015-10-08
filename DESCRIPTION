@@ -32,7 +32,8 @@ Suggests:
     data.table,
     gridExtra,
     knitr,
-    ggthemes
+    ggthemes,
+    numDeriv
 Description: Implementations of semi-supervised learning approaches for
     classification and regression. Serves as benchmarks to new approaches and
     contains implementations of the authors' own methods.
