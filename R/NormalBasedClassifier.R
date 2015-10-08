@@ -138,7 +138,8 @@ setMethod("posterior", signature(object="NormalBasedClassifier"), function(objec
   return(posteriors)
 })
 
-#'@export
+#' @rdname line_coefficients-methods
+#' @aliases line_coefficients,LeastSquaresClassifier-method 
 setMethod("line_coefficients",signature(object="NormalBasedClassifier"), function(object) {
   w <- -(object@means[2,, drop=FALSE]-object@means[1,, drop=FALSE]) %*% solve(object@sigma[[1]])
   

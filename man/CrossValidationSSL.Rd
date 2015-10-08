@@ -24,6 +24,8 @@ CrossValidationSSL(X, y, ...)
 
 \item{verbose}{logical; Controls the verbosity of the output}
 
+\item{mc.cores}{integer; Number of cores to be used}
+
 \item{classifiers}{list; Classifiers to crossvalidate}
 
 \item{measures}{named list of functions giving the measures to be used}

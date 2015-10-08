@@ -10,9 +10,11 @@ xtable.CrossValidation(object, caption = "", benchmark_method = NULL,
 \arguments{
 \item{object}{cross-validation results object}
 
-\item{caption}{character; Caption to be placed over the Latex table}
+\item{caption}{character; Caption to be placed over the latex table}
 
-\item{classifier_names}{character vector; (Shortened) Names of the classifiers}
+\item{benchmark_method}{character; The method to be used to compare others with}
+
+\item{exclude_methods}{character vector; Methods to exclude from the table}
 }
 \description{
 Generate Latex table of cross-validation results

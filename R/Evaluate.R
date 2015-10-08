@@ -1,3 +1,8 @@
+#' Throw out labels at random
+#' 
+#' @param df data.frame; Data frame of interest
+#' @param formula formula; Formula to indicate the outputs
+#' @param prob numeric; Probability of removing the label
 #' @export
 add_missinglabels_mar <- function(df,formula=NULL,prob=0.1) {
   if (!is.null(formula)) {
@@ -13,8 +18,6 @@ add_missinglabels_mar <- function(df,formula=NULL,prob=0.1) {
 #' Convert data.frame to matrices for semi-supervised learners
 #'
 #' Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations. Note: always removes the intercept
-#'
-#' @usage SSLDataFrameToMatrices(model,D)
 #'
 #' @param model Formula object with model
 #' @param D data.frame object with objects
@@ -44,11 +47,20 @@ SSLDataFrameToMatrices <- function(model,D) {
   list(X=X, y=y, X_u=X_u, y_u=yu)
 }
 
+#' Convert data.frame with missing labels to matrices
+#' @param df data.frame; Data
+#' @param formula formula; Description of problem
 #' @export
 df_to_matrices <- function(df,formula=NULL) {
   SSLDataFrameToMatrices(formula,df)
 }
 
+#' Create Train, Test and Unlabeled Set
+#' @param X matrix; Design matrix
+#' @param y factor; Label vector
+#' @param frac_train numeric; Fraction of all objects to be used as training objects
+#' @param frac_ssl numeric; Fraction of training objects to used as unlabeled objects
+#' 
 #' @export
 split_dataset_ssl<-function(X, y, frac_train=0.8, frac_ssl=0.8) {
   n <- length(y)

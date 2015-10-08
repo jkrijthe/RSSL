@@ -333,10 +333,16 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
   return(object)
 }
 
+#' Plot LearningCurve object
+#' 
+#' @param x LearningCurve object
+#' @param y Not used
+#' @param ... Not used
+#' @method plot LearningCurve
 #' @export
 plot.LearningCurve <- function(x, y, ...) {
   
-  data<-x
+  data <- x
   
   # Check for input object
   if (class(data)=="LearningCurve") { 

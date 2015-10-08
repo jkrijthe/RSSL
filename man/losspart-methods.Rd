@@ -11,16 +11,13 @@ losspart(object, ...)
 \S4method{losspart}{NormalBasedClassifier}(object, newdata, Y)
 }
 \arguments{
-\item{object}{TODO}
+\item{object}{Classifier; Trained Classifier}
 
 \item{...}{additional parameters}
 
 \item{newdata}{design matrix}
 
 \item{Y}{class responsibility matrix}
-}
-\value{
-numeric of the total loss on the test data
 }
 \description{
 Loss of a classifier or regression function evaluated on partial labels

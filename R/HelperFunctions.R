@@ -20,7 +20,7 @@ clapply <- function(X,FUN,...,mc.cores=getOption("mc.cores", 2L)) {
   if (Sys.getenv("RSTUDIO") == 1 | mc.cores == 1) {
     lapply(X,FUN,...)
   } else {
-    mclapply(X,FUN,...,mc.cores=mc.cores)
+    parallel::mclapply(X,FUN,...,mc.cores=mc.cores)
   }
 }
 

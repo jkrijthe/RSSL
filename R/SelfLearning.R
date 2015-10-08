@@ -94,6 +94,8 @@ setMethod("loss", signature(object="SelfLearning"), function(object,newdata,y=NU
   return(loss(object@model,X,y,...))
 })
 
+#' @rdname line_coefficients-methods
+#' @aliases line_coefficients,SelfLearning-method    
 setMethod("line_coefficients", signature(object="SelfLearning"), function(object) {
   if (!is.null(object@scaling)) { 
     stop("Plotting decision boundaries for scaled self-learning is currently not implemented.")

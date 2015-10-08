@@ -4,7 +4,7 @@
 \alias{SSLDataFrameToMatrices}
 \title{Convert data.frame to matrices for semi-supervised learners}
 \usage{
-SSLDataFrameToMatrices(model,D)
+SSLDataFrameToMatrices(model, D)
 }
 \arguments{
 \item{model}{Formula object with model}

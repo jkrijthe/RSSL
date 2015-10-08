@@ -158,6 +158,8 @@ setMethod("show", signature(object="LeastSquaresClassifier"), function(object) {
   print(object@theta)
 })
 
+#' @rdname line_coefficients-methods
+#' @aliases line_coefficients,LeastSquaresClassifier-method 
 setMethod("line_coefficients", signature(object="LeastSquaresClassifier"), function(object) {
   return(coefficients_after_scaling(w0=object@theta[1]-(0.5-object@y_scale),w=object@theta[2:3],scaling=object@scaling))
 })

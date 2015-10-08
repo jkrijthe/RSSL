@@ -51,6 +51,7 @@ c.CrossValidation <- function(...) {
 #' The "test" option of \code{leaveout}, on the other hand, uses the folds as the test sets. This means every object will be used as a test object exactly once. The remaining objects in each training iteration are split randomly into a labeled and an unlabeled part, where the number of the labeled objects is controlled by the user through the n_labeled parameter.
 #' @param X design matrix of the labeled objects
 #' @param y vector with labels
+#' @param mc.cores integer; Number of cores to be used
 #' @param ... arguments passed to underlying functions
 #' 
 #' @export
@@ -60,7 +61,7 @@ CrossValidationSSL <- function(X, y,...) {
 
 #' @rdname CrossValidationSSL
 #' @export
-CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE,mc.cores=1) {
+CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
   if (is.matrix(X[[1]]) & is.factor(y[[1]])) {
     curves <- clapply(names(X),function(dname){
       if (verbose) cat(dname,"\n");
@@ -245,8 +246,9 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
 #' Generate Latex table of cross-validation results
 #' 
 #' @param object cross-validation results object
-#' @param caption character; Caption to be placed over the Latex table
-#' @param classifier_names character vector; (Shortened) Names of the classifiers
+#' @param caption character; Caption to be placed over the latex table
+#' @param benchmark_method character; The method to be used to compare others with
+#' @param exclude_methods character vector; Methods to exclude from the table
 #' 
 #' @export
 xtable.CrossValidation<-function(object,caption="",benchmark_method=NULL,exclude_methods=NULL) {

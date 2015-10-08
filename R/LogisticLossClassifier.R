@@ -98,8 +98,8 @@ setMethod("predict", signature(object="LogisticLossClassifier"), function(object
   } else return(classes)
 })
 
-#' @rdname boundaryplot-methods
-#' @aliases boundaryplot,LogisticLossClassifier-method  
+#' @rdname line_coefficients-methods
+#' @aliases line_coefficients,LeastSquaresClassifier-method 
 setMethod("line_coefficients", signature(object="LogisticLossClassifier"), function(object) {
   return(coefficients_after_scaling(w0=object@w[1],w=object@w[2:3],scaling=object@scaling))
 })

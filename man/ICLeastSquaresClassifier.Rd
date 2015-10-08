@@ -54,8 +54,10 @@ Implicitly constrained semisupervised learning with quadratic loss. Least square
 }
 \examples{
 data(testdata)
-w1 <- LeastSquaresClassifier(testdata$X, testdata$y, intercept = TRUE,x_center = FALSE, scale=FALSE)@theta
-w2 <- ICLeastSquaresClassifier(testdata$X, testdata$y, testdata$X_u, intercept = TRUE, x_center = FALSE, scale=FALSE)@theta
+w1 <- LeastSquaresClassifier(testdata$X, testdata$y,
+   intercept = TRUE,x_center = FALSE, scale=FALSE)@theta
+w2 <- ICLeastSquaresClassifier(testdata$X, testdata$y,
+   testdata$X_u, intercept = TRUE, x_center = FALSE, scale=FALSE)@theta
 plot(testdata$X[,1],testdata$X[,2],col=factor(testdata$y),asp=1)
 points(testdata$X_u[,1],testdata$X_u[,2],col="darkgrey",pch=16,cex=0.5)
 abline((0.5-w1[1])/w1[3],-w1[2]/w1[3],lty=2)

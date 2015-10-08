@@ -2,7 +2,6 @@
 % Please edit documentation in R/Generics.R, R/KernelLeastSquaresClassifier.R, R/LeastSquaresClassifier.R, R/LinearSVM.R, R/LogisticLossClassifier.R, R/LogisticRegression.R, R/MajorityClassClassifier.R, R/NormalBasedClassifier.R, R/SVM.R, R/SVMlin.R, R/SelfLearning.R, R/TSVMuniversum.R, R/USMLeastSquaresClassifier.R
 \docType{methods}
 \name{loss}
-\alias{line_coefficients}
 \alias{loss}
 \alias{loss,KernelLeastSquaresClassifier-method}
 \alias{loss,LeastSquaresClassifier-method}
@@ -19,8 +18,6 @@
 \title{Loss of a classifier or regression function}
 \usage{
 loss(object, ...)
-
-line_coefficients(object, ...)
 
 \S4method{loss}{KernelLeastSquaresClassifier}(object, newdata, y = NULL, ...)
 
@@ -47,30 +44,18 @@ line_coefficients(object, ...)
 \S4method{loss}{USMLeastSquaresClassifier}(object, newdata, y = NULL, ...)
 }
 \arguments{
-\item{object}{TODO}
+\item{object}{Classifier; Trained Classifier}
 
 \item{...}{additional parameters}
 
-\item{newdata}{data.frame object with test data}
+\item{newdata}{data.frame; object with test data}
 
-\item{y}{Vector with true classes of the test data}
-
-\item{object}{TODO}
-
-\item{y}{Vector with true classes of the test data}
-
-\item{newdata}{data.frame object with test data}
-
-\item{...}{additional parameters}
+\item{y}{factor; True classes of the test data}
 }
 \value{
-numeric of the total loss on the test data
-
-numeric of the total loss on the test data
+numeric; the total loss on the test data
 }
 \description{
-Loss of a classifier or regression function
-
 Loss of a classifier or regression function
 
 Hinge loss on new objects of a trained LinearSVM

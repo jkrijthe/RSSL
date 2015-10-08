@@ -1,10 +1,10 @@
 #' Loss of a classifier or regression function
 #' 
-#' @param object TODO
-#' @param y Vector with true classes of the test data
-#' @param newdata data.frame object with test data
+#' @param object Classifier; Trained Classifier
+#' @param y factor; True classes of the test data
+#' @param newdata data.frame; object with test data
 #' @param ... additional parameters
-#' @return numeric of the total loss on the test data
+#' @return numeric; the total loss on the test data
 #' 
 #' @export
 #' @docType methods
@@ -13,9 +13,8 @@ setGeneric("loss",function(object, ...) {standardGeneric("loss")})
 
 #' Loss of a classifier or regression function evaluated on partial labels
 #' 
-#' @param object TODO
+#' @param object Classifier; Trained Classifier
 #' @param ... additional parameters
-#' @return numeric of the total loss on the test data
 #' 
 #' @export
 #' @docType methods
@@ -44,15 +43,13 @@ setGeneric("posterior",function(object, ...) {standardGeneric("posterior")})
 
 #' Loss of a classifier or regression function
 #' 
-#' @param object TODO
-#' @param y Vector with true classes of the test data
-#' @param newdata data.frame object with test data
-#' @param ... additional parameters
+#' @param object Classifier; Trained Classifier object
+#' @param ... Not used
 #' @return numeric of the total loss on the test data
 #' 
-#' @export
 #' @docType methods
-#' @rdname loss-methods
+#' @rdname line_coefficients-methods
+#' @export
 setGeneric("line_coefficients",function(object, ...) {standardGeneric("line_coefficients")})
 
 #' Decision values returned by a classifier for a set of objects

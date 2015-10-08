@@ -10,6 +10,9 @@ coefficients_after_scaling <- function(w0,w,scaling) {
   }
 }
 
+#' Plot RSSL classifier boundary
+#' @param ... List of trained classifiers
+#' @param show_guide logical (default: TRUE); Show legend
 #' @export
 geom_classifier <- function(...,show_guide=TRUE) {
   classifiers <- list(...)
@@ -21,12 +24,15 @@ geom_classifier <- function(...,show_guide=TRUE) {
                       ) 
   }))
   boundaries$Classifier <- factor(names(classifiers),levels=names(classifiers),ordered=TRUE)
-  geom_abline(aes(intercept=intercept,slope=slope,linetype=Classifier),
+  geom_abline(aes_string(intercept="intercept",slope="slope",linetype="Classifier"),
               data=boundaries,show_guide = show_guide)
 }
 
+#' Plot RSSL responsibilities
+#' @param classifier Classifier; Classifier to plot the responsibilities for
+#' @param data data.frame; Data corresponding to the coordinates of the unlabeled objects
 #' @export
 geom_responsibilities <- function(classifier,data) {
   data <- data.frame(data,Responsibility=classifier@responsibilities)
-  geom_point(aes(fill=Responsibility),shape=21,size=4,color="white", data=data) 
+  geom_point(aes_string(fill="Responsibility"),shape=21,size=4,color="white", data=data) 
 }

@@ -121,7 +121,8 @@ setMethod("loss", signature(object="LinearSVM"), function(object, newdata, y=NUL
   return(as.numeric(d))
 })
 
-
+#' @rdname line_coefficients-methods
+#' @aliases line_coefficients,LinearSVM-method 
 setMethod("line_coefficients", signature(object="LinearSVM"), function(object) {
   return(coefficients_after_scaling(w0=object@w[1],w=object@w[2:3],scaling=object@scaling))
 })
