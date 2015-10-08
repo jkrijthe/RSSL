@@ -1,6 +1,15 @@
 #' @include Classifier.R
 setClass("GRFClassifier",
-         representation(theta="matrix",responsibilities="ANY",scaling="ANY",optimization="ANY",intercept="ANY",Xtrain="matrix",ytrain="ANY",eta="numeric",sigma="numeric",unlab_predictions="factor"),
+         representation(theta="matrix",
+                        responsibilities="ANY",
+                        scaling="ANY",
+                        optimization="ANY",
+                        intercept="ANY",
+                        Xtrain="matrix",
+                        ytrain="ANY",
+                        eta="numeric",
+                        sigma="numeric",
+                        unlab_predictions="factor"),
          prototype(name="GRFClassifier",scaling=NULL), 
          contains="Classifier")
 
@@ -71,7 +80,7 @@ harmonic_function <- function(W,Y) {
   L <- diag(colSums(W)) - W;
   
   # the harmonic function.
-  fu <- -solve(L[(l+1):n, (l+1):n],L[(l+1):n, 1:l] %*% Y)
+  fu <- -solve(L[(l+1):n, (l+1):n],L[(l+1):n, 1:l]  %*% Y)
   
   # compute the CMN solution
   #q = colSums(Y)+1 % the unnormalized class proportion estimate from labeled data, with Laplace smoothing
