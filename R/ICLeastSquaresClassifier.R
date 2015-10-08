@@ -190,7 +190,7 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       opt_func_projection <- function(theta) {
           # Return a Mahanalobis type distance between the semi-supervised and supervised coefficients
           theta <- matrix(theta)
-          w_semi <- matrix(C %*% t(Xe) %*% rbind(matrix(y),theta),ncol=1)
+          #w_semi <- matrix(C %*% t(Xe) %*% rbind(matrix(y),theta),ncol=1)
 
           t(theta) %*% O1 %*% theta + 2 * t(theta) %*% O2 - 2 * t(theta) %*% O3 + lambda_prior*(mean(theta)-mean_y)^2
         }

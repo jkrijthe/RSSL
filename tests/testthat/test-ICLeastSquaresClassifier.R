@@ -34,18 +34,6 @@ test_that("Different settings return the same loss",{
   expect_equal(s1,mean(loss(g_3,X_test,y_test)),tolerance=10e-6)
   g_4<-ICLeastSquaresClassifier(X,y,X_u,intercept=TRUE,scale=TRUE,x_center=TRUE,y_scale=TRUE)
   expect_equal(s1,mean(loss(g_4,X_test,y_test)),tolerance=10e-6)
-  
-  measure_losstrain(g_semi_sup,X_l=problem$X,y_l=problem$y,X_u=problem$X_u,y_u=problem$y_u)
-  mean(loss(g_semi_sup,rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
-  
-  measure_losstrain(g_semi,X_l=problem$X,y_l=problem$y,X_u=problem$X_u,y_u=problem$y_u)
-  mean(loss(g_semi,rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
-  
-  measure_losstrain(g_semi_old,X_l=problem$X,y_l=problem$y,X_u=problem$X_u,y_u=problem$y_u)
-  mean(loss(g_semi_old,rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
-  
-  measure_losstrain(g_semi_scaled,X_l=problem$X,y_l=problem$y,X_u=problem$X_u,y_u=problem$y_u)
-  mean(loss(g_semi_scaled,rbind(problem$X,problem$X_u),unlist(list(problem$y,problem$y_u))))
 })
 
 test_that("Multi class gives an output", {

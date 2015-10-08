@@ -44,22 +44,23 @@ KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanillado
   
   if (inherits(kernel,"kernel")) {
     Xtrain <- rbind(X, X_u)
-    K <- kernelMatrix(kernel,Xtrain,Xtrain)
+    K <- kernlab::kernelMatrix(kernel,Xtrain,Xtrain)
     alpha_sup <- solve(K[1:n,1:n,drop=FALSE]+lambda*diag(n), Y)
     
     theta <- rep(0.5,nrow(X_u))
+    Kinv <- inv(K+1e-6*diag(nrow(K)))
     if (method=="LBFGS") {
       if (projection=="supervised") {
-        Kinv <- inv(K+1e-6*diag(nrow(K)))
-        
+
         opt_result <- optim(theta, objective_kicls, gr=gradient_kicls, 
                             Kinv=Kinv, K=K, alpha_sup=alpha_sup, l=n, lambda_prior=lambda_prior,classprior=classprior,Y=Y, 
                             method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
         unlabels <- opt_result$par
         theta <- matrix(Kinv %*% c(as.numeric(Y), unlabels))
       } else if (projection=="semisupervised") {
+
         opt_result <- optim(theta, objective_kicls_semi, gr=gradient_kicls_semi, 
-                            K=K, alpha_sup=alpha_sup, n=n, lambda_prior=lambda_prior,classprior=classprior, 
+                            K=K, alpha_sup=alpha_sup, n=n, lambda_prior=lambda_prior,classprior=classprior, Y=Y, Kinv=Kinv, 
                             method="L-BFGS-B", lower=0.0-y_scale, upper=1.0-y_scale, control=list(fnscale=1))
         unlabels <- opt_result$par
         theta <- matrix(solve(K+diag(nrow(K))*0.00000001, c(as.numeric(Y), unlabels)))
@@ -73,7 +74,7 @@ KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanillado
   }
   
   ## Return correct object
-  new("KernelLeastSquaresClassifier",
+  new("KernelICLeastSquaresClassifier",
       classnames=classnames,
       scaling=scaling,
       theta=theta,
@@ -81,22 +82,34 @@ KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanillado
       kernel=kernel,
       Xtrain=Xtrain,
       y_scale=y_scale,
-      responsibilities=unlabels
+      responsibilities=unlabels,
+      optimization=opt_result
   )
 }
 
-objective_kicls_semi <- function(resp,K,alpha_sup,n,lambda_prior,classprior) {
+objective_kicls_semi <- function(resp,K,alpha_sup,n,lambda_prior,classprior,Y,Kinv) {
   alpha_sup <- matrix(alpha_sup,nrow = 1)
   resp <- matrix(resp,ncol=1)
-  t(resp) %*% resp - 2 * alpha_sup %*% K[1:n,-c(1:n)] %*% resp + lambda_prior*(mean(resp)-classprior)^2
+  #t(resp) %*% resp - 2 * alpha_sup %*% K[1:n,-c(1:n)] %*% resp + lambda_prior*(mean(resp)-classprior)^2
+  
+  # Alternative
+  t(resp) %*% Kinv[-c(1:n),] %*% K %*% K %*% Kinv[, -c(1:n)] %*% resp + 
+    2* t(resp) %*% Kinv[-c(1:n),] %*% K %*% K %*% Kinv[, c(1:n)] %*% Y - 
+    2 * alpha_sup %*% K[1:n,-c(1:n)] %*% resp
 }
 
-gradient_kicls_semi <- function(resp,K,alpha_sup,n,lambda_prior,classprior) {
+gradient_kicls_semi <- function(resp,K,alpha_sup,n,lambda_prior,classprior,Y,Kinv) {
   alpha_sup <- matrix(alpha_sup,nrow = 1)
   resp <- matrix(resp,ncol=1)
-  gradient <- 2 * t(resp) - 2 * alpha_sup %*% K[1:n,-c(1:n)] + lambda_prior*2*(mean(resp)-classprior)/nrow(resp)
-  #print(sum(abs(grad(objective_kicls_semi,resp,K=K,alpha_sup=alpha_sup,n=n,lambda_prior=lambda_prior,classprior=classprior)-gradient)))
-  gradient
+  # gradient <- 2 * t(resp) - 2 * alpha_sup %*% K[1:n,-c(1:n)] + lambda_prior*2*(mean(resp)-classprior)/nrow(resp)
+#   print(gradient)
+#   print(sum(abs(grad(objective_kicls_semi,resp,K=K,alpha_sup=alpha_sup,n=n,lambda_prior=lambda_prior,classprior=classprior)-gradient)))
+  # gradient
+  
+  # Alternative
+  2 * t(resp) %*% Kinv[-c(1:n),] %*% K %*% K %*% Kinv[, -c(1:n)] + 
+    2* t(Kinv[-c(1:n),] %*% K %*% K %*% Kinv[, c(1:n)] %*% Y) - 
+    2 * alpha_sup %*% K[1:n,-c(1:n)]
 }
 
 objective_kicls <- function(resp, Kinv, K, alpha_sup,Y,l,lambda_prior,classprior) {
