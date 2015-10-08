@@ -32,11 +32,11 @@ install_github("jkrijthe/RSSL")
 
 #Usage
 After installation, load the package as usual:
-```R
+```{r results='hide'}
 library(RSSL)
 ```
 The following code generates a simple dataset, trains a supervised and two semi-supervised classifiers and evaluates their performance:
-```R
+```{r results='hide'}
 # Generate dataset
 df <- generate2ClassGaussian(d=2,expected=TRUE)
 df_lab <- df[sample(nrow(df),10),]
@@ -58,7 +58,7 @@ mean(predict(t_sup,df)!=df$Class)
 mean(predict(t_self,df)!=df$Class)
 mean(predict(t_ic,df)!=df$Class)
 ```
-For an overview of different classifiers and examples on how to use them, see the [classifier overview vignette](https://cdn.rawgit.com/jkrijthe/RSSL/master/vignettes/SSL-Classifiers.html).
+For an overview of different classifiers and examples on how to use them, see the [classifier overview vignette](https://github.com/jkrijthe/RSSL/blob/master/vignettes/SSL-Classifiers.Rmd).
 
 #Acknowledgement
 Work on this package was supported by Project 23 of the Dutch national program COMMIT.

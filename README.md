@@ -52,7 +52,7 @@ mean(predict(t_self,df)!=df$Class)
 mean(predict(t_ic,df)!=df$Class)
 ```
 
-For an overview of different classifiers and examples on how to use them, see the [classifier overview vignette](https://cdn.rawgit.com/jkrijthe/RSSL/master/vignettes/SSL-Classifiers.html).
+For an overview of different classifiers and examples on how to use them, see the [classifier overview vignette](https://github.com/jkrijthe/RSSL/blob/master/vignettes/SSL-Classifiers.Rmd).
 
 Acknowledgement
 ===============
