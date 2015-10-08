@@ -32,11 +32,11 @@ install_github("jkrijthe/RSSL")
 
 #Usage
 After installation, load the package as usual:
-```
+```R
 library(RSSL)
 ```
 The following code generates a simple dataset, trains a supervised and two semi-supervised classifiers and evaluates their performance:
-```
+```R
 # Generate dataset
 df <- generate2ClassGaussian(d=2,expected=TRUE)
 df_lab <- df[sample(nrow(df),10),]
