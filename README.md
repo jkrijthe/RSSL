@@ -4,9 +4,9 @@
 R Semi-Supervised Learning package
 ==================================
 
-This R package provides implementations of several semi-supervised learning methods, in particular, our of own work involving constraint based semi-supervised learning.
+This R package provides implementations of several semi-supervised learning methods, in particular, our own work involving constraint based semi-supervised learning.
 
-The package is still under development. Therefore, function names and interfaces are still subject to change.
+The package is still under development. Therefore, function names and interfaces are subject to change.
 
 Installation Instructions
 =========================
