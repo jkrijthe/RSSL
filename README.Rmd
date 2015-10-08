@@ -58,7 +58,7 @@ mean(predict(t_sup,df)!=df$Class)
 mean(predict(t_self,df)!=df$Class)
 mean(predict(t_ic,df)!=df$Class)
 ```
-For an overview of different classifiers and examples on how to use them, see the [classifier overview vignette][https://cdn.rawgit.com/jkrijthe/RSSL/master/vignettes/SSL-Classifiers.html].
+For an overview of different classifiers and examples on how to use them, see the [classifier overview vignette](https://cdn.rawgit.com/jkrijthe/RSSL/master/vignettes/SSL-Classifiers.html).
 
 #Acknowledgement
 Work on this package was supported by Project 23 of the Dutch national program COMMIT.
