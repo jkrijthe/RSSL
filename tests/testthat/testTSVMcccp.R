@@ -32,7 +32,7 @@ g_trans2 <- TSVMcccp_lin(X=X,y=y,X_u=X_u,C=1,Cstar=10,scale=FALSE,verbose=FALSE,
 w1 <- g_sup$alpha %*% (ynum*X)
 w2 <- g_trans@alpha %*% rbind(X,X_u,X_u,colMeans(X_u))
 #w3 <- g_supext$alpha %*% (yenum*Xe)
-w4 <- g_trans2$w
+w4 <- g_trans2@w
 
 plot(X[,1],X[,2],col=factor(y),asp=1,ylim=c(-3,3))
 points(X_u[,1],X_u[,2],col="darkgrey",pch=16,cex=1)
@@ -43,6 +43,6 @@ abline(0,2)
 
 #abline(-g_trans@b/w2[2],-w2[1]/w2[2],lty=1,col="green")
 #abline(-g_supext$b/w3[2],-w3[1]/w3[2],lty=3)
-abline(-g_trans2$b/w4[2],-w4[1]/w4[2],lty=1,lwd=3,col="blue")
+abline(-g_trans2@w[1]/w4[2],-w4[1]/w4[2],lty=1,lwd=3,col="blue") #g_trans2@w[1] might not be intercept
 
 

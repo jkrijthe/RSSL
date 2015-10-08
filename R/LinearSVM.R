@@ -63,12 +63,8 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9,reltol=10e-14) 
     
   } else if (method=="BGD") {
     w <- rep(0.0, ncol(X)) #Initial parameter values
-    
-    #opt_result <- optimx(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C, method=c("BFGS"), control=list(fnscale=1, maxit=10000, trace=0,starttests=FALSE,reltol=1e-16,type=3,follow.on=TRUE,dowarn=FALSE))
     opt_result <- optim(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=2*C,method="BFGS",control=list(reltol=reltol))
-    
     w<-opt_result$par
-
   } else {
     stop("Unknown optimization method.")
   }
@@ -133,7 +129,7 @@ setMethod("line_coefficients", signature(object="LinearSVM"), function(object) {
 svm_opt_func <- function(w, X, y, C) {
   d <- 1 - y * (X %*% w)
   l <- C * sum(d[d>0]) +  w[-1] %*% w[-1]
-  return(as.numeric(l))
+  return(as.numeric(l)/nrow(X))
 }
 
 svm_opt_grad <- function(w, X, y, C) {
@@ -144,6 +140,6 @@ svm_opt_grad <- function(w, X, y, C) {
   } else {
     grad <- 2 * c(0,w[-1])
   }
-  return(grad)
+  return(grad/nrow(X))
 }
 

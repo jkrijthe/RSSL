@@ -6,7 +6,7 @@ extra_testdata <- generateSlicedCookie(100,expected=TRUE)
 g1 <- SVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10)
 g2 <- LinearSVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10)
 g3 <- LinearSVM(formula(Class~.), testdata, C=1000, method="Primal",eps=1e-10)
-g4 <- LinearSVM(formula(Class~.), testdata, C=1000, method="BGD",reltol=1e-20)
+g4 <- LinearSVM(formula(Class~.), testdata, C=1000, method="BGD",reltol=1e-40)
 
 test_that("Same result as kernlab implementation", {
   g_nonscaled  <- SVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10,scale=FALSE)
@@ -20,7 +20,6 @@ test_that("Same result for SVM and Linear SVM.", {
   expect_equal(decisionvalues(g4,testdata),decisionvalues(g1,testdata),tolerance=1e-5)
   
 
-  
 })
 
 test_that("Weights equal for BGD and Dual solution", {
@@ -52,6 +51,6 @@ test_that("Gradient is superficially correct",{
   X <- cbind(1,testdata$X)
   y <- as.numeric(testdata$y)*2-3 
   w <- rnorm(ncol(X))
-  C <- 100
-  expect_equal(as.numeric(numDeriv::grad(svm_opt_func,w,X=X,y=y,C=C, method="simple")),as.numeric(svm_opt_grad(w,X=X,y=y,C=C)),tolerance=1e-5)
+  C <- 1000
+  expect_equal(as.numeric(numDeriv::grad(RSSL:::svm_opt_func,w,X=X,y=y,C=C, method="simple")),as.numeric(RSSL:::svm_opt_grad(w,X=X,y=y,C=C)),tolerance=1e-2)
 })
