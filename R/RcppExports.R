@@ -5,3 +5,7 @@ harmonic_function_cpp <- function(W, Y) {
     .Call('RSSL_harmonic_function_cpp', PACKAGE = 'RSSL', W, Y)
 }
 
+svmlin_rcpp <- function(X, y, l, algorithm, lambda, lambda_u, max_switch, pos_frac, Cp, Cn, costs, verbose) {
+    .Call('RSSL_svmlin_rcpp', PACKAGE = 'RSSL', X, y, l, algorithm, lambda, lambda_u, max_switch, pos_frac, Cp, Cn, costs, verbose)
+}
+

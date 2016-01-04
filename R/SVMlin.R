@@ -1,72 +1,85 @@
-#' TSVMuniversum
-#' @include Classifier.R
-setClass("SVMlin", 
-         representation(name="ANY",modelform="ANY",classnames="ANY",scaling="ANY",binary_path="ANY",temp_path="ANY"), 
-         prototype(name="SVMlin"))
+#' svmlin implementation by Sindhwani
+#'
+#' R interface to the svmlin software by Vikas Sindhwani for fast linear transductive SVMs.
+#'
+#' Algorithms
+#' 0 -- Regularized Least Squares Classification (RLSC)
+#' 1 -- SVM (L2-SVM-MFN) (default choice)
+#' 2 -- Multi-switch Transductive SVM (using L2-SVM-MFN)
+#' 3 -- Deterministic Annealing Semi-supervised SVM (using L2-SVM-MFN)
+#'
+#' @param X Matrix or sparseMatrix containing the labeled feature vectors, without intercept
+#' @param y factor containing class assignments
+#' @param Xu Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept
+#' @param Algorithm choice, see details (default:1)
+#' @param lambda  regularization parameter lambda (default 1)
+#' @param lambda_u regularization parameter lambda_u (default 1)
+#' @param max_switch -S maximum number of switches in TSVM (default 10000)
+#' @param pos_frac positive class fraction of unlabeled data  (default 0.5)
+#' @param Cp relative cost for positive examples (only available with algorithm 1)
+#' @param Cn relative cost for positive examples (only available with algorithm 1)
+#'
+#' @references Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs.     Proceedings of ACM SIGIR, 2006
+#'  @references V. Sindhwani and S. Sathiya Keerthi. Newton Methods for Fast Solution of Semi-supervised Linear SVMs. Book Chapter in Large Scale Kernel Machines, MIT Press, 2006
+#' @examples
+#' data(svmlin_example)
+#' t_svmlin_1 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,Xu=NULL, lambda = 0.001)
+#' t_svmlin_2 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,Xu=svmlin_example$X_train[-c(1:50),], lambda = 10,lambda_u=100,algorithm = 2)
+#' # Calculate Accuracy
+#' mean(predict(t_svmlin_1,svmlin_example$X_test)==svmlin_example$y_test)
+#' mean(predict(t_svmlin_2,svmlin_example$X_test)==svmlin_example$y_test)
+#' @export
+svmlin <- function(X, y, Xu, algorithm=1, lambda=1, lambda_u=1, max_switch=10000, pos_frac=0.5, Cp=1.0, Cn=1.0,verbose=FALSE) {
 
-SVMlin<-function(X, y, X_u=NULL, x_center=FALSE,scale=FALSE,binary_path=NULL,temp_path=NULL,type=2,lambda_u=1,...) {
-  if (is.null(binary_path)) {
-    stop("Path to svmlin binary is not given")
-  } else if (is.null(binary_path)) {
-    stop("Path to temp directory is not given")
+  stopifnot(nrow(X)==length(y))
+  stopifnot(is.factor(y))
+  stopifnot(length(levels(y))==2)
+
+  # Turn X into sparse matrix and y into numeric vector
+  if (is.matrix(X)) {
+    X <- Matrix(X, sparse = TRUE)
   }
-  
-  if (!(requireNamespace("e1071", quietly = TRUE) & requireNamespace("SparseM", quietly = TRUE))) {
-    stop("packages e1071 and SparseM are required for this function")
+  if (is.matrix(Xu)) {
+    X <- Matrix(X, sparse = TRUE)
+  }
+  classnames <- levels(y)
+  y <- as.numeric(y)*2-3
+
+  # Combine feature matrices, add intercept and transpose them to conform to the C++ datastructure
+  if (is.null(Xu)) {
+    Xall <- Matrix::t(cbind2(1,X))
   } else {
-    
-  ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
-  X<-ModelVariables$X
-  X_u<-ModelVariables$X_u
-  y<-ModelVariables$y
-  scaling<-ModelVariables$scaling
-  classnames<-ModelVariables$classnames
-  modelform<-ModelVariables$modelform
-
-  frac_pos<-prop.table(table(y))[2]
-  e1071::write.matrix.csr(x=SparseM::as.matrix.csr(rbind(X,X_u)), file=paste(temp_path,"tempfile.train",sep=""))
-  write(c(2*(y-1.5),rep(0,nrow(X_u))), file=paste(temp_path,"tempfile.labels",sep=""),ncolumns=1)
-  
-  system(paste("cd ",temp_path,"; ", binary_path,"svmlin -W 1 -U ",lambda_u," -A ",type," -R ",frac_pos," ",temp_path,"tempfile.train ",temp_path,"tempfile.labels",sep=""),intern=TRUE)
-  new("SVMlin",
-      modelform=modelform,
-      classnames=classnames,
-      scaling=scaling,
-      binary_path=binary_path,
-      temp_path=temp_path
-  )
+    Xall <- Matrix::t(cbind2(1,Matrix::rbind2(X,Xu)))
+    y <- c(y,rep(0,nrow(Xu)))
   }
+
+  # Determine costs
+  costs<-rep(1,ncol(Xall))
+  if (algorithm<1) {
+    costs[y<0] <- Cn
+    costs[y>0] <- Cp
+  }
+
+  # Run C++ implementation
+  res <- svmlin_rcpp(X=Xall,y=y,l=nrow(X), algorithm=algorithm,lambda=lambda,lambda_u=lambda_u,max_switch=max_switch,pos_frac=pos_frac,Cp=Cp,Cn=Cn,costs=costs,verbose=verbose)
+  res$classnames <- classnames
+  class(res) <- "svmlin"
+  return(res)
 }
 
-#' @rdname rssl-predict
-#' @aliases predict,SVMlin-method
-setMethod("predict", signature(object="SVMlin"), function(object, newdata, probs=FALSE) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
-  X<-ModelVariables$X
-  
-  #e1071::write.matrix.csr(x=SparseM::as.matrix.csr(X), file=paste(object@temp_path,"tempfile.test",sep=""))
-  
-  system(paste("cd ",object@temp_path,"; ", object@binary_path,"svmlin -f ",object@temp_path,"tempfile.train.weights ",object@temp_path,"tempfile.test",sep=""),intern=TRUE)
-  
-  y <- scan(paste(object@temp_path,"tempfile.test.outputs",sep=""),quiet=TRUE)
-  return((y>0)+1)
-})
+#'@export
+predict.svmlin <- function(object,newdata) {
+  X <- newdata
+  stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
+  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object$Weights)
+  classes <- factor(dvalues>0,levels=c(FALSE,TRUE),labels=object$classnames)
+  return(classes)
+}
 
-#' @rdname loss-methods
-setMethod("loss", signature(object="SVMlin"), function(object, newdata, y=NULL) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE)
-  X<-ModelVariables$X
-  y<-ModelVariables$y
-  if (is.null(y)) { stop("No labels supplied.")}
-  
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
-  X<-ModelVariables$X
-  
-  e1071::write.matrix.csr(x=SparseM::as.matrix.csr(X), file=paste(object@temp_path,"tempfile.test",sep=""))
-  
-  system(paste("cd ",object@temp_path,"; ", object@binary_path,"svmlin -f ",object@temp_path,"tempfile.train.weights ",object@temp_path,"tempfile.test",sep=""),intern=TRUE)
-  y<-2*(y-1.5)
-  decision <- scan(paste(object@temp_path,"tempfile.test.outputs",sep=""),quiet=TRUE)
-  sum(sapply(decision*y, function(x){max(1-x,0)^2}))
-})
+#'@export
+decisionvalues.svmlin <- function(object,newdata) {
+  X <- newdata
+  stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
+  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object$Weights)
+  return(dvalues)
+}
