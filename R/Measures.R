@@ -19,8 +19,8 @@ measure_accuracy <- function(trained_classifier,
                              X_test=NULL, y_test=NULL) { 
   mean(y_test==predict(trained_classifier, X_test)) 
 }
-#' Classification error on test set
-#' @describeIn evaluation-measures
+
+#' @describeIn evaluation-measures Classification error on test set
 #' @export
 measure_error <- function(trained_classifier, 
                           X_l=NULL, y_l=NULL, 
@@ -28,8 +28,8 @@ measure_error <- function(trained_classifier,
                           X_test=NULL, y_test=NULL) { 
   1-mean(y_test==predict(trained_classifier, X_test))
 }
-#' Average loss on test objects
-#' @describeIn evaluation-measures
+
+#' @describeIn evaluation-measures Avererage Loss on test objects
 #' @export
 measure_losstest <- function(trained_classifier, 
                              X_l=NULL, y_l=NULL, 
@@ -37,8 +37,8 @@ measure_losstest <- function(trained_classifier,
                              X_test=NULL, y_test=NULL) { 
   mean(loss(trained_classifier, X_test, y_test)) 
 }
-#' Average loss on labeled objects
-#' @describeIn evaluation-measures
+
+#' @describeIn evaluation-measures Average loss on labeled objects
 #' @export
 measure_losslab <- function(trained_classifier, 
                             X_l=NULL, y_l=NULL, 
@@ -46,8 +46,8 @@ measure_losslab <- function(trained_classifier,
                             X_test=NULL, y_test=NULL) { 
   mean(loss(trained_classifier, X_l, y_l)) 
 }
-#' Arevage loss on labeled and unlabeled objects
-#' @describeIn evaluation-measures
+
+#' @describeIn evaluation-measures Average loss on labeled and unlabeled objects
 #' @export
 measure_losstrain <- function(trained_classifier, 
                               X_l=NULL, y_l=NULL, 
