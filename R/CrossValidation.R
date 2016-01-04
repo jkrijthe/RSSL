@@ -152,18 +152,18 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
   dimnames(results)<- name_list
   
   # Check whether there is enough data for the n_labeled and k
-  if (k*n_labeled>N) stop("Too many folds or too many labeled samples selected.")
+  if (leaveout=="labeled" & k*n_labeled>N) stop("Too many folds or too many labeled samples selected.")
   
   
   ## Repeats
   if (verbose) pb<-txtProgressBar(0,repeats*k)
   for (i in 1:repeats) {
     
-    sample.classguarantee<-sample_k_per_level(y,k)
+    sample.classguarantee <- sample_k_per_level(y,k)
     sample.random <- sample((1:N)[-sample.classguarantee])    
     
     ##Folds
-    N_fold<-floor(N/k)
+    N_fold <- floor(N/k)
     
     for (f in 1:k) {
       if (verbose) setTxtProgressBar(pb, (i-1)*k+f)
