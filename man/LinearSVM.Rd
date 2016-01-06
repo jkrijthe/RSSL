@@ -5,7 +5,7 @@
 \title{Linear SVM Classifier}
 \usage{
 LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09,
-  reltol = 1e-13)
+  reltol = 1e-13, maxit = 100)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}

@@ -17,7 +17,7 @@ setClass("LinearSVM",
 #' @inheritParams BaseClassifier
 #' @return S4 object of type LinearSVM
 #' @export
-LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9,reltol=10e-14) {
+LinearSVM<-function(X, y, C=1, method="Dual", scale=TRUE, eps=1e-9, reltol=10e-14, maxit=100) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables <- PreProcessing(X,y,scale=scale,intercept=TRUE,x_center=TRUE)
@@ -59,12 +59,16 @@ LinearSVM<-function(X, y, C=1, method="Dual",scale=TRUE,eps=1e-9,reltol=10e-14) 
     Amat <- t(Amat)
     bvec <- c(rep(0,nrow(X)), rep(1,nrow(X)))            
     opt_result <- solve.QP(Dmat, -dvec, Amat, bvec)
-    w<-opt_result$solution[1:ncol(X)]
+    w <- opt_result$solution[1:ncol(X)]
     
   } else if (method=="BGD") {
-    w <- rep(0.0, ncol(X)) #Initial parameter values
-    opt_result <- optim(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=2*C,method="BFGS",control=list(reltol=reltol))
-    w<-opt_result$par
+    warning("BFGS might not converge to the optimal solution.")
+    
+    w0 <- rep(0.0, ncol(X)) #Initial parameter values
+    
+    opt_result <- optim(w0, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=2*C,eps=0,method="BFGS",control=list(reltol=reltol,maxit=maxit))
+    w <- opt_result$par
+
   } else {
     stop("Unknown optimization method.")
   }
@@ -127,20 +131,20 @@ setMethod("line_coefficients", signature(object="LinearSVM"), function(object) {
   return(coefficients_after_scaling(w0=object@w[1],w=object@w[2:3],scaling=object@scaling))
 })
 
-svm_opt_func <- function(w, X, y, C) {
+svm_opt_func <- function(w, X, y, C, eps=0.0) {
   d <- 1 - y * (X %*% w)
-  l <- C * sum(d[d>0]) +  w[-1] %*% w[-1]
-  return(as.numeric(l)/nrow(X))
+  l <- C * sum(d[d>0]) +  w[-1] %*% w[-1] + eps
+  return(as.numeric(l))
 }
 
-svm_opt_grad <- function(w, X, y, C) {
+svm_opt_grad <- function(w, X, y, C, eps=0.0) {
   d <- 1 - y * (X %*% w)
   grad <- - y * X
   if (sum(d>0)>0) {
-    grad <- C * colSums(grad[d>0,,drop=FALSE]) + 2 * c(0,w[-1])
+    grad <- C * colSums(grad[d>0,,drop=FALSE]) + 2 * c(0,w[-1]+eps)
   } else {
     grad <- 2 * c(0,w[-1])
   }
-  return(grad/nrow(X))
+  return(grad)
 }
 
