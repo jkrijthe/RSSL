@@ -1096,8 +1096,8 @@ void ssl_predict(char *inputs_file_name, const struct vector_double *Weights, st
   int m=0;
   if (fpin == NULL)
     {
-      std::cerr << "Cannot open input file: " << inputs_file_name << "\n";
-      exit(1);
+    Rcpp::stop("Cannot open input file\n");
+
     }
  /* read and predict */
   while (1)

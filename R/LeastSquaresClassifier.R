@@ -140,7 +140,7 @@ setMethod("predict", signature(object="LeastSquaresClassifier"), function(object
 })
 
 #' @rdname decisionvalues-methods
-#' @aliases decisionvalues,SVM-method
+#' @aliases decisionvalues,LeastSquaresClassifier-method
 setMethod("decisionvalues", signature(object="LeastSquaresClassifier"), function(object, newdata) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
   X <- ModelVariables$X

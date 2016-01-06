@@ -34,8 +34,8 @@
 #' GenerateSlicedCookie
 #' Generate2ClassGaussian
 #' 
-#' @import kernlab
-#' @import quadprog
+#' @importFrom kernlab vanilladot rbfdot kernelMatrix
+#' @import quadprog 
 #' @import Matrix
 #' @import ggplot2
 #' @import dplyr

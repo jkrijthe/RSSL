@@ -1,7 +1,7 @@
 setClass("scaleMatrix",
          representation(mean="ANY",scale="ANY"))
 
-#' @title matrix scaling inspired by stdize from the PLS package
+#' matrix scaling inspired by stdize from the PLS package
 #' 
 #' @param x matrix to be standardized
 #' @param center TRUE if x should be centered
@@ -32,7 +32,7 @@ scaleMatrix<-function(x,center=TRUE,scale=TRUE) {
 #' @param ... Not used
 #' @export
 setMethod("predict",signature=c("scaleMatrix"), function(object,newdata,...) {
-  if (!is.matrix(newdata)) { error("Incorrect newdata")}
+  if (!is.matrix(newdata)) { stop("Incorrect newdata")}
   if (!is.null(object@mean)) {
     newdata <- sweep(newdata, 2, object@mean)
   }

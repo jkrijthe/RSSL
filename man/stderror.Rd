@@ -2,11 +2,14 @@
 % Please edit documentation in R/HelperFunctions.R
 \name{stderror}
 \alias{stderror}
-\title{Standard Error of a vector}
+\title{Calculate the standard error of the mean from a vector of numbers}
 \usage{
 stderror(x)
 }
 \arguments{
 \item{x}{numeric; vector for which to calculate standard error}
+}
+\description{
+Calculate the standard error of the mean from a vector of numbers
 }
 

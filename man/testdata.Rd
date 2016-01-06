@@ -3,7 +3,7 @@
 \docType{data}
 \name{testdata}
 \alias{testdata}
-\title{Labeled training design matrix}
+\title{Example semi-supervised problem}
 \description{
 A list containing a sample from the \code{GenerateSlicedCookie} dataset for unit testing and examples.
 }

@@ -13,4 +13,7 @@ scaleMatrix(x, center = TRUE, scale = TRUE)
 
 \item{scale}{logical; TRUE of x should be scaled by the standard deviation}
 }
+\description{
+matrix scaling inspired by stdize from the PLS package
+}
 

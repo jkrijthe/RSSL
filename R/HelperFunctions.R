@@ -1,10 +1,10 @@
-#' @title Maximum Likelihood Covariance estimate
+#' Biased (maximum likelihood) estimate of the covariance matrix
 #' 
 #' @param X matrix with observations
 #' @export
 cov_ml<-function(X) { ((nrow(X)-1)/nrow(X))*cov(X) }
 
-#' @title Standard Error of a vector
+#' Calculate the standard error of the mean from a vector of numbers
 #' @param x numeric; vector for which to calculate standard error
 #' @export
 stderror <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))

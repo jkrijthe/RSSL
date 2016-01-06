@@ -2,7 +2,7 @@
 % Please edit documentation in R/TSVMcccp.R
 \name{TSVMcccp}
 \alias{TSVMcccp}
-\title{CCCP Transductive SVM classifier}
+\title{Transductive SVM classifier using the convex concave procedure}
 \usage{
 TSVMcccp(X, y, X_u, C, Cstar, s = -0.3, x_center = FALSE, scale = FALSE,
   eps = 1e-09, verbose = FALSE, ...)
@@ -38,5 +38,8 @@ S4 object of class TSVM with the following slots:
 \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 \item{optimization}{the object returned by the optim function}
 \item{unlabels}{the labels assigned to the unlabeled objects}
+}
+\description{
+Transductive SVM classifier using the convex concave procedure
 }
 

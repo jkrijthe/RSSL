@@ -14,6 +14,8 @@ svmlin(X, y, Xu, algorithm = 1, lambda = 1, lambda_u = 1,
 
 \item{Xu}{Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept}
 
+\item{algorithm}{Algorithm choice, see details (default:1)}
+
 \item{lambda}{regularization parameter lambda (default 1)}
 
 \item{lambda_u}{regularization parameter lambda_u (default 1)}
@@ -26,7 +28,7 @@ svmlin(X, y, Xu, algorithm = 1, lambda = 1, lambda_u = 1,
 
 \item{Cn}{relative cost for positive examples (only available with algorithm 1)}
 
-\item{Algorithm}{choice, see details (default:1)}
+\item{verbose}{Should output be verbose? (default: FALSE)}
 }
 \description{
 R interface to the svmlin software by Vikas Sindhwani for fast linear transductive SVMs.

@@ -46,6 +46,6 @@ p_lapsvm <- ggplot(plotframe, aes(x=x,y=y)) +
   scale_shape_discrete(na.value=8) +
   scale_size_discrete(range=c(5,5),na.value=0.5)
 
-grid.arrange(p_svm, p_lapsvm, ncol=2)
+#grid.arrange(p_svm, p_lapsvm, ncol=2)
 
 test_that("LaplacianSVM is the same as SVM when manifold term has weight 0", FALSE)

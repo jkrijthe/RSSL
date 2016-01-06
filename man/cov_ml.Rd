@@ -2,11 +2,14 @@
 % Please edit documentation in R/HelperFunctions.R
 \name{cov_ml}
 \alias{cov_ml}
-\title{Maximum Likelihood Covariance estimate}
+\title{Biased (maximum likelihood) estimate of the covariance matrix}
 \usage{
 cov_ml(X)
 }
 \arguments{
 \item{X}{matrix with observations}
+}
+\description{
+Biased (maximum likelihood) estimate of the covariance matrix
 }
 

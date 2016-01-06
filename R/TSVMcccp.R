@@ -4,7 +4,7 @@ setClass("TSVMcccp",
          prototype=list(name="Transductive Support Vector Machine training using CCCP"), 
          contains="Classifier")
 
-#' @title CCCP Transductive SVM classifier
+#' Transductive SVM classifier using the convex concave procedure
 #'
 #' @param X matrix; Design matrix, intercept term is added within the function
 #' @param y vector; Vector or factor with class assignments
@@ -165,7 +165,7 @@ solve_svm <- function(K, y, C=1) {
 
 #' @title Linear CCCP Transductive SVM classifier
 #'
-#' This method is mostly for debugging purposes, since its updates are done using numerical gradient calculations.
+#' @description This method is mostly for debugging purposes, since its updates are done using numerical gradient calculations.
 #'
 #' @param X matrix; Design matrix, intercept term is added within the function
 #' @param y vector; Vector or factor with class assignments

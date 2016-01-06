@@ -5,6 +5,8 @@ Title: Implementations of Semi-Supervised Learning Approaches for Classification
     and Regression
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
+Depends:
+    R(>= 2.10.0)
 Imports:
     Rcpp,
     MASS,
@@ -80,7 +82,6 @@ Collate:
     'SVM.R'
     'SVMlin_binary.R'
     'SelfLearning.R'
-    'TSVM.R'
     'TSVMcccp.R'
     'TSVMuniversum.R'
     'USMLeastSquaresClassifier.R'

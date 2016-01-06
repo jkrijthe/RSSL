@@ -2,9 +2,7 @@
 % Please edit documentation in R/TSVMcccp.R
 \name{TSVMcccp_lin}
 \alias{TSVMcccp_lin}
-\title{Linear CCCP Transductive SVM classifier
-
-This method is mostly for debugging purposes, since its updates are done using numerical gradient calculations.}
+\title{Linear CCCP Transductive SVM classifier}
 \usage{
 TSVMcccp_lin(X, y, X_u, C, Cstar, s = -0.3, x_center = FALSE,
   scale = FALSE, eps = 1e-06, verbose = FALSE, init = NULL, ...)
@@ -42,5 +40,8 @@ S4 object of class TSVM with the following slots:
 \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 \item{optimization}{the object returned by the optim function}
 \item{unlabels}{the labels assigned to the unlabeled objects}
+}
+\description{
+This method is mostly for debugging purposes, since its updates are done using numerical gradient calculations.
 }
 
