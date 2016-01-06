@@ -14,6 +14,7 @@ setClass("LinearSVM",
 #' @param scale Whether a z-transform should be applied (default: TRUE)
 #' @param eps Small value to ensure positive definiteness of the matrix in QP formulation
 #' @param reltol relative tolerance using during BFGS optimization
+#' @param maxit Maximum number of iterations for BFGS optimization
 #' @inheritParams BaseClassifier
 #' @return S4 object of type LinearSVM
 #' @export

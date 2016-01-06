@@ -21,6 +21,8 @@ LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09,
 \item{eps}{Small value to ensure positive definiteness of the matrix in QP formulation}
 
 \item{reltol}{relative tolerance using during BFGS optimization}
+
+\item{maxit}{Maximum number of iterations for BFGS optimization}
 }
 \value{
 S4 object of type LinearSVM

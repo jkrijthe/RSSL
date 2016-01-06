@@ -2,6 +2,8 @@ context("SVM and Linear SVM")
 
 library(kernlab)
 
+set.seed(91)
+
 testdata <- generateSlicedCookie(50,expected=FALSE)
 extra_testdata <- generateSlicedCookie(100,expected=TRUE)
 
@@ -21,13 +23,13 @@ test_that("Same result as kernlab implementation", {
 
 test_that("Same result for SVM and Linear SVM.", {
   expect_equal(decisionvalues(g2,testdata),decisionvalues(g1,testdata),tolerance=1e-5)
-  expect_equal(decisionvalues(g3,testdata),decisionvalues(g1,testdata),tolerance=1e-5)
+  expect_equal(decisionvalues(g3,testdata),decisionvalues(g1,testdata),tolerance=1e-3)
   #expect_equal(decisionvalues(g4,testdata),decisionvalues(g1,testdata),tolerance=1e-3) # BFGS does not always converge
 
 })
 
-test_that("Weights equal for BGD and Dual solution", {
-  expect_equal(g2@w, as.numeric(g3@w),tolerance=10e-4,scale=1)
+test_that("Weights equal for Primal and Dual solution", {
+  expect_equal(g2@w, as.numeric(g3@w),tolerance=10e-2,scale=1)
   #expect_equal(g3@w, as.numeric(g4@w),tolerance=10e-4,scale=1) # BFGS does not always converge
 })
 
@@ -44,7 +46,7 @@ test_that("Loss functions return the same value for SVM and LinearSVM",{
   
   l1 <- loss(g1,testdata)
   expect_equal(l1,loss(g2,testdata),tolerance=1e-3,scale=1)
-  expect_equal(l1,loss(g3,testdata),tolerance=1e-3,scale=1)
+  expect_equal(l1,loss(g3,testdata),tolerance=1e-2,scale=1)
   #expect_equal(l1,loss(g4,testdata),tolerance=1e-3,scale=1) # BFGS does not always converge
 })
 
