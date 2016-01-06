@@ -1,3 +1,9 @@
+#' @include Classifier.R
+setClass("svmlinClassifier",
+         representation(weights="numeric"),
+         prototype(name="svmlinClassifier"), 
+         contains="Classifier")
+
 #' svmlin implementation by Sindhwani
 #'
 #' R interface to the svmlin software by Vikas Sindhwani for fast linear transductive SVMs.
@@ -11,13 +17,14 @@
 #' @param X Matrix or sparseMatrix containing the labeled feature vectors, without intercept
 #' @param y factor containing class assignments
 #' @param Xu Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept
-#' @param Algorithm choice, see details (default:1)
+#' @param algorithm Algorithm choice, see details (default:1)
 #' @param lambda  regularization parameter lambda (default 1)
 #' @param lambda_u regularization parameter lambda_u (default 1)
 #' @param max_switch -S maximum number of switches in TSVM (default 10000)
 #' @param pos_frac positive class fraction of unlabeled data  (default 0.5)
 #' @param Cp relative cost for positive examples (only available with algorithm 1)
 #' @param Cn relative cost for positive examples (only available with algorithm 1)
+#' @param verbose Should output be verbose? (default: FALSE)
 #'
 #' @references Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs.     Proceedings of ACM SIGIR, 2006
 #'  @references V. Sindhwani and S. Sathiya Keerthi. Newton Methods for Fast Solution of Semi-supervised Linear SVMs. Book Chapter in Large Scale Kernel Machines, MIT Press, 2006
@@ -30,7 +37,7 @@
 #' mean(predict(t_svmlin_2,svmlin_example$X_test)==svmlin_example$y_test)
 #' @export
 svmlin <- function(X, y, Xu, algorithm=1, lambda=1, lambda_u=1, max_switch=10000, pos_frac=0.5, Cp=1.0, Cn=1.0,verbose=FALSE) {
-
+  
   stopifnot(nrow(X)==length(y))
   stopifnot(is.factor(y))
   stopifnot(length(levels(y))==2)
@@ -62,24 +69,29 @@ svmlin <- function(X, y, Xu, algorithm=1, lambda=1, lambda_u=1, max_switch=10000
 
   # Run C++ implementation
   res <- svmlin_rcpp(X=Xall,y=y,l=nrow(X), algorithm=algorithm,lambda=lambda,lambda_u=lambda_u,max_switch=max_switch,pos_frac=pos_frac,Cp=Cp,Cn=Cn,costs=costs,verbose=verbose)
-  res$classnames <- classnames
-  class(res) <- "svmlin"
-  return(res)
+  
+  ## Return correct object
+  new("svmlinClassifier",
+      classnames=classnames,
+      weights=res$Weights
+  )
 }
 
-#'@export
-predict.svmlin <- function(object,newdata) {
+#' @rdname rssl-predict
+#' @aliases predict,svmlinClassifier-method
+setMethod("predict", signature(object="svmlinClassifier"), function(object, newdata, probs=FALSE,...) {
   X <- newdata
   stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
-  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object$Weights)
-  classes <- factor(dvalues>0,levels=c(FALSE,TRUE),labels=object$classnames)
+  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object@weights)
+  classes <- factor(dvalues>0,levels=c(FALSE,TRUE),labels=object@classnames)
   return(classes)
-}
+})
 
-#'@export
-decisionvalues.svmlin <- function(object,newdata) {
+#' @rdname decisionvalues-methods
+#' @aliases decisionvalues,svmlinClassifier-method
+setMethod("decisionvalues", signature(object="svmlinClassifier"), function(object, newdata) {
   X <- newdata
   stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
-  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object$Weights)
+  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object@weights)
   return(dvalues)
-}
+})
