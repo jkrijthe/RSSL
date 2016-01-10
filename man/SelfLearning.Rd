@@ -2,10 +2,10 @@
 % Please edit documentation in R/SelfLearning.R
 \name{SelfLearning}
 \alias{SelfLearning}
-\title{Self Learning Semi-supervised Learning}
+\title{Self-Learning approach to Semi-supervised Learning}
 \usage{
 SelfLearning(X, y, X_u = NULL, method, prob = FALSE, cautious = FALSE,
-  scale = FALSE, ...)
+  ...)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -18,14 +18,12 @@ SelfLearning(X, y, X_u = NULL, method, prob = FALSE, cautious = FALSE,
 
 \item{prob}{If TRUE, run algorithm with soft labels, instead of hard labels}
 
-\item{cautious}{TODO: implement this}
-
-\item{scale}{logical; Whether the feature vectors should be normalized}
+\item{cautious}{logical; not implemented}
 
 \item{...}{additional arguments to be passed to method}
 }
 \description{
-Use self learning to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and adding these predictions to the set of labeled objects.
+Use self-learning (also known as Yarowsky's algorithm or pseudo-labeling) to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and adding these predictions to the set of labeled objects.
 }
 \examples{
 data(testdata)
