@@ -2,7 +2,7 @@
 title: "Semi-Supervised Classifiers"
 date: "`r Sys.Date()`"
 output: 
-  rmarkdown::html_document:
+  rmarkdown::html_vignette:
     toc: true
 vignette: >
   %\VignetteIndexEntry{Semi-Supervised Classifiers}
