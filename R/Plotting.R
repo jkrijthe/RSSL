@@ -25,7 +25,7 @@ geom_classifier <- function(...,show_guide=TRUE) {
   }))
   boundaries$Classifier <- factor(names(classifiers),levels=names(classifiers),ordered=TRUE)
   geom_abline(aes_string(intercept="intercept",slope="slope",linetype="Classifier"),
-              data=boundaries,show_guide = show_guide)
+              data=boundaries,show.legend = show_guide)
 }
 
 #' Plot RSSL responsibilities

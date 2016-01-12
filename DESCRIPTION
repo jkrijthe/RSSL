@@ -33,7 +33,7 @@ Suggests:
     testthat,
     data.table,
     gridExtra,
-    knitr,
+    rmarkdown,
     ggthemes,
     numDeriv,
     LiblineaR
@@ -89,5 +89,5 @@ Collate:
     'scaleMatrix.R'
     'svmlin.R'
     'testdata-data.R'
-VignetteBuilder: knitr
+VignetteBuilder: rmarkdown
 RoxygenNote: 5.0.1
