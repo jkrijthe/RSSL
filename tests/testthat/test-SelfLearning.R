@@ -14,8 +14,15 @@ test_that("Formula and matrix formulation give same results", {
   expect_that(g_matrix@classnames,is_equivalent_to(g_model@classnames)) # Class names the same?
 })
 
-test_that("Example with Nearest Mean", {
-  g<-SelfLearning(testdata$X,testdata$y,testdata$X_u,method=NearestMeanClassifier)
-  1-mean(predict(g, testdata$X_test)==testdata$y_test)
-  loss(g, testdata$X_test, testdata$y_test)
+test_that("Example where classifier should not change.", {
+  X <- matrix(c(-1,+1),2,1)
+  X_u <- X
+  y <- factor(c(-1,+1))
+  g_sup <- LeastSquaresClassifier(X,y)
+  g_self <- SelfLearning(X,y,X_u,
+                         method=LeastSquaresClassifier)
+
+  expect_equal(loss(g_sup,X_u,y),
+               loss(g_self,X_u,y))
+  expect_equal(g_sup@theta,g_self@model@theta)
 })
