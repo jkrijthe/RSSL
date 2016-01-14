@@ -24,10 +24,13 @@ setClass("NearestMeanClassifier",
 #' \item{classnames}{a vector with the classnames for each of the classes}
 #' \item{scaling}{scaling object used to transform new observations}
 #' @export
-NearestMeanClassifier <- function(X, y, method="closedform", prior=NULL, scale=FALSE,  ...) {
+NearestMeanClassifier <- function(X, y, method="closedform", prior=NULL, x_center=FALSE, scale=FALSE) {
   
   ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X,y,X_u=NULL,scale=scale,intercept=FALSE)
+  ModelVariables<-PreProcessing(X,y,X_u=NULL,
+                                x_center=x_center, 
+                                scale=scale,
+                                intercept=FALSE)
   X<-ModelVariables$X
   y<-ModelVariables$y
   scaling<-ModelVariables$scaling
@@ -38,11 +41,12 @@ NearestMeanClassifier <- function(X, y, method="closedform", prior=NULL, scale=F
   
   if (method=="closedform") {
     
-    if (is.null(prior)) prior<-matrix(colMeans(Y),2,1)
-    means<-t((t(X) %*% Y))/(colSums(Y))
-    sigma<-mean((X-(Y %*% means))^2)
-    sigma<-diag(ncol(X))*sigma
-    sigma<-lapply(1:ncol(Y),function(c){sigma})
+    if (is.null(prior)) prior <- matrix(colMeans(Y),2,1)
+    means <- t((t(X) %*% Y))/(colSums(Y))
+    sigma <- mean((X-(Y %*% means))^2)
+    sigma <- diag(ncol(X))*sigma
+    sigma <- lapply(1:ncol(Y),function(c){sigma})
+    
   } else if (method=="ml") {
     
     if (is.null(prior)) prior<-matrix(colMeans(Y),2,1)
@@ -53,8 +57,13 @@ NearestMeanClassifier <- function(X, y, method="closedform", prior=NULL, scale=F
       sigma<-diag(ncol(X))*sigma
       sigma<-lapply(1:ncol(Y),function(c){sigma})
       
-      model<-new("NearestMeanClassifier", modelform=modelform, prior=prior, means=means, sigma=sigma,classnames=1:ncol(Y),scaling=scaling)
-    
+      model<-new("NearestMeanClassifier", 
+                 modelform=modelform, 
+                 prior=prior, 
+                 means=means, 
+                 sigma=sigma,
+                 classnames=1:ncol(Y),
+                 scaling=scaling)
       loss(model,X,y)
     }
     
@@ -69,5 +78,11 @@ NearestMeanClassifier <- function(X, y, method="closedform", prior=NULL, scale=F
   }
   
   ## Return object
-  new("NearestMeanClassifier", modelform=modelform, prior=prior, means=means, sigma=sigma,classnames=classnames,scaling=scaling)
+  new("NearestMeanClassifier", 
+      modelform=modelform, 
+      prior=prior, 
+      means=means, 
+      sigma=sigma,
+      classnames=classnames,
+      scaling=scaling)
 }
