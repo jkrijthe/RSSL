@@ -7,15 +7,26 @@ setClass("NormalBasedClassifier",
 #' @rdname rssl-formatting
 #' @aliases show,NormalBasedClassifier-method
 setMethod("show", signature(object="NormalBasedClassifier"), function(object) {
-  print(object@name)
+  cat(object@name,'\n')
+  cat("Means:\n")
   print(object@means)
+  cat("\nSigma:\n")
+  print(object@sigma)
+  cat("\nScaling:\n")
+  print(object@scaling)
+  cat("Classes:")
+  print(object@classnames)
 })
 
 #' @rdname rssl-predict
 #' @aliases predict,NormalBasedClassifier-method
 setMethod("predict", signature(object="NormalBasedClassifier"), function(object,newdata,probs=FALSE) {
   
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,object@scaling,intercept=FALSE)
+  ModelVariables<-PreProcessingPredict(modelform=object@modelform,
+                                       newdata=newdata,
+                                       y=NULL,
+                                       scaling=object@scaling,
+                                       intercept=FALSE)
   X<-ModelVariables$X
   
   M<-object@means
@@ -120,7 +131,11 @@ setMethod("losslogsum", signature(object="NormalBasedClassifier"), function(obje
 #' @aliases posterior,NormalBasedClassifier-method
 setMethod("posterior", signature(object="NormalBasedClassifier"), function(object,newdata) {
   
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,object@scaling,intercept=FALSE)
+  ModelVariables<-PreProcessingPredict(modelform=object@modelform,
+                                       newdata=newdata,
+                                       y=NULL,
+                                       scaling=object@scaling,
+                                       intercept=FALSE)
   X<-ModelVariables$X
   
   M<-object@means
@@ -129,10 +144,11 @@ setMethod("posterior", signature(object="NormalBasedClassifier"), function(objec
   for (c in 1:length(object@sigma)) {
     S <- object@sigma[[c]] # Covariance matrix
     k <- ncol(S) # Dimensionality
-    G[,c]<-log(object@prior[c,,drop=FALSE]) - (k/2) * log(2*pi)- 0.5*log(det(S)) - rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE])) 
+    G[,c] <- log(object@prior[c,,drop=FALSE]) - (k/2) * log(2*pi) - 0.5*log(det(S)) - rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE])) 
   }
   
-  posteriors <- G-(log(rowSums(exp(G-apply(G,1,max))))+apply(G,1,max)) # More stable way of doing logsumexp
+  posteriors <- G - (log(rowSums(exp(G-apply(G,1,max))))+apply(G,1,max)) # More stable way of doing logsumexp
+  
   posteriors <- exp(posteriors)
   colnames(posteriors)<-object@classnames
   return(posteriors)

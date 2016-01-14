@@ -1,4 +1,4 @@
-context("Self Learning")
+context("Self-Learning")
 
 data(testdata)
 
