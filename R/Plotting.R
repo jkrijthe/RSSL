@@ -5,6 +5,15 @@ coefficients_after_scaling <- function(w0,w,scaling) {
   } else {
     m <- scaling@mean
     s <- scaling@scale
+    
+    # If either mean of scaling is missing
+    if (is.null(s)) {
+      s <- rep(1,length(m))
+    }
+    if (is.null(m)) {
+      m <- rep(0,length(s))
+    }
+    
     list(intercept = as.numeric(-w0*s[2]/w[2]+m[2]+m[1]*(s[2]*w[1])/(s[1]*w[2])), 
          slope = as.numeric(-(s[2]*w[1])/(s[1]*w[2])))
   }
