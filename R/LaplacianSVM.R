@@ -4,12 +4,13 @@ setClass("LaplacianSVM",
          prototype(name="Support Vector Machine"),
          contains="Classifier")
 
-#' SVM Classifier
+#' Laplacian SVM classifier.
 #'
 #' @param adjacency_kernel kernlab::kernel to use as adjacency kernel
 #' @param gamma numeric; Weight of the unlabeled data
 #' @inheritParams BaseClassifier
 #' @return S4 object of type LaplacianSVM
+#' @example tests/examples/exampleLaplacianSVM.R
 #' @export
 LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=vanilladot(), adjacency_kernel=rbfdot(1/4)) {
   
