@@ -14,13 +14,13 @@ y_test <- testdata$y_test
 test_that("Kernel and Linear give same result: 2 class", {
   dmat<-model.matrix(Species~.-1,iris[51:150,])
   tvec<-droplevels(iris$Species[51:150])
-  testdata <- data.frame(tvec,dmat[,1:2])
+  testdata <- data.frame(tvec,dmat[,1:4])
   colnames(testdata)<-c("Class","X1","X2")
   
-  g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,kernel=vanilladot(),lambda=0.000001,scale = TRUE)
-  g_linear<-LeastSquaresClassifier(dmat[,1:2],tvec,intercept=TRUE)
-  expect_equal(predict(g_kernel,dmat[,1:2]),  predict(g_linear,dmat[,1:2]))
-  expect_equal(loss(g_kernel,dmat[,1:2],tvec),  loss(g_linear,dmat[,1:2],tvec),tolerance =10e-6)
+  g_kernel<-KernelLeastSquaresClassifier(dmat[,1:4],tvec,kernel=vanilladot(),lambda=0.000001,scale = TRUE)
+  g_linear<-LeastSquaresClassifier(dmat[,1:4],tvec,intercept=TRUE)
+  expect_equal(predict(g_kernel,dmat[,1:4]),  predict(g_linear,dmat[,1:4]))
+  expect_equal(loss(g_kernel,dmat[,1:4],tvec),  loss(g_linear,dmat[,1:4],tvec),tolerance =10e-6)
 })
 
 test_that("Kernel and Linear give same result: 3 class", {
@@ -50,7 +50,7 @@ test_that("Linear and Kernel implementation give the same answer.", {
   g_6<-KernelLeastSquaresClassifier(X,y,lambda=0.000000001,scale=TRUE,x_center=TRUE,y_scale=TRUE)
   expect_equal(s1, sum(loss(g_6,X_test,y_test)))
   
-  # No y scaling, no intercept shoudl give the same bad answer
+  # No y scaling, no intercept should give the same bad answer
   g_1<-LeastSquaresClassifier(X,y,intercept=FALSE,scale=TRUE,x_center=TRUE,y_scale=FALSE)
   g_2<-KernelLeastSquaresClassifier(X,y,lambda=0.000000001,scale=TRUE,x_center=TRUE,y_scale=FALSE)
   expect_equal(sum(loss(g_1,X_test,y_test)),sum(loss(g_2,X_test,y_test)))
