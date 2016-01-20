@@ -14,7 +14,6 @@ setClass("LinearDiscriminantClassifier",
 #' @param prior A matrix with class prior probabilites. If NULL, this will be estimated from the data
 #' @param scale logical; If TRUE, apply a z-transform to the design matrix X before running the regression
 #' @param x_center logical; Whether the feature vectors should be centered
-#' @param ... additional arguments
 #' @return S4 object of class LeastSquaresClassifier with the following slots:
 #' \item{modelform}{weight vector}
 #' \item{prior}{the prior probabilities of the classes}
@@ -23,7 +22,7 @@ setClass("LinearDiscriminantClassifier",
 #' \item{classnames}{a vector with the classnames for each of the classes}
 #' \item{scaling}{scaling object used to transform new observations}
 #' @export
-LinearDiscriminantClassifier<- function(X, y, method="closedform",prior=NULL, scale=FALSE, x_center=FALSE,  ...) {
+LinearDiscriminantClassifier<- function(X, y, method="closedform",prior=NULL, scale=FALSE, x_center=FALSE) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,X_u=NULL,scale=scale,intercept=FALSE,x_center=x_center)
   X<-ModelVariables$X

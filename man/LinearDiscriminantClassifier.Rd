@@ -5,7 +5,7 @@
 \title{Linear Discriminant Classifier}
 \usage{
 LinearDiscriminantClassifier(X, y, method = "closedform", prior = NULL,
-  scale = FALSE, x_center = FALSE, ...)
+  scale = FALSE, x_center = FALSE)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -19,8 +19,6 @@ LinearDiscriminantClassifier(X, y, method = "closedform", prior = NULL,
 \item{scale}{logical; If TRUE, apply a z-transform to the design matrix X before running the regression}
 
 \item{x_center}{logical; Whether the feature vectors should be centered}
-
-\item{...}{additional arguments}
 }
 \value{
 S4 object of class LeastSquaresClassifier with the following slots:
