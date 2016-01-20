@@ -17,12 +17,8 @@ test_that("Formula and matrix formulation give same results",{
   g_model <- ICLeastSquaresClassifier(modelform, D)
   
   expect_that(1-mean(predict(g_matrix,X_test)==y_test),is_equivalent_to(1-mean(predict(g_model,D_test)==D_test[,classname]))) # Same classification error?
-  expect_that(loss(g_matrix, X_test, y_test),is_equivalent_to(loss(g_model, D_test))) # Same loss on test set?
-  #   expect_that(g_matrix@classnames,is_equivalent_to(g_model@classnames)) # Class names the same?
-})
-
-test_that("Expected results on simple benchmark dataset",{
-  
+  expect_that(loss(g_matrix, X_test, y_test),is_equivalent_to(loss(g_model, D_test)))  
+  expect_equal(g_matrix@classnames,g_model@classnames) # Class names the same?
 })
 
 test_that("Different settings return the same loss",{
@@ -57,4 +53,21 @@ test_that("Multi class gives an output", {
   expect_equal(sum(predict(g_sup,problem$X_test)==problem$y_test),61)
   expect_equal(sum(predict(g_semi,problem$X_test)==problem$y_test),61)
   expect_equal(sum(predict(g_euc,problem$X_test)==problem$y_test),57)
+})
+
+test_that("Different methods", {
+
+  g_sup <- ICLeastSquaresClassifier(X,y,X_u,
+                                    projection="supervised",method="QP",eps=10e-10)
+  g_sup_lbfgs <- ICLeastSquaresClassifier(X,y,X_u,
+                                    projection="supervised",method="LBFGS",eps=10e-10)
+  
+  expect_equal(predict(g_sup,X_test),predict(g_sup_lbfgs,X_test))
+  
+  g_semi <- ICLeastSquaresClassifier(X,y,X_u,
+                                     projection="semisupervised",method="QP",eps=10e-10)
+  g_semi_lbfgs <- ICLeastSquaresClassifier(X,y,X_u,
+                                    projection="semisupervised",method="LBFGS",eps=10e-10)
+  expect_equal(loss(g_semi,X_test,y_test),loss(g_semi_lbfgs,X_test,y_test),tolerance=10e-6)
+  
 })

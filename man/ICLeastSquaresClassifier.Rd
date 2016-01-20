@@ -55,13 +55,19 @@ Implicitly constrained semisupervised learning with quadratic loss. Least square
 \examples{
 data(testdata)
 w1 <- LeastSquaresClassifier(testdata$X, testdata$y, 
-   intercept = TRUE,x_center = FALSE, scale=FALSE)@theta
+                             intercept = TRUE,x_center = FALSE, scale=FALSE)
 w2 <- ICLeastSquaresClassifier(testdata$X, testdata$y, 
-   testdata$X_u, intercept = TRUE, x_center = FALSE, scale=FALSE)@theta
+                               testdata$X_u, intercept = TRUE, x_center = FALSE, scale=FALSE)
 plot(testdata$X[,1],testdata$X[,2],col=factor(testdata$y),asp=1)
 points(testdata$X_u[,1],testdata$X_u[,2],col="darkgrey",pch=16,cex=0.5)
-abline((0.5-w1[1])/w1[3],-w1[2]/w1[3],lty=2)
-abline((0.5-w2[1])/w2[3],-w2[2]/w2[3],lty=1)
+
+abline(line_coefficients(w1)$intercept,
+       line_coefficients(w1)$slope,lty=2)
+abline(line_coefficients(w2)$intercept,
+       line_coefficients(w2)$slope,lty=1)
+}
+\references{
+Krijthe, J.H. & Loog, M., 2015. Implicitly Constrained Semi-Supervised Least Squares Classification. In E. Fromont, T. De Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances in Intelligent Data Analysis XIV (Lecture Notes in Computer Science Volume 9385). Saint Etienne. France, pp. 158-169.
 }
 \seealso{
 Other RSSL LeastSquares: \code{\link{EMLeastSquaresClassifier}}
