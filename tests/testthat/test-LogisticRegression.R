@@ -29,8 +29,6 @@ test_that("Centering input does not change predictions", {
   
   expect_equal(g_center@w[-1],g_noncenter@w[-1],tolerance=10e-4)
   
-  g_center@opt_result
-  g_noncenter@opt_result
   expect_equal(loss(g_center,X_test,y_test),
                loss(g_noncenter,X_test,y_test),
                tolerance=10e-5)
