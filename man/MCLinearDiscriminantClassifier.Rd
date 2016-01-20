@@ -2,27 +2,32 @@
 % Please edit documentation in R/MCLinearDiscriminantClassifier.R
 \name{MCLinearDiscriminantClassifier}
 \alias{MCLinearDiscriminantClassifier}
-\title{Moment Constrained Semi-Supervised Linear Discriminant Analysis.}
+\title{Moment Constrained Semi-supervised Linear Discriminant Analysis.}
 \usage{
 MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
-  prior = NULL, scale = FALSE)
+  prior = NULL, x_center = FALSE, scale = FALSE)
 }
 \arguments{
-\item{X}{Matrix with n objects for m features}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{factor with labels for n objects}
+\item{y}{factor or integer vector; Label vector}
 
-\item{X_u}{Matrix with n objects for m features for unlabeled data}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{method}{either "ml" or "closedform"}
+\item{method}{character; Currently only "closedform"}
 
 \item{prior}{Matrix (k by 1) of class prior probabilities. If NULL, estimated from data}
+
+\item{x_center}{logical;  Should the features be centered?}
 
 \item{scale}{boolean; Should the features be normalized? (default: FALSE)}
 }
 \description{
-Using an update of the estimated means and covariance proposed by \cite{Loog}. 
-Using the method="closedform" option, uses the ad hoc parameter update proposed in \cite{Loog}. The alternative way to minimize this objective function directly has not been implemented yet.
+Using an update of the estimated means and covariance proposed in (Loog 2014). 
+Using the method="closedform" option, uses the ad hoc parameter update proposed in (Loog 2014). The alternative way to minimize this objective function directly has not been implemented yet.
+}
+\references{
+Loog, M., 2014. Semi-supervised linear discriminant analysis through moment-constraint parameter estimation. Pattern Recognition Letters, 37, pp.24-31.
 }
 \seealso{
 Other RSSL classifiers: \code{\link{MCNearestMeanClassifier}},

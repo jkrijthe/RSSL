@@ -28,6 +28,11 @@ test_that("Scaling input has some expected properties", {
   expect_equal(predict(g_scaled, X_test),predict(g_unscaled, X_test))
   expect_equal(predict(g_unscaled2, X_test),predict(g_unscaled, X_test))
   
+  expect_equal(predict(g_scaled, X_test)=="-1",
+               posterior(g_scaled, X_test)[,1]>=0.5)
+  expect_equal(predict(g_unscaled, X_test)=="-1",
+               posterior(g_unscaled, X_test)[,1]>=0.5)
+  
   expect_equal(loss(g_scaled, X_test, y_test)-loss(g_unscaled, X_test, y_test),rep(-0.9848311,nrow(X_test)),tolerance=10e-7)
   expect_equal(loss(g_unscaled, X_test, y_test),loss(g_unscaled2, X_test, y_test))
   

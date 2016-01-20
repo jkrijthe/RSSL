@@ -4,7 +4,7 @@ library(kernlab)
 
 set.seed(91)
 
-testdata <- generateSlicedCookie(50,expected=FALSE)
+testdata <- generateSlicedCookie(50,expected=TRUE)
 extra_testdata <- generateSlicedCookie(100,expected=TRUE)
 
 g1 <- SVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10)
@@ -18,7 +18,7 @@ test_that("Batch Gradient Descent gives a warning", {
 test_that("Same result as kernlab implementation", {
   g_nonscaled  <- SVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10,scale=FALSE)
   g_kernlab <- ksvm(formula(Class~.),data=testdata, C=1000,kernel=vanilladot(),scaled=FALSE)
-  expect_equal(g_nonscaled@alpha[g_kernlab@alphaindex[[1]]],-g_kernlab@coef[[1]],tolerance=1e-3)
+  expect_equal(g_nonscaled@alpha[g_kernlab@alphaindex[[1]]],-g_kernlab@coef[[1]],tolerance=1e-2)
 })
 
 test_that("Same result for SVM and Linear SVM.", {
