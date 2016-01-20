@@ -95,7 +95,7 @@ setMethod("decisionvalues", signature(object="SVM"), function(object, newdata) {
 #' @aliases predict,SVM-method
 setMethod("predict", signature(object="SVM"), function(object, newdata) {
   output <- decisionvalues(object,newdata)
-  factor(as.numeric(output>0),levels=0:1,labels=object@classnames)
+  factor(output>0,levels=c(TRUE,FALSE),labels=object@classnames)
 })
 
 #' Losses per object for SVM

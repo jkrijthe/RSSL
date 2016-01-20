@@ -104,8 +104,7 @@ setMethod("predict", signature(object="LinearSVM"), function(object, newdata) {
   
   w <- matrix(object@w,nrow=ncol(X))
   
-  result<-factor(as.numeric(X %*% w>0),levels=0:1)
-  levels(result)<-object@classnames
+  result<-factor(as.numeric(X %*% w<0),levels=0:1,labels=object@classnames)
   return(result)
 })
 
