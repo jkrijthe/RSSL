@@ -35,6 +35,16 @@ setClass("svmlinClassifier",
 #' # Calculate Accuracy
 #' mean(predict(t_svmlin_1,svmlin_example$X_test)==svmlin_example$y_test)
 #' mean(predict(t_svmlin_2,svmlin_example$X_test)==svmlin_example$y_test)
+#' 
+#' data(testdata)
+#' 
+#' g_svm <- SVM(testdata$X,testdata$y)
+#' g_sup <- svmlin(testdata$X,testdata$y,testdata$X_u,algorithm = 3)
+#' g_semi <- svmlin(testdata$X,testdata$y,testdata$X_u,algorithm = 2)
+#' 
+#' mean(predict(g_svm,testdata$X_test)==testdata$y_test)
+#' mean(predict(g_sup,testdata$X_test)==testdata$y_test)
+#' mean(predict(g_semi,testdata$X_test)==testdata$y_test)
 #' @export
 svmlin <- function(X, y, Xu, algorithm=1, lambda=1, lambda_u=1, max_switch=10000, pos_frac=0.5, Cp=1.0, Cn=1.0,verbose=FALSE) {
   
