@@ -8,14 +8,10 @@ setClass("NearestMeanClassifier",
 #'
 #' Implementation of the nearest mean classifier modeled as a gaussian for each class. Classes are modeled as gaussians with equal, spherical covariance matrices. The optimal covariance matrix and means for the classes are found using maximum likelihood, which, in this case, has a closed form solution. To get true nearest mean classification, set prior as a matrix with equal probabilty for all classes.
 #'
-#' @usage NearestMeanClassifier(X, y, method="closedform",prior=NULL, scale=FALSE, ...)
-#'
-#' @param X Design matrix, intercept term is added within the function
-#' @param y Vector or factor with class assignments
-#' @param scale If TRUE, apply a z-transform to the design matrix X before running the regression
 #' @param prior A matrix with class prior probabilites. If NULL, this will be estimated from the data
 #' @param method the method to use. Either "closedform" for the fast closed form solution or "ml" for explicit maximum likelihood maximization
-#' @param ... additional arguments
+#' @inheritParams BaseClassifier
+#' 
 #' @return S4 object of class LeastSquaresClassifier with the following slots:
 #' \item{modelform}{weight vector}
 #' \item{prior}{the prior probabilities of the classes}

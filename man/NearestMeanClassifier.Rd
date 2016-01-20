@@ -4,20 +4,21 @@
 \alias{NearestMeanClassifier}
 \title{Nearest Mean Classifier}
 \usage{
-NearestMeanClassifier(X, y, method="closedform",prior=NULL, scale=FALSE, ...)
+NearestMeanClassifier(X, y, method = "closedform", prior = NULL,
+  x_center = FALSE, scale = FALSE)
 }
 \arguments{
-\item{X}{Design matrix, intercept term is added within the function}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{Vector or factor with class assignments}
+\item{y}{factor or integer vector; Label vector}
 
 \item{method}{the method to use. Either "closedform" for the fast closed form solution or "ml" for explicit maximum likelihood maximization}
 
 \item{prior}{A matrix with class prior probabilites. If NULL, this will be estimated from the data}
 
-\item{scale}{If TRUE, apply a z-transform to the design matrix X before running the regression}
+\item{x_center}{logical;  Should the features be centered?}
 
-\item{...}{additional arguments}
+\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
 }
 \value{
 S4 object of class LeastSquaresClassifier with the following slots:
