@@ -2,7 +2,7 @@
 % Please edit documentation in R/ICLinearDiscriminantClassifier.R
 \name{ICLinearDiscriminantClassifier}
 \alias{ICLinearDiscriminantClassifier}
-\title{Implicitly Constrained Semi-Supervised Linear Discriminant Classifier}
+\title{Implicitly Constrained Semi-supervised Linear Discriminant Classifier}
 \usage{
 ICLinearDiscriminantClassifier(X, y, X_u, prior = NULL, scale = FALSE,
   init = NULL, sup_prior = FALSE, factr = 1e+07, x_center = FALSE, ...)
@@ -29,7 +29,10 @@ ICLinearDiscriminantClassifier(X, y, X_u, prior = NULL, scale = FALSE,
 \item{...}{Additional Parameters, Not used}
 }
 \description{
-Semi-supervised version of Linear Discriminant Analysis using implicit constraints.
+Semi-supervised version of Linear Discriminant Analysis using implicit constraints as described in (Krijthe & Loog 2014)
 This method finds the labeling of the unlabeled objects, whose resulting LDA solution gives the highest log-likelihood when evaluated on the labeled objects only.
+}
+\references{
+Krijthe, J.H. & Loog, M., 2014. Implicitly Constrained Semi-Supervised Linear Discriminant Analysis. In International Conference on Pattern Recognition. Stockholm, pp. 3762-3767.
 }
 

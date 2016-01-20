@@ -4,11 +4,12 @@ setClass("ICLinearDiscriminantClassifier",
          prototype(name="Implicitly Constrained Linear Discriminant Classifier"),
          contains="LinearDiscriminantClassifier")
 
-#' Implicitly Constrained Semi-Supervised Linear Discriminant Classifier
+#' Implicitly Constrained Semi-supervised Linear Discriminant Classifier
 #'
-#' Semi-supervised version of Linear Discriminant Analysis using implicit constraints.
+#' Semi-supervised version of Linear Discriminant Analysis using implicit constraints as described in (Krijthe & Loog 2014)
 #' This method finds the labeling of the unlabeled objects, whose resulting LDA solution gives the highest log-likelihood when evaluated on the labeled objects only.
 #'
+#' @references Krijthe, J.H. & Loog, M., 2014. Implicitly Constrained Semi-Supervised Linear Discriminant Analysis. In International Conference on Pattern Recognition. Stockholm, pp. 3762-3767.
 #'
 #' @param X design matrix of the labeled objects
 #' @param y vector with labels
