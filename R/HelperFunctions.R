@@ -48,7 +48,7 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE)
   if (is(X,"formula") & is.data.frame(y)) {
     modelform <- X
     problem <- SSLDataFrameToMatrices(X,y)
-    out <- PreProcessing(problem$X,problem$y,problem$X_u,scale=scale,intercept=intercept,x_center=FALSE)
+    out <- PreProcessing(problem$X,problem$y,problem$X_u,scale=scale,intercept=intercept,x_center=x_center)
     out$modelform <- X
     return(out)
   } else if ((is.matrix(X) || is.data.frame(X)) && (is.factor(y))) {
