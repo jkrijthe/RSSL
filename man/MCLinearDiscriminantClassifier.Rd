@@ -5,7 +5,7 @@
 \title{Moment Constrained Semi-supervised Linear Discriminant Analysis.}
 \usage{
 MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
-  prior = NULL, x_center = FALSE, scale = FALSE)
+  prior = NULL, x_center = TRUE, scale = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -24,9 +24,11 @@ MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
 }
 \description{
 Using an update of the estimated means and covariance proposed in (Loog 2014). 
-Using the method="closedform" option, uses the ad hoc parameter update proposed in (Loog 2014). The alternative way to minimize this objective function directly has not been implemented yet.
+Using the method="invariant" option, uses the scale invariant parameter update proposed in (Loog 2014), while method="closedform" using the non-scale invariant version from (Loog 2012). The alternative way to minimize this objective function directly has not been implemented yet.
 }
 \references{
+Loog, M., 2012. Semi-supervised linear discriminant analysis using moment constraints. Partially Supervised Learning, LNCS, 7081, pp.32-41.
+
 Loog, M., 2014. Semi-supervised linear discriminant analysis through moment-constraint parameter estimation. Pattern Recognition Letters, 37, pp.24-31.
 }
 \seealso{

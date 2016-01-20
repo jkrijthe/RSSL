@@ -24,11 +24,16 @@ test_that("Formula and matrix formulation give same results",{
 })
 
 test_that("Adding the labeled data again does not help",{
-  g_semi <- MCLinearDiscriminantClassifier(X, y, X)
+  g_semi <- MCLinearDiscriminantClassifier(X, y, X, method="closedform")
+  g_invariant <- MCLinearDiscriminantClassifier(X, y, X, method="invariant")
   g_sup <- LinearDiscriminantClassifier(X, y)
   
+  expect_equal(as.numeric(g_sup@sigma[[1]]),
+               as.numeric(g_semi@sigma[[1]]),tolerance=10e-8)
   expect_equal(predict(g_semi,X_test), predict(g_sup,X_test))
+  expect_equal(g_semi,g_invariant)
   expect_equal(posterior(g_semi,X_test), posterior(g_sup,X_test))
+  expect_equal(posterior(g_sup,X_test), posterior(g_invariant,X_test))
   expect_equal(g_semi@classnames,g_sup@classnames) # Class names the same?
 })
 
@@ -40,22 +45,23 @@ test_that("Centering has no effect",{
   expect_equal(posterior(g_1,X_test), posterior(g_2,X_test))
   expect_equal(g_1@classnames,g_2@classnames) # Class names the same?
   expect_equal(line_coefficients(g_1), line_coefficients(g_2))
+  
+  g_1 <- MCLinearDiscriminantClassifier(X, y, X_u, x_center=TRUE,method="invariant")
+  g_2 <- MCLinearDiscriminantClassifier(X, y, X_u, x_center=FALSE,method="invariant")
+  
+  expect_equal(predict(g_1,X_test), predict(g_2,X_test))
+  expect_equal(posterior(g_1,X_test), posterior(g_2,X_test))
+  expect_equal(g_1@classnames,g_2@classnames) # Class names the same?
+  expect_equal(line_coefficients(g_1), line_coefficients(g_2))
 })
 
-# test_that("Scaling has no effect",{
-#   g_1 <- MCLinearDiscriminantClassifier(X, y, X_test, scale=TRUE)
-#   g_2 <- MCLinearDiscriminantClassifier(X, y, X_test, scale=FALSE,x_center=TRUE)
-#   
-#   g_1@sigma[[1]] %*% diag(g_1@scaling@scale)
-#   g_2@sigma[[1]]
-#   
-#   g_3 <- LinearDiscriminantClassifier(X, y, scale=TRUE)
-#   g_4 <- LinearDiscriminantClassifier(X, y, scale=FALSE)
-#   expect_equal(line_coefficients(g_3), line_coefficients(g_4))
-#   
-#   expect_equal(predict(g_1,X_test), predict(g_2,X_test))
-#   expect_equal(posterior(g_1,X_test), posterior(g_2,X_test))
-#   max(abs(posterior(g_1,X_test)-posterior(g_2,X_test)))
-#   expect_equal(g_1@classnames,g_2@classnames)
-#   expect_equal(line_coefficients(g_1), line_coefficients(g_2))
-# })
+test_that("Scaling has no effect for invariant option",{
+  g_1 <- MCLinearDiscriminantClassifier(X, y, X_u, scale=TRUE,method="invariant")
+  g_2 <- MCLinearDiscriminantClassifier(X, y, X_u, scale=FALSE,method="invariant")
+  
+  expect_equal(predict(g_1,X_test), predict(g_2,X_test))
+  expect_equal(posterior(g_1,X_test), posterior(g_2,X_test))
+  max(abs(posterior(g_1,X_test)-posterior(g_2,X_test)))
+  expect_equal(g_1@classnames,g_2@classnames)
+  expect_equal(line_coefficients(g_1), line_coefficients(g_2))
+})

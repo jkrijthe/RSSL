@@ -7,7 +7,8 @@ setClass("MCLinearDiscriminantClassifier",
 #' Moment Constrained Semi-supervised Linear Discriminant Analysis.
 #'
 #' Using an update of the estimated means and covariance proposed in (Loog 2014). 
-#' Using the method="closedform" option, uses the ad hoc parameter update proposed in (Loog 2014). The alternative way to minimize this objective function directly has not been implemented yet.
+#' Using the method="invariant" option, uses the scale invariant parameter update proposed in (Loog 2014), while method="closedform" using the non-scale invariant version from (Loog 2012). The alternative way to minimize this objective function directly has not been implemented yet.
+#' @references Loog, M., 2012. Semi-supervised linear discriminant analysis using moment constraints. Partially Supervised Learning, LNCS, 7081, pp.32-41.
 #' @references Loog, M., 2014. Semi-supervised linear discriminant analysis through moment-constraint parameter estimation. Pattern Recognition Letters, 37, pp.24-31.
 #'
 #' @param method character; Currently only "closedform"
@@ -16,7 +17,7 @@ setClass("MCLinearDiscriminantClassifier",
 #' 
 #' @family RSSL classifiers
 #' @export
-MCLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform",prior=NULL, x_center=FALSE, scale=FALSE) {
+MCLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform",prior=NULL, x_center=TRUE, scale=FALSE) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X <- ModelVariables$X
@@ -59,8 +60,46 @@ MCLinearDiscriminantClassifier <- function(X, y, X_u, method="closedform",prior=
     
     sigma<-lapply(1:ncol(Y),function(c){sigma})
     
+  } else if (method=="invariant") {
+    
+    #Set priors if not set by user
+    if (is.null(prior)) prior <- matrix(colMeans(Y),2,1)
+    
+    #Calculate means for classes
+    means<-t((t(X) %*% Y))/(colSums(Y))
+    
+    #Set sigma to be the average within scatter matrix
+    sigma.classes<-lapply(1:ncol(Y),function(c,X){cov_ml(X[Y[,c]==1,,drop=FALSE])},X)
+    sigma<-sigma.classes[[1]]*prior[1]
+    for (i in 2:length(sigma.classes)) {
+      sigma<-sigma+sigma.classes[[i]]*prior[i]
+    }
+    
+    T.labeled<-cov_ml(X)
+    T.all<-cov_ml(rbind(X,X_u))
+    m.labeled<-colMeans(X)
+    m.all<-colMeans(rbind(X,X_u))
+    
+    matrixsqrt <- function(X) {
+      decomposition <- eigen(X)
+      decomposition$vectors %*% diag(sqrt(decomposition$values)) %*% t(decomposition$vectors)
+    }
+    
+    E <- (eigen(ginv(T.all) %*% T.labeled)$vectors)
+    D_T <- t(E) %*% T.labeled %*% E
+    D_theta <- t(E) %*% T.all %*% E
+    Trans <- t(ginv(E)) %*% t(matrixsqrt(D_theta)) %*% ginv(matrixsqrt(D_T)) %*% t(E)
+                              
+    means <- t(Trans %*% t(means-matrix(1,nrow(means),1) %*% m.labeled ) + t(matrix(1,nrow(means),1) %*% m.all))
+    sigma <- Trans %*%  sigma  %*% t(Trans)
+    
+    
+    sigma<-lapply(1:ncol(Y),function(c){sigma})
+    
   } else if (method=="ml") {
     stop("Not implemented yet")
+  } else {
+    stop("Value of method not recognized.")
   }
   new("MCLinearDiscriminantClassifier", 
       prior=prior, 
