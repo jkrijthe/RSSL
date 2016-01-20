@@ -33,21 +33,7 @@ LogisticLossClassifier <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, 
   modelform<-ModelVariables$modelform
   
   if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
-  y <- (Y-1.5)*2
-  
-  opt_func <- function(w, X, y) {
-    
-    loss <- sum(log(matrix(1,nrow(X),1)+exp(- y * (X %*% w)))) + lambda * w[-1] %*% w[-1]
-    
-    return(as.numeric(loss))
-  }
-  
-  opt_grad <- function(w, X, y) {
-    w <- matrix(w,nrow=ncol(X))
-     # Numerators of the probability estimates    
-    weightings <- -y * (exp(- y * (X %*% w))/(matrix(1,nrow(X),1)+exp(- y * (X %*% w))))
-    as.vector(t(X) %*% weightings + lambda *c(0,w[-1]))
-  }
+  y <- (Y-0.5)*2
   
   if (is.na(init[1])) {
     w <- rep(0.0,ncol(X)*(length(classnames)-1))
@@ -62,44 +48,64 @@ LogisticLossClassifier <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, 
 #     #print(opt_func(w,X,y))
 #   }
   
-  opt_result <- optim(w, fn=opt_func, gr=opt_grad, X=X, y=y, method="BFGS", control=list(fnscale=1), lower=-Inf, upper=Inf)
-  # w<-as.numeric(opt_result[1,1:length(w)])
+  opt_result <- optim(w, 
+                      fn=loss_logistic, 
+                      gr=grad_logistic, 
+                      X=X, y=y, lambda=lambda,
+                      method="BFGS")
+  
   w<-opt_result$par
-  #print(opt_func(w,X,y))
-  return(new("LogisticLossClassifier", modelform=modelform, classnames=classnames, w=w, scaling=scaling))
+  
+  return(new("LogisticLossClassifier", 
+             modelform=modelform, 
+             classnames=classnames, 
+             w=w, 
+             scaling=scaling))
 }
                                                                                         
 #' @rdname loss-methods
 #' @aliases loss,LogisticLossClassifier-method  
 setMethod("loss", signature(object="LogisticLossClassifier"), function(object, newdata, y=NULL, ...) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=TRUE)
-  X<-ModelVariables$X
-  y<-ModelVariables$y
+  X <- ModelVariables$X
+  Y <- ModelVariables$Y
+  y <- ModelVariables$y
   
   if (is.null(y)) { stop("No labels supplied.")}
-  y<-(y-1.5)*2
-  sum(log(matrix(1,nrow(X),1)+exp(- y * (X %*% object@w))))
-})                                                                              
+  
+  y <- (Y[,1]-0.5)*2
+  log(matrix(1,nrow(X),1)+exp(- y * (X %*% object@w)))
+})                     
 
 #' @rdname rssl-predict
 #' @aliases predict,LogisticLossClassifier-method  
 setMethod("predict", signature(object="LogisticLossClassifier"), function(object, newdata,probs=FALSE) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=TRUE)
+  
   X<-ModelVariables$X
   
   w <- matrix(object@w, nrow=ncol(X))
-  expscore <- exp(cbind(rep(0,nrow(X)), X %*% w))
-  probabilities <- expscore/rowSums(expscore)
-  # If we need to return classes
-  classes <- factor(apply(probabilities,1,which.max),levels=1:length(object@classnames), labels=object@classnames)
-  if (probs)
-  {
-    return(probabilities)
-  } else return(classes)
+  classes <- factor(X %*% w > 0, levels=c(TRUE,FALSE), labels=object@classnames)
+  
+  return(classes)
 })
 
 #' @rdname line_coefficients-methods
-#' @aliases line_coefficients,LeastSquaresClassifier-method 
+#' @aliases line_coefficients,LogisticLossClassifier-method 
 setMethod("line_coefficients", signature(object="LogisticLossClassifier"), function(object) {
   return(coefficients_after_scaling(w0=object@w[1],w=object@w[2:3],scaling=object@scaling))
 })
+
+loss_logistic <- function(w, X, y, lambda) {
+  
+  loss <- sum(log(matrix(1,nrow(X),1)+exp(- y * (X %*% w)))) + lambda * w[-1] %*% w[-1]
+  
+  return(as.numeric(loss))
+}
+
+grad_logistic <- function(w, X, y, lambda) {
+  w <- matrix(w,nrow=ncol(X))
+  # Numerators of the probability estimates    
+  weightings <- -y * (exp(- y * (X %*% w))/(matrix(1,nrow(X),1)+exp(- y * (X %*% w))))
+  as.vector(t(X) %*% weightings + 2 *lambda *c(0,w[-1]))
+}
