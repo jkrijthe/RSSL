@@ -140,7 +140,7 @@ ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@sca
 #' @rdname line_coefficients-methods
 #' @aliases line_coefficients,LogisticRegression-method 
 setMethod("line_coefficients", signature(object="LogisticRegression"), function(object) {
-  return(coefficients_after_scaling(w0=object@w[1]-(0.5-object@y_scale),w=object@w[2:3],scaling=object@scaling))
+  return(coefficients_after_scaling(w0=object@w[1]-(0.5),w=object@w[2:3],scaling=object@scaling))
 })
 
 loss_logisticregression <- function(w, X, y, classnames,lambda) {
