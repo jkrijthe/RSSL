@@ -9,30 +9,33 @@ EntropyRegularizedLogisticRegression(X, y, X_u = NULL, lambda = 0,
   x_center = FALSE)
 }
 \arguments{
-\item{X}{Design matrix, intercept term is added within the function}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{Vector or factor with class assignments}
+\item{y}{factor or integer vector; Label vector}
 
-\item{X_u}{Design matrix of the unlabeled data, intercept term is added within the function}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
 \item{lambda}{l2 Regularization}
 
 \item{lambda_entropy}{Weight of the labeled observations compared to the unlabeled observations}
 
-\item{intercept}{Whether an intercept should be added to the model}
+\item{intercept}{logical; Whether an intercept should be included}
 
 \item{init}{Initial parameters for the gradient descent}
 
-\item{scale}{logical; whether the data should be normalized}
+\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
 
-\item{x_center}{logical; whether the data should be centered}
+\item{x_center}{logical;  Should the features be centered?}
 }
 \value{
 S4 object of class EntropyRegularizedLogisticRegression with the following slots:
-\item{theta}{weight vector}
+\item{w}{weight vector}
 \item{classnames}{the names of the classes}
 }
 \description{
-Entropy regularized logistic regression as introduced by \cite{Grandvalet2005}.
+R Implementation of entropy regularized logistic regression implementation as proposed by Grandvalet & Bengio 2005. In the model an extra term is added to the objective function that penalizes the entropy of the posterior measured on the unlabeled examples.
+}
+\references{
+Grandvalet, Y. & Bengio, Y., 2005. Semi-supervised learning by entropy minimization. In L. K. Saul, Y. Weiss, & L. Bottou, eds. Advances in Neural Information Processing Systems 17. Cambridge, MA: MIT Press, pp. 529-536.
 }
 
