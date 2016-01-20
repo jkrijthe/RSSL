@@ -4,16 +4,14 @@ setClass("MCNearestMeanClassifier",
          prototype(name="Moment Constrained Nearest Mean Classifier through ad hoc mean shifting"),
          contains="NearestMeanClassifier")
 
-#' Moment Constrained Nearest Mean Classifier (Semi-Supervised)
+#' Moment Constrained Semi-supervised Nearest Mean Classifier
 #'
-#' To fit a true nearest mean classifier, set prior to equal class priors. Based on Loog (2010)
+#' To fit a true nearest mean classifier, set prior to equal class priors. Based on (Loog 2010).
 #'
-#' @param X Design matrix, intercept term is added within the function
-#' @param y Vector with class assignments
-#' @param X_u Design matrix of the unlabeled objects, intercept term is added within the function
+#' @references Loog, M., 2010. Constrained Parameter Estimation for Semi-Supervised Learning: The Case of the Nearest Mean Classifier. In Proceedings of the 2010 European Conference on Machine learning and Knowledge Discovery in Databases. pp. 291-304.
+#'
 #' @param method Estimation procedure: c("closedform","ml")
-#' @param scale Whether the features should be scaled (default: FALSE)
-#' @param ... additional arguments
+#' @inheritParams BaseClassifier
 #' @return S4  object; a list consisting of
 #' \item{means}{the approximation of piel}
 #' \item{prior}{the number of trials}
@@ -21,9 +19,9 @@ setClass("MCNearestMeanClassifier",
 #' @family RSSL classifiers
 #' 
 #' @export
-MCNearestMeanClassifier <- function(X, y, X_u, method="closedform",scale=FALSE, ...) {
+MCNearestMeanClassifier <- function(X, y, X_u, method="closedform",scale=FALSE,x_center=FALSE) {
   ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=FALSE)
+  ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
   y<-ModelVariables$y

@@ -2,23 +2,23 @@
 % Please edit documentation in R/MCNearestMeanClassifier.R
 \name{MCNearestMeanClassifier}
 \alias{MCNearestMeanClassifier}
-\title{Moment Constrained Nearest Mean Classifier (Semi-Supervised)}
+\title{Moment Constrained Semi-supervised Nearest Mean Classifier}
 \usage{
 MCNearestMeanClassifier(X, y, X_u, method = "closedform", scale = FALSE,
-  ...)
+  x_center = FALSE)
 }
 \arguments{
-\item{X}{Design matrix, intercept term is added within the function}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{Vector with class assignments}
+\item{y}{factor or integer vector; Label vector}
 
-\item{X_u}{Design matrix of the unlabeled objects, intercept term is added within the function}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
 \item{method}{Estimation procedure: c("closedform","ml")}
 
-\item{scale}{Whether the features should be scaled (default: FALSE)}
+\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
 
-\item{...}{additional arguments}
+\item{x_center}{logical;  Should the features be centered?}
 }
 \value{
 S4  object; a list consisting of
@@ -27,7 +27,10 @@ S4  object; a list consisting of
 \item{sigma}{the number of hits}
 }
 \description{
-To fit a true nearest mean classifier, set prior to equal class priors. Based on Loog (2010)
+To fit a true nearest mean classifier, set prior to equal class priors. Based on (Loog 2010).
+}
+\references{
+Loog, M., 2010. Constrained Parameter Estimation for Semi-Supervised Learning: The Case of the Nearest Mean Classifier. In Proceedings of the 2010 European Conference on Machine learning and Knowledge Discovery in Databases. pp. 291-304.
 }
 \seealso{
 Other RSSL classifiers: \code{\link{MCLinearDiscriminantClassifier}},
