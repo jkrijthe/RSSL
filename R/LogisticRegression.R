@@ -8,8 +8,11 @@ setClass("LogisticRegression",
          contains="Classifier")
 
 #' (Regularized) Logistic Regression implementation used for comparison with semi-supervised implementations
+#' @param lambda numeric; L2 regularization parameter
+#' @param init numeric; Initialization of parameters for the optimization
+#' @inheritParams BaseClassifier
 #' @export
-LogisticRegression <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, init=NA, x_center=FALSE) {
+LogisticRegression <- function(X, y, lambda=0.0, intercept=TRUE, scale=FALSE, init=NA, x_center=FALSE) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
@@ -49,7 +52,10 @@ LogisticRegression <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, init
   
 }
 
-#' Train the Logistic Regression using R's standard glm function
+#' Logistic Regression implementation that uses R's glm
+#' @param lambda numeric; not used
+#' @param init numeric; not used
+#' @inheritParams BaseClassifier
 #' @export
 LogisticRegressionFast <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, init=NA, x_center=FALSE) {
   
@@ -92,7 +98,7 @@ LogisticRegressionFast <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, 
 # })
 
 #' @rdname loss-methods
-#' @aliases loss,LogisticRegression-method                                                                                                   
+#' @aliases loss,LogisticRegression-method           
 setMethod("loss", signature(object="LogisticRegression"), function(object, newdata, y=NULL) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept)
   X<-ModelVariables$X
@@ -108,7 +114,7 @@ setMethod("loss", signature(object="LogisticRegression"), function(object, newda
   ll <- -log(rowSums(exp(expscore))) # Denominators of the probability estimates
   
   for (c in 1:length(object@classnames)) {
-    ll[y==c] <- ll[y==c] + expscore[y==c,c] # Sum the numerators for each class
+    ll[y==object@classnames[c]] <- ll[y==object@classnames[c]] + expscore[y==object@classnames[c],c] # Sum the numerators for each class
   }
   return(-ll)
 })
@@ -133,7 +139,7 @@ ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@sca
 
 #' @rdname line_coefficients-methods
 #' @aliases line_coefficients,LogisticRegression-method 
-setMethod("line_coefficients", signature(object="LeastSquaresClassifier"), function(object) {
+setMethod("line_coefficients", signature(object="LogisticRegression"), function(object) {
   return(coefficients_after_scaling(w0=object@w[1]-(0.5-object@y_scale),w=object@w[2:3],scaling=object@scaling))
 })
 
