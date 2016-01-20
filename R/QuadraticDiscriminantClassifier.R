@@ -40,10 +40,10 @@ QuadraticDiscriminantClassifier <- function(X, y, method="closedform", prior=NUL
     if (is.null(prior)) prior<-matrix(colMeans(Y),2,1)
     
     #Calculate means for classes
-    means<-t((t(X) %*% Y))/(colSums(Y))
+    means <- t((t(X) %*% Y))/(colSums(Y))
     
     #Set sigma to be the average within scatter matrix
-    sigma<-lapply(1:ncol(Y),function(c,X){cov(X[Y[,c]==1,,drop=FALSE])},X)
+    sigma <- lapply(1:ncol(Y),function(c,X){cov(X[Y[,c]==1,,drop=FALSE])},X)
     
   } else if (method=="ml") {
     stop("QDC: ML optimization not implemented yet.")
@@ -70,3 +70,9 @@ QuadraticDiscriminantClassifier <- function(X, y, method="closedform", prior=NUL
   }
   new("QuadraticDiscriminantClassifier", modelform=modelform, prior=prior, means=means, sigma=sigma,classnames=classnames,scaling=scaling)
 }
+
+#' @rdname line_coefficients-methods
+#' @aliases line_coefficients,QuadraticDiscriminantClassifier-method 
+setMethod("line_coefficients", signature(object="QuadraticDiscriminantClassifier"), function(object) {
+  stop("Not a linear decision boundary.")
+})

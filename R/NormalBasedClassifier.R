@@ -31,11 +31,12 @@ setMethod("predict", signature(object="NormalBasedClassifier"), function(object,
   
   M<-object@means
 
-  G<-matrix(NA,nrow(X),length(object@sigma))
-  for (c in 1:length(object@sigma)) {
-    G[,c]<-matrix(1,nrow(X),1) %*% (t(log(object@prior[c,,drop=FALSE])) - 0.5 * diag(M[c,,drop=FALSE] %*% solve(object@sigma[[c]]) %*% t(M[c,,drop=FALSE]))) + X %*% solve(object@sigma[[c]]) %*% t(M[c,,drop=FALSE])
-  }
+  G <- matrix(NA,nrow(X),length(object@sigma))
   
+  for (c in 1:length(object@sigma)) {
+    S <- object@sigma[[c]]
+    G[,c] <- log(object@prior[c,,drop=FALSE]) - 0.5 * log(det(S)) - rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]))
+  }
   
   factor(apply(G, 1, which.max), labels=object@classnames,levels=1:length(object@classnames))
 })
@@ -51,21 +52,19 @@ setMethod("loss", signature(object="NormalBasedClassifier"), function(object, ne
   Y <- model.matrix(~as.factor(y)-1)
   
   k<-ncol(X) # Number of features
-  m<-object@means # Parameters of the NM classifier
+  m<-object@means
   ll<-0
   losses <- rep(NA,nrow(X))
   for (c in 1:nrow(m)) {
     sigma<-object@sigma[[c]]
     
-    Xc<-X[as.logical(Y[,c]), ,drop=FALSE] #Select all objects in class c
-    ll<- ll + nrow(Xc) * ( log(object@prior[c,])-(k/2)*log(2*pi)-(1/2)*log(det(sigma)) ) #Add the constant part for each row in Xc
-    ll<- ll + -(1/2)*sum((Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma) * (Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])) #Add the dynamic contribution
+    Xc <- X[as.logical(Y[,c]), ,drop=FALSE] #Select all objects in class c
+    ll <- ll + nrow(Xc) * ( log(object@prior[c,])-(k/2)*log(2*pi)-(1/2)*log(det(sigma)) ) #Add the constant part for each row in Xc
+    ll <- ll + -(1/2)*sum((Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma) * (Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])) #Add the dynamic contribution
     # Note: much faster than: sum(-(1/2)*diag((Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma)%*%t(Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))) 
     losses[as.logical(Y[,c])] <- ( log(object@prior[c,])-(k/2)*log(2*pi)-(1/2)*log(det(sigma)) ) + -(1/2)*rowSums((Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma) * (Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))
     
   }
-#   if (-ll<0) {browser()}
-  #print(-sum(losses))
   return(-losses)
 })
 
@@ -140,7 +139,7 @@ setMethod("posterior", signature(object="NormalBasedClassifier"), function(objec
   
   M<-object@means
   
-  G<-matrix(NA,nrow(X),length(object@sigma))
+  G <- matrix(NA,nrow(X),length(object@sigma))
   for (c in 1:length(object@sigma)) {
     S <- object@sigma[[c]] # Covariance matrix
     k <- ncol(S) # Dimensionality
@@ -150,7 +149,7 @@ setMethod("posterior", signature(object="NormalBasedClassifier"), function(objec
   posteriors <- G - (log(rowSums(exp(G-apply(G,1,max))))+apply(G,1,max)) # More stable way of doing logsumexp
   
   posteriors <- exp(posteriors)
-  colnames(posteriors)<-object@classnames
+  colnames(posteriors) <- object@classnames
   return(posteriors)
 })
 
