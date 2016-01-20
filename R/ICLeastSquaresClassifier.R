@@ -8,6 +8,8 @@ setClass("ICLeastSquaresClassifier",
 #'
 #' Implicitly constrained semisupervised learning with quadratic loss. Least squares regression is used treating classes as targets (1 for one class, 2 for the other). We find an (fractional) labelling of the unlabeled objects, whose least squares regression solution minimizes the least squares loss on the labeled training data only. This is equivalent to finding a weighting of the unlabeled objects belonging to either of the two classes.
 #'
+#' @references Krijthe, J.H. & Loog, M., 2015. Implicitly Constrained Semi-Supervised Least Squares Classification. In E. Fromont, T. De Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances in Intelligent Data Analysis XIV (Lecture Notes in Computer Science Volume 9385). Saint Etienne. France, pp. 158-169.
+#'
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param X_u Design matrix of the unlabeled data, intercept term is added within the function
@@ -32,13 +34,16 @@ setClass("ICLeastSquaresClassifier",
 #' @examples
 #' data(testdata)
 #' w1 <- LeastSquaresClassifier(testdata$X, testdata$y, 
-#'    intercept = TRUE,x_center = FALSE, scale=FALSE)@@theta
+#'                              intercept = TRUE,x_center = FALSE, scale=FALSE)
 #' w2 <- ICLeastSquaresClassifier(testdata$X, testdata$y, 
-#'    testdata$X_u, intercept = TRUE, x_center = FALSE, scale=FALSE)@@theta
+#'                                testdata$X_u, intercept = TRUE, x_center = FALSE, scale=FALSE)
 #' plot(testdata$X[,1],testdata$X[,2],col=factor(testdata$y),asp=1)
 #' points(testdata$X_u[,1],testdata$X_u[,2],col="darkgrey",pch=16,cex=0.5)
-#' abline((0.5-w1[1])/w1[3],-w1[2]/w1[3],lty=2)
-#' abline((0.5-w2[1])/w2[3],-w2[2]/w2[3],lty=1)
+#' 
+#' abline(line_coefficients(w1)$intercept,
+#'        line_coefficients(w1)$slope,lty=2)
+#' abline(line_coefficients(w2)$intercept,
+#'        line_coefficients(w2)$slope,lty=1)
 #' @family RSSL LeastSquares
 #' @export
 ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda_prior=0,trueprob=NULL,eps=10e-10,y_scale=FALSE) {
@@ -93,7 +98,6 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
       Dmat <- G %*% t(X_u)
       Dmat <- Dmat + eps*diag(nrow(Dmat))
     } else if (projection=="semisupervised")  {
-      warning("Does not correspond with LBFGS solution yet")
       dvec <- - X_u %*% C %*% t(X) %*% y + X_u %*% C2 %*% t(X) %*% y
       Dmat <- X_u %*% C %*% t(X_u)
       Dmat <- Dmat + eps*diag(nrow(Dmat))
