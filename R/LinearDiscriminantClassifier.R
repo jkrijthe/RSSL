@@ -30,7 +30,7 @@ LinearDiscriminantClassifier<- function(X, y, method="closedform",prior=NULL, sc
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
-  
+  if (any(table(y)<2)) { stop("Some classes contain fewer than 2 objects.")}
   Y <- model.matrix(~as.factor(y)-1)
   
   if (method=="closedform") {
