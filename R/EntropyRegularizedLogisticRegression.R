@@ -32,10 +32,19 @@ EntropyRegularizedLogisticRegression <- function(X,y,X_u=NULL,lambda=0.0,lambda_
   
   if (is.na(init[1])) {
     w <- rep(0.0,ncol(X)*(length(classnames)-1))
+  } else if (init=="supervised") {
+    w <- optim(w, 
+               fn=loss_logisticregression,
+               gr=grad_logisticregression, 
+               X=X, y=y, lambda=lambda,
+               classnames=classnames,
+               method="BFGS", 
+               control=list(fnscale=-1))$par
   } else {
     w <- init
   }
   
+  # Optimization
   opt_result <- optim(w, 
                       fn=loss_erlr, 
                       gr=grad_erlr, 
