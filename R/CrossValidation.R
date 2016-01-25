@@ -18,7 +18,13 @@ summary.CrossValidation <- function(object,measure=NULL) {
   }
 }
 
-print.CrossValidation <- function(x) {
+#' Print CrossValidation object
+#' 
+#' @param x CrossValidation object
+#' @param ... Not used
+#' @method print CrossValidation
+#' @export
+print.CrossValidation <- function(x,...) {
   cat("CrossValidation object\n\n")
   cat("Classifiers:\n", paste("\t",levels(x$results$Classifier),collapse="\n"), "\n")
   cat("Measures:\n",  paste("\t",levels(x$results$Measure),collapse="\n"), "\n")
@@ -285,6 +291,13 @@ xtable.CrossValidation<-function(object,caption="",benchmark_method=NULL,exclude
   cat("\\end{table}\n")
 }
 
+#' Plot CrossValidation object
+#' 
+#' @param x CrossValidation object
+#' @param y Not used
+#' @param ... Not used
+#' @method plot CrossValidation
+#' @export
 plot.CrossValidation <-function(x,y,...) {
   if ("Dataset" %in% names(x$results)) {
     x$results %>% 
@@ -292,6 +305,7 @@ plot.CrossValidation <-function(x,y,...) {
       geom_jitter() +
       facet_wrap(~Measure+Dataset,scales="free")
   } else {
+    x$results %>% 
     ggplot(aes_string(x="Classifier",y="value")) + 
       geom_jitter() +
       facet_wrap(~Measure+Dataset,scales="free")
