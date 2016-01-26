@@ -360,13 +360,13 @@ plot.LearningCurve <- function(x, y, ...) {
   if ("Dataset" %in% names(x$results)) {
     plot_frame <-  x$results %>% 
       dplyr::group_by_(x_label, quote(Classifier), quote(Measure), quote(Dataset)) %>%
-      summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=quote(sd(value,na.rm=TRUE)/sqrt(n()))) %>% 
+      summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=quote(stderror(value))) %>% 
       ungroup
     facet_used <- facet_wrap(~ Dataset + Measure,scales="free",ncol=length(unique(plot_frame$Measure)))
   } else {
     plot_frame <-  x$results %>% 
       dplyr::group_by_(x_label, quote(Classifier), quote(Measure)) %>%
-      summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=quote(sd(value,na.rm=TRUE)/sqrt(n()))) %>% 
+      summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=quote(stderror(value))) %>% 
       ungroup
     facet_used <- facet_wrap(~Measure,scales="free")
   }
