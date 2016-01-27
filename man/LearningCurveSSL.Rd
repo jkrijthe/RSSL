@@ -26,7 +26,7 @@ LearningCurveSSL(X, y, ...)
 
 \item{type}{Type of learning curve, either "unlabeled" or "fraction"}
 
-\item{n_l}{Number of labeled objects to be used in the experiments}
+\item{n_l}{Number of labeled objects to be used in the experiments (see details)}
 
 \item{with_replacement}{Indicated whether the subsampling is done with replacement or not (default: FALSE)}
 
@@ -57,6 +57,9 @@ LearningCurve object
 }
 \description{
 Evaluate semi-supervised classifiers for different amounts of unlabeled training examples or different fractions of unlabeled vs. labeled examples.
+}
+\details{
+For n_l, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
 }
 \examples{
 X <- model.matrix(Species~.-1,data=iris)

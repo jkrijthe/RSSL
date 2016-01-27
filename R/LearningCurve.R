@@ -148,7 +148,7 @@ LearningCurveSSL.list<-function(X,y,...,verbose=FALSE,mc.cores=1) {
 
 #' @rdname LearningCurveSSL
 #' @param classifiers list; Classifiers to crossvalidate
-#' @param n_l Number of labeled objects to be used in the experiments
+#' @param n_l Number of labeled objects to be used in the experiments (see details)
 #' @param with_replacement Indicated whether the subsampling is done with replacement or not (default: FALSE)
 #' @param sizes vector with number of unlabeled objects for which to evaluate performance
 #' @param n_test Number of test points if with_replacement is TRUE
@@ -163,6 +163,10 @@ LearningCurveSSL.list<-function(X,y,...,verbose=FALSE,mc.cores=1) {
 #' @param pre_pca logical; Whether the features should be preprocessed using a PCA step
 #' @param measures named list of functions giving the measures to be used
 #' @param time logical; Whether execution time should be saved.
+#' 
+#' @details 
+#' For n_l, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
+#' 
 #' @export
 LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE,...) {
   
