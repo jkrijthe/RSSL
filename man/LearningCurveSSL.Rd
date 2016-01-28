@@ -52,6 +52,8 @@ LearningCurveSSL(X, y, ...)
 \item{pre_scale}{logical; Whether the features should be scaled before the dataset is used}
 
 \item{pre_pca}{logical; Whether the features should be preprocessed using a PCA step}
+
+\item{low_level_cores}{integer; Number of cores to use compute repeats of the learning curve}
 }
 \value{
 LearningCurve object

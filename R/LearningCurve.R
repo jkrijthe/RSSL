@@ -163,6 +163,7 @@ LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, mc.cores=1) {
 #' @param pre_pca logical; Whether the features should be preprocessed using a PCA step
 #' @param measures named list of functions giving the measures to be used
 #' @param time logical; Whether execution time should be saved.
+#' @param low_level_cores integer; Number of cores to use compute repeats of the learning curve
 #' 
 #' @details 
 #' For n_l, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
