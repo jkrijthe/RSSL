@@ -108,7 +108,7 @@ LearningCurveSSL<-function(X, y, ...) {
 }
 
 #' @export
-LearningCurveSSL.list<-function(X,y,...,verbose=FALSE,mc.cores=1) {
+LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, mc.cores=1) {
 
   if (is.matrix(X[[1]]) & is.factor(y[[1]])) {
     curves <- clapply(names(X),function(dname){
@@ -168,7 +168,7 @@ LearningCurveSSL.list<-function(X,y,...,verbose=FALSE,mc.cores=1) {
 #' For n_l, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
 #' 
 #' @export
-LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE,...) {
+LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE,low_level_cores=1,...) {
   
   if (!is.factor(y)) { stop("Labels are not a factor.") }
   if (nrow(X)!=length(y)) { stop("Number of objects in X and y do not match.") }
@@ -224,7 +224,9 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
   if (verbose) pb <- txtProgressBar(0,repeats) # Display a text progress bar
   
   if (type=="unlabeled") {
-    for (i in 1:repeats) {
+    results <- clapply(1:repeats,function(i) {
+      results <- results[1,,,,drop=FALSE]
+      
       if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
       
       sample.labeled <- sample_k_per_level(y,n_min)
@@ -260,10 +262,10 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
                                       list(X=X_l, y=y_l, X_u=X_u_s, y_u=y_u_s))
           if (time) {
             timed <- proc.time()-timed
-            results[i,s,c,length(measures)+1] <- timed[[3]]  
+            results[1,s,c,length(measures)+1] <- timed[[3]]  
           }
           for (m in 1:length(measures)) {
-            results[i,s,c,m] <- do.call(measures[[m]],
+            results[1,s,c,m] <- do.call(measures[[m]],
                                         list(trained_classifier=trained_classifier,
                                              X=X_l, 
                                              y=y_l, 
@@ -274,9 +276,13 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
           }
         }
       }
-    }
+      dimnames(results)$repeats <- i
+      return(reshape2::melt(results))
+    }, mc.cores=low_level_cores)
+    results <- dplyr::bind_rows(results)
   } else if (type=="fraction") {
-    for (i in 1:repeats) {
+    results <- clapply(1:repeats,function(i) {
+      results <- results[1,,,,drop=FALSE]
     sample.guaranteed <- sample_k_per_level(y,n_min)
     if (!is.null(test_fraction)) { 
       idx_test <- sample((1:nrow(X))[-sample.guaranteed], size=ceiling(nrow(X)*test_fraction))
@@ -324,14 +330,15 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
         }
       }
     }
-    }
+    }, mc.cores=low_level_cores)
+    results <- dplyr::bind_rows(results)
   } else {
     stop("Unknown value for argument 'type'")
   }
   if (verbose) cat("\n")
   
   object<-list(n_l=n_l,
-               results=reshape2::melt(results),
+               results=results,
                n_test=n_test)
   class(object)<-"LearningCurve"
   return(object)

@@ -11,7 +11,8 @@ LearningCurveSSL(X, y, ...)
   = measure_accuracy), type = "unlabeled", n_l, with_replacement = FALSE,
   sizes = 2^(1:8), n_test = 1000, repeats = 100, verbose = FALSE,
   n_min = 1, dataset_name = NULL, test_fraction = NULL, fracs = seq(0.1,
-  0.9, 0.1), time = TRUE, pre_scale = FALSE, pre_pca = FALSE, ...)
+  0.9, 0.1), time = TRUE, pre_scale = FALSE, pre_pca = FALSE,
+  low_level_cores = 1, ...)
 }
 \arguments{
 \item{X}{design matrix}
