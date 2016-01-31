@@ -13,3 +13,10 @@ test_that("svmlin and LiblineaR give the same results", {
   expect_equal(decisionvalues(t_svmlin,A),predict(t_liblin,as.matrix(A),decisionValues = TRUE)$decisionValues[,1],tolerance=10e-4)
   expect_equal(predict(t_svmlin,A),as.factor(predict(t_liblin,as.matrix(A))$predictions),tolerance=10e-4)
 })
+
+test_that("svmlin does not throw errors", {
+  t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),Xu=NULL, lambda = 1,algorithm=0)
+  t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),Xu=A, lambda = 1,algorithm=1)
+  t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),Xu=A, lambda = 1,algorithm=2)
+  t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),Xu=A, lambda = 1,algorithm=3)
+})
