@@ -1,6 +1,8 @@
 context("Crossvalidation")
 
 test_that("Example Runs",{
+  library(xtable)
+  
   X <- model.matrix(Species~.-1,data=iris)
   y <- iris$Species
   
@@ -27,6 +29,6 @@ test_that("Example Runs",{
   
   lc2 <- CrossValidationSSL(list("D1"=formula(Species~.)),list("D1"=na.omit(iris)),
                      classifiers=classifiers,
-                     measures=measures,n_l=10,repeats=3,leavout="labeled")
+                     measures=measures,n_l=10,repeats=3,leaveout="labeled")
   
 })

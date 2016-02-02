@@ -4,8 +4,8 @@
 \alias{xtable.CrossValidation}
 \title{Generate Latex table of cross-validation results}
 \usage{
-xtable.CrossValidation(object, caption = "", benchmark_method = NULL,
-  exclude_methods = NULL)
+\method{xtable}{CrossValidation}(object, caption = "",
+  benchmark_method = NULL, exclude_methods = NULL)
 }
 \arguments{
 \item{object}{cross-validation results object}

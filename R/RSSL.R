@@ -40,6 +40,7 @@
 #' @import ggplot2
 #' @import dplyr
 #' @import reshape2
+#' @import xtable
 #' @importFrom MASS mvrnorm ginv
 #' @useDynLib RSSL
 #' @importFrom Rcpp sourceCpp

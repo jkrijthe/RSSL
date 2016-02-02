@@ -1,5 +1,11 @@
+#' Summary of Crossvalidation results
+#'
+#' @param object CrossValidation object
+#' @param measure Measure of interest
+#' @param ... Not used
+#' @method summary CrossValidation
 #' @export
-summary.CrossValidation <- function(object,measure=NULL) {
+summary.CrossValidation <- function(object, measure=NULL,...) {
   results <- object$results
   if (!is.null(measure)) {
     results <- results %>% filter_(quote(Measure) %in% measure) 
