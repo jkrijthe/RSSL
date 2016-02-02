@@ -284,6 +284,7 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
   } else if (type=="fraction") {
     results <- clapply(1:repeats,function(i) {
       results <- results[1,,,,drop=FALSE]
+      
     sample.guaranteed <- sample_k_per_level(y,n_min)
     if (!is.null(test_fraction)) { 
       idx_test <- sample((1:nrow(X))[-sample.guaranteed], size=ceiling(nrow(X)*test_fraction))
@@ -319,11 +320,11 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
                                     list(X=X_l, y=y_l, X_u=X_u, y_u=y_u))
         if (time) {
           timed <- proc.time()-timed
-          results[i,s,c,length(measures)+1] <- timed[[3]]  
+          results[1,s,c,length(measures)+1] <- timed[[3]]  
         }
         
         for (m in 1:length(measures)) {
-          results[i,s,c,m] <- do.call(measures[[m]],
+          results[1,s,c,m] <- do.call(measures[[m]],
                                       list(trained_classifier=trained_classifier,
                                            X=X_l, y=y_l, 
                                            X_u=X_u, y_u=y_u,
@@ -331,6 +332,8 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
         }
       }
     }
+    dimnames(results)$repeats <- i
+    return(reshape2::melt(results))
     }, mc.cores=low_level_cores)
     results <- dplyr::bind_rows(results)
   } else {
