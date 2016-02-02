@@ -1,3 +1,4 @@
+#' @export
 summary.CrossValidation <- function(object,measure=NULL) {
   results <- object$results
   if (!is.null(measure)) {
@@ -33,9 +34,12 @@ print.CrossValidation <- function(x,...) {
   cat(sum(is.na(x$results)), " missing\n")
 }
 
+#' Merge result of cross-validation runs on single datasets into a the same object
+#' @param ... Named arguments for the different objects, where the name reflects the dataset name
+#' @export
 c.CrossValidation <- function(...) {
   obs <- eval(substitute(alist(...)))
-  results <- dplyr::bind_rows(lapply(names(obs),function(x) {dplyr::mutate(obs[[x]]$results,Dataset=x)}))
+  results <- dplyr::bind_rows(lapply(names(obs), function(x) {dplyr::mutate(obs[[x]]$results,Dataset=x)}))
   object<-list(results=results)
   class(object) <- "CrossValidation"
   return(object)
@@ -78,7 +82,7 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
       yd <- y[[dname]]
       
       CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose)
-    },mc.cores=mc.cores)
+    }, mc.cores=mc.cores)
   } else if (is(X[[1]],"formula") & is.data.frame(y[[1]])) { 
     curves <- clapply(names(X),function(dname){
       if (verbose) cat(dname,"\n");
@@ -93,7 +97,7 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
       CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose)
     },mc.cores=mc.cores)
   } else {
-    stop("Unknown input. Should be either a list of matrices and label vectors or formulae and data frames.")
+    stop("Unknown input. Should be either a named list of matrices and label vectors or a named list of formulae and data frames.")
   }
   names(curves) <- names(X)
   return(do.call(c,curves))
@@ -258,37 +262,7 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
 #' 
 #' @export
 xtable.CrossValidation<-function(object,caption="",benchmark_method=NULL,exclude_methods=NULL) {
-  # overfolds<-apply(object$results,c(1,3:4),mean,na.rm=T)
-  if (is.list(object)) {
-    if ("results" %in% names(object)) {
-      object<-list(object)
-    }
-  } else {
-    stop("Supplied object is not a cross-validation results object")
-  }
-
-  if (is.null(classifier_names)) {
-    classifier_names<-dimnames(object[[1]]$results)[[2]]
-  }
-
-  cat("\\begin{table}\n")
-  cat("\\begin{tabular}{l|",paste(rep("l",dim(object[[1]]$results)[2]),collapse=""),"}\n",sep="")
-  cat("\\hline\n")
-  cat("Dataset &",paste(classifier_names,collapse=" & "),"\\\\ \n")
-  sapply(1:length(object), function(n) { 
-    cat(object[[n]]$dataset_name,"")
-    overfolds<-object[[n]]$results
-    means<-apply(overfolds,c(2:3),mean,na.rm=T)
-    sds<-apply(overfolds,2:3,sd)
-    options(digits=2)
-  for (c in 1:dim(means)[1]) {
-    cat("& $",ifelse(all(means[c]>=means[1])&(c!=5),"\\mathbf{",""),means[c,1]," \\pm ",sds[c,1],ifelse(all(means[c]>=means[1])&(c!=5),"} $","$"),sep="")
-  }
-  cat("\\\\ \n")
-  })
-  cat("\\end{tabular}\n")
-  cat("\\caption{",caption,"}\n",sep="")
-  cat("\\end{table}\n")
+  xtable(summary(object))
 }
 
 #' Plot CrossValidation object
@@ -308,6 +282,6 @@ plot.CrossValidation <-function(x,y,...) {
     x$results %>% 
     ggplot(aes_string(x="Classifier",y="value")) + 
       geom_jitter() +
-      facet_wrap(~Measure+Dataset,scales="free")
+      facet_wrap(~Measure,scales="free")
   }
 }
