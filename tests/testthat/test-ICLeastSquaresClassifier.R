@@ -68,6 +68,9 @@ test_that("Different methods", {
                                      projection="semisupervised",method="QP",eps=10e-10)
   g_semi_lbfgs <- ICLeastSquaresClassifier(X,y,X_u,
                                     projection="semisupervised",method="LBFGS",eps=10e-10)
+  g_semiold <- ICLeastSquaresClassifier(X,y,X_u,
+                                           projection="semisupervisedold",method="LBFGS",eps=10e-10)
   expect_equal(loss(g_semi,X_test,y_test),loss(g_semi_lbfgs,X_test,y_test),tolerance=10e-6)
+  expect_equal(loss(g_semi,X_test,y_test),loss(g_semiold,X_test,y_test),tolerance=10e-5)
   
 })
