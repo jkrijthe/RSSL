@@ -1,6 +1,6 @@
 context("Learning Curves")
 
-test_that("Example Runs",{
+test_that("LearningCurveSSL does not return error",{
   X <- model.matrix(Species~.-1,data=iris)
   y <- iris$Species
   
