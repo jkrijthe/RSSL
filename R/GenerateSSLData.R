@@ -104,28 +104,3 @@ generateCrescentMoon<-function(n=100,d=2,sigma=1) {
   
   data.frame(Class=y, rbind(X1=c1,X2=c2))
 }
-
-#' Plot 2D classification problem with missing labels
-#'
-#' @param X feature values for observations
-#' @param y labels for observations
-#' @export 
-clplot<-function(X,y) {
-  if (is.factor(y)) {
-    if (any(is.na(y))){
-      levels(y)<-c(levels(y),"NA")
-      y[is.na(y)]<-"NA"
-    }
-    colScale <- scale_colour_manual(values = c("orange","purple","darkgrey"))
-  }
-  if (is.factor(y)) p<-qplot(X[,1],X[,2],color=y,asp=1,size=y)+colScale+scale_size_manual(values=c(5,5,2))+scale_shape()   # Shape depends on cond
-  else p<-qplot(X[,1],X[,2],color=y,asp=1,size=5)                                                                                                  
-  p<-p + theme(
-    panel.background = element_rect(fill = "transparent",colour = NA), 
-    panel.grid.minor = element_line(colour="lightgrey",size=0.5,linetype=2), 
-    panel.grid.major = element_line(colour="lightgrey",size=0.5,linetype=2)
-  )
-  p<-p+xlab(colnames(X)[1])
-  p<-p+ylab(colnames(X)[2])
-  return (p)
-}
