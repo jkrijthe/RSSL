@@ -4,8 +4,8 @@
 \alias{KernelLeastSquaresClassifier}
 \title{Kernelized Least Squares Classifier}
 \usage{
-KernelLeastSquaresClassifier(X, y, lambda = 0, gamma = 0,
-  kernel = vanilladot(), x_center = TRUE, scale = TRUE, y_scale = TRUE)
+KernelLeastSquaresClassifier(X, y, lambda = 0, kernel = vanilladot(),
+  x_center = TRUE, scale = TRUE, y_scale = TRUE)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -13,8 +13,6 @@ KernelLeastSquaresClassifier(X, y, lambda = 0, gamma = 0,
 \item{y}{Vector or factor with class assignments}
 
 \item{lambda}{Regularization parameter of the l2 penalty in regularized least squares}
-
-\item{gamma}{numeric; Parameter for the Laplacian term in Laplacian RLSC}
 
 \item{kernel}{kernlab kernel function}
 

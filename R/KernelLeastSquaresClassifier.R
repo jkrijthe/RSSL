@@ -11,7 +11,6 @@ setClass("KernelLeastSquaresClassifier",
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param lambda Regularization parameter of the l2 penalty in regularized least squares
-#' @param gamma numeric; Parameter for the Laplacian term in Laplacian RLSC
 #' @param kernel kernlab kernel function
 #' @param y_scale TRUE center the target vector
 #' @param x_center TRUE, whether the dependent variables (features) should be centered
@@ -65,7 +64,7 @@ setClass("KernelLeastSquaresClassifier",
 #'   geom_tile(aes(fill = factor(maxind,labels=levels(tvec)))) +
 #'   geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=4,alpha=0.5)
 #' @export
-KernelLeastSquaresClassifier <- function(X, y, lambda=0, gamma=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
+KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
   
   ## Preprocessing to correct datastructures and scaling  
   ## Preprocessing to correct datastructures and scaling  
