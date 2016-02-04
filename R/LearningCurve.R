@@ -117,7 +117,7 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
   
   if (n_l=="enough") { n_l <- max(ncol(X)+5,20) }
   else if (n_l=="d") { n_l <- ncol(X)+1 }
-  else if (n_l=="2d") { n_l <- ncol(X)*2 }
+  else if (n_l=="2d") { n_l <- max(ncol(X)*2,10) }
   else {n_l<-n_l}
   
   # Set variables
