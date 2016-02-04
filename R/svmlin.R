@@ -1,6 +1,6 @@
 #' @include Classifier.R
 setClass("svmlinClassifier",
-         representation(weights="numeric"),
+         representation(weights="numeric",algorithm="numeric"),
          prototype(name="svmlinClassifier"), 
          contains="Classifier")
 
@@ -83,7 +83,8 @@ svmlin <- function(X, y, Xu, algorithm=1, lambda=1, lambda_u=1, max_switch=10000
   ## Return correct object
   new("svmlinClassifier",
       classnames=classnames,
-      weights=res$Weights
+      weights=res$Weights,
+      algorithm=algorithm
   )
 }
 
@@ -104,4 +105,17 @@ setMethod("decisionvalues", signature(object="svmlinClassifier"), function(objec
   stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
   dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object@weights)
   return(dvalues)
+})
+
+#' @rdname loss-methods
+#' @aliases loss,svmlinClassifier-method
+setMethod("loss", signature(object="svmlinClassifier"), function(object, newdata, y=NULL) {
+  X <- newdata
+  stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
+  if (!(object@algorithm %in% 1:3)) warning("Loss only correct for L2-SVM algorithms.")
+  
+  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object@weights)
+  ypm <- as.numeric(y)*2-3
+  
+  return(vapply(1-ypm*dvalues, function(x) max(c(x,0)),1)^2)
 })
