@@ -13,7 +13,8 @@ CrossValidationSSL(X, y, ...)
 \method{CrossValidationSSL}{matrix}(X, y, classifiers, measures = list(Error =
   measure_error), k = 10, repeats = 1, verbose = FALSE,
   leaveout = "test", n_labeled = 10, prop_unlabeled = 0.5, time = TRUE,
-  pre_scale = FALSE, pre_pca = FALSE, n_min = 1, ...)
+  pre_scale = FALSE, pre_pca = FALSE, n_min = 1, low_level_cores = 1,
+  ...)
 }
 \arguments{
 \item{X}{design matrix of the labeled objects}
@@ -47,6 +48,8 @@ CrossValidationSSL(X, y, ...)
 \item{pre_pca}{logical; Whether the features should be preprocessed using a PCA step}
 
 \item{n_min}{integer; Minimum number of labeled objects per class}
+
+\item{low_level_cores}{integer; Number of cores to use compute repeats of the learning curve}
 }
 \description{
 Cross-validation for semi-supervised learning, in which the dataset is split in three parts: labeled training object, unlabeled training object and validation objects. This can be used to evaluate different approaches to semi-supervised classification under the assumption the labels are missing at random. Different cross-validation schemes are implemented. See below for details.

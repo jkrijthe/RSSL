@@ -17,8 +17,7 @@ Imports:
     dplyr,
     reshape2,
     scales,
-    tidyr,
-    xtable
+    tidyr
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     e1071,

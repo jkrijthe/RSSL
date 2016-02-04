@@ -122,8 +122,9 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
 #' @param n_min integer; Minimum number of labeled objects per class
 #' @param prop_unlabeled numeric; proportion of unlabeled objects
 #' @param time logical; Whether execution time should be saved.
+#' @param low_level_cores integer; Number of cores to use compute repeats of the learning curve
 #' @export
-CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=measure_error), k=10, repeats=1, verbose=FALSE, leaveout="test", n_labeled=10, prop_unlabeled=0.5,time=TRUE,pre_scale=FALSE,pre_pca=FALSE,n_min=1,...) {
+CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=measure_error), k=10, repeats=1, verbose=FALSE, leaveout="test", n_labeled=10, prop_unlabeled=0.5,time=TRUE,pre_scale=FALSE,pre_pca=FALSE,n_min=1,low_level_cores=1,...) {
   N<-nrow(X)
   
   if (!is.factor(y)) { stop("Labels are not a factor.") }
@@ -173,7 +174,8 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
   
   ## Repeats
   if (verbose) pb<-txtProgressBar(0,repeats*k)
-  for (i in 1:repeats) {
+  results <- clapply(1:repeats,function(i) {
+    results <- results[1,,,,drop=FALSE]
     
     sample.classguarantee <- sample_k_per_level(y,k)
     sample.random <- sample((1:N)[-sample.classguarantee])    
@@ -238,10 +240,10 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
                                     list(X=X_labeled, y=y_labeled, X_u=X_unlabeled, y_u=y_unlabeled))
         if (time) {
           timed <- proc.time()-timed
-          results[i,f,c,length(measures)+1] <- timed[[3]]  
+          results[1,f,c,length(measures)+1] <- timed[[3]]  
         }
         for (m in 1:length(measures)) {
-          results[i,f,c,m] <- do.call(measures[[m]],
+          results[1,f,c,m] <- do.call(measures[[m]],
                                       list(trained_classifier=trained_classifier,
                                            X=X_labeled, 
                                            y=y_labeled, 
@@ -252,23 +254,14 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
         }
       }
   }
-  }
+    dimnames(results)$repeats <- i
+    return(reshape2::melt(results))
+  }, mc.cores=low_level_cores)
+  results <- dplyr::bind_rows(results)
   object <- list()
-  object$results <- reshape2::melt(results)
+  object$results <- results
   class(object) <- "CrossValidation"
   return(object)
-}
-
-#' Generate Latex table of cross-validation results
-#' 
-#' @param object cross-validation results object
-#' @param caption character; Caption to be placed over the latex table
-#' @param benchmark_method character; The method to be used to compare others with
-#' @param exclude_methods character vector; Methods to exclude from the table
-#' 
-#' @export
-xtable.CrossValidation<-function(object,caption="",benchmark_method=NULL,exclude_methods=NULL) {
-  xtable(summary(object))
 }
 
 #' Plot CrossValidation object
