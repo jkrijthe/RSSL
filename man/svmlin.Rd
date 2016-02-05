@@ -4,15 +4,14 @@
 \alias{svmlin}
 \title{svmlin implementation by Sindhwani}
 \usage{
-svmlin(X, y, Xu, algorithm = 1, lambda = 1, lambda_u = 1,
-  max_switch = 10000, pos_frac = 0.5, Cp = 1, Cn = 1, verbose = FALSE)
+svmlin(X, y, X_u, algorithm = 1, lambda = 1, lambda_u = 1,
+  max_switch = 10000, pos_frac = 0.5, Cp = 1, Cn = 1, verbose = FALSE,
+  intercept = TRUE, scale = FALSE, x_center = FALSE)
 }
 \arguments{
 \item{X}{Matrix or sparseMatrix containing the labeled feature vectors, without intercept}
 
 \item{y}{factor containing class assignments}
-
-\item{Xu}{Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept}
 
 \item{algorithm}{Algorithm choice, see details (default:1)}
 
@@ -29,6 +28,8 @@ svmlin(X, y, Xu, algorithm = 1, lambda = 1, lambda_u = 1,
 \item{Cn}{relative cost for positive examples (only available with algorithm 1)}
 
 \item{verbose}{Should output be verbose? (default: FALSE)}
+
+\item{Xu}{Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept}
 }
 \description{
 R interface to the svmlin software by Vikas Sindhwani for fast linear transductive SVMs.

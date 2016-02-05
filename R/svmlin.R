@@ -1,6 +1,6 @@
 #' @include Classifier.R
 setClass("svmlinClassifier",
-         representation(weights="numeric",algorithm="numeric"),
+         representation(weights="numeric",algorithm="numeric",intercept="logical"),
          prototype(name="svmlinClassifier"), 
          contains="Classifier")
 
@@ -46,30 +46,43 @@ setClass("svmlinClassifier",
 #' mean(predict(g_sup,testdata$X_test)==testdata$y_test)
 #' mean(predict(g_semi,testdata$X_test)==testdata$y_test)
 #' @export
-svmlin <- function(X, y, Xu, algorithm=1, lambda=1, lambda_u=1, max_switch=10000, pos_frac=0.5, Cp=1.0, Cn=1.0,verbose=FALSE) {
+svmlin <- function(X, y, X_u, algorithm=1, lambda=1, lambda_u=1, max_switch=10000, pos_frac=0.5, Cp=1.0, Cn=1.0,verbose=FALSE,intercept=TRUE,scale=FALSE,x_center=FALSE) {
+  
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
+  X<-ModelVariables$X
+  X_u<-ModelVariables$X_u
+  scaling<-ModelVariables$scaling
+  classnames<-ModelVariables$classnames
+  modelform<-ModelVariables$modelform
+  y <- ModelVariables$y
+  
+  X <- Matrix(X, sparse = TRUE)
+  if (!is.null(X_u)) {
+    X_u <- Matrix(X_u, sparse = TRUE)
+  }
   
   stopifnot(nrow(X)==length(y))
   stopifnot(is.factor(y))
   stopifnot(length(levels(y))==2)
 
-  # Turn X into sparse matrix and y into numeric vector
-  if (is.matrix(X)) {
-    X <- Matrix(X, sparse = TRUE)
-  }
-  if (is.matrix(Xu)) {
-    X <- Matrix(X, sparse = TRUE)
-  }
-  classnames <- levels(y)
   y <- as.numeric(y)*2-3
-
+  
   # Combine feature matrices, add intercept and transpose them to conform to the C++ datastructure
-  if (is.null(Xu)) {
-    Xall <- Matrix::t(cbind2(1,X))
+  if (is.null(X_u) || algorithm<2) {
+    if (intercept) {
+      X <- cbind2(X,1)
+      X_u <- cbind2(X_u,1)
+    }
+    Xall <- Matrix::t(X)
   } else {
-    Xall <- Matrix::t(cbind2(1,Matrix::rbind2(X,Xu)))
-    y <- c(y,rep(0,nrow(Xu)))
+    if (intercept) {
+      X <- cbind2(X,1)
+      X_u <- cbind2(X_u,1)
+    }
+    Xall <- Matrix::t(Matrix::rbind2(X,X_u))
+    y <- c(y,rep(0,nrow(X_u)))
   }
-
+  
   # Determine costs
   costs<-rep(1,ncol(Xall))
   if (algorithm<1) {
@@ -84,16 +97,25 @@ svmlin <- function(X, y, Xu, algorithm=1, lambda=1, lambda_u=1, max_switch=10000
   new("svmlinClassifier",
       classnames=classnames,
       weights=res$Weights,
-      algorithm=algorithm
+      algorithm=algorithm,
+      scaling=scaling,
+      modelform=modelform,
+      intercept=intercept
   )
 }
 
 #' @rdname rssl-predict
 #' @aliases predict,svmlinClassifier-method
 setMethod("predict", signature(object="svmlinClassifier"), function(object, newdata, probs=FALSE,...) {
-  X <- newdata
-  stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
-  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object@weights)
+  
+    ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
+    X <- ModelVariables$X
+    
+    if (object@intercept) {
+      X <- cbind2(X,1)
+    }
+    
+  dvalues <- as.numeric(X %*% object@weights)
   classes <- factor(dvalues>0,levels=c(FALSE,TRUE),labels=object@classnames)
   return(classes)
 })
@@ -101,20 +123,32 @@ setMethod("predict", signature(object="svmlinClassifier"), function(object, newd
 #' @rdname decisionvalues-methods
 #' @aliases decisionvalues,svmlinClassifier-method
 setMethod("decisionvalues", signature(object="svmlinClassifier"), function(object, newdata) {
-  X <- newdata
-  stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
-  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object@weights)
+    ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
+    X <- ModelVariables$X
+    if (object@intercept) {
+      X <- cbind2(X,1)
+    }
+
+  
+  dvalues <- as.numeric(X %*% object@weights)
   return(dvalues)
 })
 
 #' @rdname loss-methods
 #' @aliases loss,svmlinClassifier-method
 setMethod("loss", signature(object="svmlinClassifier"), function(object, newdata, y=NULL) {
-  X <- newdata
-  stopifnot(is.matrix(X) || class(X)=="dgCMatrix")
+  ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
+  X <- ModelVariables$X
+  y <- ModelVariables$y
+  
+  if (object@intercept) {
+    X <- cbind2(X,1)
+  }
+  
+  if (is.null(y)) { stop("No labels supplied.")}
   if (!(object@algorithm %in% 1:3)) warning("Loss only correct for L2-SVM algorithms.")
   
-  dvalues <- as.numeric(Matrix::cbind2(1,X) %*% object@weights)
+  dvalues <- as.numeric(X %*% object@weights)
   ypm <- as.numeric(y)*2-3
   
   return(vapply(1-ypm*dvalues, function(x) max(c(x,0)),1)^2)

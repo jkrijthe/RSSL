@@ -42,7 +42,7 @@ clapply <- function(X,FUN,...,mc.cores=getOption("mc.cores", 2L)) {
 #' \item{scaling}{a scaling object used to scale the test observations in the same way as the training set}
 #' \item{modelform}{a formula object containing the used model}
 #' @export
-PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE) {
+PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE) {
   
   # Make sure we get a matrix from the model representation
   if (is(X,"formula") & is.data.frame(y)) {
@@ -51,7 +51,7 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE)
     out <- PreProcessing(problem$X,problem$y,problem$X_u,scale=scale,intercept=intercept,x_center=x_center)
     out$modelform <- X
     return(out)
-  } else if ((is.matrix(X) || is.data.frame(X)) && (is.factor(y))) {
+  } else if ((is.matrix(X) || is.data.frame(X) || class(X)=="dgCMatrix") && (is.factor(y))) {
     
     modelform <- NULL
     
@@ -65,8 +65,8 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE)
       }
     } else {
       if (intercept) { 
-        X<-cbind(matrix(1,nrow(X),1),X)
-        if (!is.null(X_u)) { X_u<-cbind(matrix(1,nrow(X_u),1),X_u) }
+        X <- cbind2(matrix(1,nrow(X),1),X)
+        if (!is.null(X_u)) { X_u <- cbind2(matrix(1,nrow(X_u),1),X_u) }
       }
     }
     
@@ -92,12 +92,12 @@ PreProcessing<-function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE)
         Xe<-rbind(X,X_u)
         
         scaling<-scaleMatrix(Xe[,cols,drop=FALSE], center = TRUE, scale = scale)
-        X[,cols]<-predict(scaling,X[,cols,drop=FALSE]) 
-        X_u[,cols]<-predict(scaling,X_u[,cols,drop=FALSE])
+        X[,cols]<-predict(scaling,as.matrix(X[,cols,drop=FALSE])) 
+        X_u[,cols]<-predict(scaling,as.matrix(X_u[,cols,drop=FALSE]))
     } else {
       
       scaling<-scaleMatrix(X[,cols,drop=FALSE], center = TRUE, scale = scale)
-      X[,cols]<-predict(scaling,X[,cols,drop=FALSE]) 
+      X[,cols]<-predict(scaling,as.matrix(X[,cols,drop=FALSE]))
     }
 
   } else {scaling=NULL}
@@ -125,7 +125,7 @@ PreProcessingPredict<-function(modelform,newdata,y=NULL,classnames=NULL,scaling=
     problem<- SSLDataFrameToMatrices(modelform,newdata)
     return(PreProcessingPredict(NULL,problem$X,problem$y,classnames=classnames,scaling=scaling,intercept=intercept))
   } else {
-    if (!(is.matrix(newdata) || is.data.frame(newdata))) { stop("Training data and Testing data don't match.")}
+    if (!(is.matrix(newdata) || is.data.frame(newdata) || class(newdata)=="dgCMatrix")) { stop("Training data and Testing data don't match.")}
     if (is.data.frame(newdata)) {
       if (intercept) {
         X <- model.matrix(~.,newdata)
@@ -135,14 +135,14 @@ PreProcessingPredict<-function(modelform,newdata,y=NULL,classnames=NULL,scaling=
     } else {
       X <- newdata
     }
-    if (intercept) { X<-cbind(matrix(1,nrow(X),1),X) } # Add intercept term
+    if (intercept) { X<-cbind2(matrix(1,nrow(X),1),X) } # Add intercept term
   }
 
   if (!is.null(scaling)) {
     if (intercept) {
-      X[,2:ncol(X)]<-predict(scaling,X[,2:ncol(X),drop=FALSE]) 
+      X[,2:ncol(X)]<-predict(scaling,as.matrix(X[,2:ncol(X),drop=FALSE])) 
     } else {
-      X[,1:ncol(X)]<-predict(scaling,X[,1:ncol(X),drop=FALSE])
+      X[,1:ncol(X)]<-predict(scaling,as.matrix(X[,1:ncol(X),drop=FALSE]))
     }
   }
 
