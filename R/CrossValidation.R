@@ -137,8 +137,8 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
   if (pre_pca) {
     t_pca <- princomp(X)
     n_comp <- sum(cumsum(t_pca$sdev^2)/sum(t_pca$sdev^2)<0.99)
-    n_comp <- n_comp #min(c(n_comp,floor(n_labeled/2)))
-    X <- t_pca$scores[,1:n_comp]
+    n_comp <- n_comp+1 #min(c(n_comp,floor(n_labeled/2)))
+    X <- t_pca$scores[,1:n_comp,drop=FALSE]
   }
   
   if (n_labeled=="enough") { n_labeled <- max(ncol(X)+5,20) }
@@ -215,20 +215,20 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
           
           idx_train<-(1:N)[-idx_test]
           
-          X_train<-X[idx_train,]
+          X_train<-X[idx_train,,drop=FALSE]
           y_train<-y[idx_train]
           
           sample.labeled.classguarantee<-sample_k_per_level(y_train,n_min)
           sample.labeled.random <- sample((1:nrow(X_train))[-sample.labeled.classguarantee],n_labeled-2*n_min)
           idx_train_labeled<-c(sample.labeled.classguarantee, sample.labeled.random)
           
-          X_labeled <- X_train[idx_train_labeled,]
+          X_labeled <- X_train[idx_train_labeled,,drop=FALSE]
           y_labeled <- y_train[idx_train_labeled]
           
-          X_unlabeled <- X_train[-idx_train_labeled,]
+          X_unlabeled <- X_train[-idx_train_labeled,,drop=FALSE]
           y_unlabeled <- y_train[-idx_train_labeled]
           
-          X_test<-X[-idx_train,]
+          X_test<-X[-idx_train,,drop=FALSE]
           y_test<-y[-idx_train]
       }
       
