@@ -1,4 +1,3 @@
-#' TSVMuniversum
 #' @include Classifier.R
 setClass("SVMlin", 
          representation(name="ANY",modelform="ANY",classnames="ANY",scaling="ANY",binary_path="ANY",temp_path="ANY"), 
@@ -26,9 +25,8 @@ SVMlin<-function(X, y, X_u=NULL, x_center=FALSE,scale=FALSE,binary_path=NULL,tem
 
   frac_pos<-prop.table(table(y))[2]
   e1071::write.matrix.csr(x=SparseM::as.matrix.csr(rbind(X,X_u)), file=paste(temp_path,"tempfile.train",sep=""))
-  write(c(2*(y-1.5),rep(0,nrow(X_u))), file=paste(temp_path,"tempfile.labels",sep=""),ncolumns=1)
+  write(c(2*(as.numeric(y)-1.5),rep(0,nrow(X_u))), file=paste(temp_path,"tempfile.labels",sep=""),ncolumns=1)
   
-  system(paste("cd ",temp_path,"; ", binary_path,"svmlin -W 1 -U ",lambda_u," -A ",type," -R ",frac_pos," ",temp_path,"tempfile.train ",temp_path,"tempfile.labels",sep=""),intern=TRUE)
   new("SVMlin",
       modelform=modelform,
       classnames=classnames,
@@ -45,12 +43,13 @@ setMethod("predict", signature(object="SVMlin"), function(object, newdata, probs
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
   X<-ModelVariables$X
   
-  #e1071::write.matrix.csr(x=SparseM::as.matrix.csr(X), file=paste(object@temp_path,"tempfile.test",sep=""))
+  e1071::write.matrix.csr(x=SparseM::as.matrix.csr(X), file=paste(object@temp_path,"tempfile.test",sep=""))
   
   system(paste("cd ",object@temp_path,"; ", object@binary_path,"svmlin -f ",object@temp_path,"tempfile.train.weights ",object@temp_path,"tempfile.test",sep=""),intern=TRUE)
   
   y <- scan(paste(object@temp_path,"tempfile.test.outputs",sep=""),quiet=TRUE)
   return((y>0)+1)
+  return(y)
 })
 
 #' @rdname loss-methods
