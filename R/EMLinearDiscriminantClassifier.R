@@ -11,10 +11,11 @@ setClass("EMLinearDiscriminantClassifier",
 #' @param method character; Currently only "EM"
 #' @param eps Stopping criterion for the maximinimization
 #' @param verbose logical; Controls the verbosity of the output
+#' @param max_iter integer; Maximum number of iterations
 #' @inheritParams BaseClassifier
 #' 
 #' @export
-EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-8, verbose=FALSE) {
+EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-8, verbose=FALSE, max_iter=100) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE)
@@ -39,7 +40,7 @@ EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, e
 #     print(logmarginal)
     while (abs(logmarginal-logmarginal_old) > eps) {
       iteration<- iteration+1
-      if (iteration>100) { print("Broken"); break }
+      if (iteration>max_iter) { warning("Maximum number of iterations exceeded"); break }
       
       
       prior<-matrix(colMeans(Ye),2,1)
