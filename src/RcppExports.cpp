@@ -40,3 +40,60 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// rowMax
+arma::mat rowMax(const arma::mat& X);
+RcppExport SEXP RSSL_rowMax(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    __result = Rcpp::wrap(rowMax(X));
+    return __result;
+END_RCPP
+}
+// which_rowMax
+arma::mat which_rowMax(const arma::mat& X);
+RcppExport SEXP RSSL_which_rowMax(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    __result = Rcpp::wrap(which_rowMax(X));
+    return __result;
+END_RCPP
+}
+// sort_matrix
+arma::mat sort_matrix(const arma::mat& X);
+RcppExport SEXP RSSL_sort_matrix(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    __result = Rcpp::wrap(sort_matrix(X));
+    return __result;
+END_RCPP
+}
+// rowwise_addition
+arma::mat rowwise_addition(arma::mat A, arma::rowvec x);
+RcppExport SEXP RSSL_rowwise_addition(SEXP ASEXP, SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< arma::mat >::type A(ASEXP);
+    Rcpp::traits::input_parameter< arma::rowvec >::type x(xSEXP);
+    __result = Rcpp::wrap(rowwise_addition(A, x));
+    return __result;
+END_RCPP
+}
+// factor_to_dummy_cpp
+arma::mat factor_to_dummy_cpp(Rcpp::IntegerVector y, int c);
+RcppExport SEXP RSSL_factor_to_dummy_cpp(SEXP ySEXP, SEXP cSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type y(ySEXP);
+    Rcpp::traits::input_parameter< int >::type c(cSEXP);
+    __result = Rcpp::wrap(factor_to_dummy_cpp(y, c));
+    return __result;
+END_RCPP
+}
