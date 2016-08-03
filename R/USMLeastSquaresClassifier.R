@@ -9,20 +9,13 @@ setClass("USMLeastSquaresClassifier",
 #' 
 #' See for instance \cite{Shaffer1991}. Use all data to estimate E(X'X).
 #' 
-#' @param X Design matrix
-#' @param y labels
-#' @param X_u Design matrix unlabeled data
 #' @param lambda numeric; L2 regularization parameter
-#' @param intercept logical; Whether an intercept should be added to the model
-#' @param scale logical; Whether the features should be scaled
-#' @param y_scale logical; Whether the class vector should be scaled
-#' @param x_center logical; Whether the features should be centered
-#' @param ... Unused
+#' @inheritParams BaseClassifier
 #' 
 #' @export
-USMLeastSquaresClassifier<-function(X, y, X_u, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, y_scale=FALSE, ...) {
+USMLeastSquaresClassifier<-function(X, y, X_u, lambda=0, intercept=TRUE, x_center=FALSE, scale=FALSE, y_scale=FALSE, ...,use_Xu_for_scaling=TRUE) {
 	  ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center)
+  ModelVariables<-PreProcessing(X,y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center,use_Xu_for_scaling=use_Xu_for_scaling)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
   #y<-ModelVariables$y
