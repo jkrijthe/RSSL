@@ -15,3 +15,9 @@ NULL
 #' @description Useful for testing the S4VM and WellSVM implementations
 #' @docType data
 NULL
+
+#' @name diabetes
+#' @title diabetes data to for unit testing
+#' @description Useful for testing the WellSVM implementation
+#' @docType data
+NULL
