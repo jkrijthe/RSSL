@@ -1,10 +1,10 @@
 context("WellSVM")
 
 # Test Equivalence
-data(diabetis)
+data(diabetes)
 
 test_that("Implementation gives same result as Matlab implementation",{
-  acc <- RSSL:::wellsvm(rbind(diabetes$data[diabetes$idxLabs[1,],],diabetes$data[diabetes$idxUnls[1,],]),
+  acc <- RSSL:::wellsvm_direct(rbind(diabetes$data[diabetes$idxLabs[1,],],diabetes$data[diabetes$idxUnls[1,],]),
         rbind(diabetes$target[diabetes$idxLabs[1,],,drop=FALSE],matrix(0,length(diabetes$idxUnls[1,]),1)),
         diabetes$data[diabetes$idxTest[1,],],
         diabetes$target[diabetes$idxTest[1,],,drop=FALSE],
@@ -26,7 +26,7 @@ test_that("WellSVM interface result equal to direct result",{
   y <- model.matrix(~Species,data)[,2]*2-1
   g_train <- WellSVM(x,factor(y),x,gamma=1,x_center=TRUE)
   expect_equal(predict(g_train,x),
-             factor(RSSL:::wellsvm(rbind(x,x),
+             factor(RSSL:::wellsvm_direct(rbind(x,x),
                             rbind(matrix(y,ncol=1),
                                   matrix(0,nrow=nrow(x))),
                             x,y,gamma=1)$prediction))
