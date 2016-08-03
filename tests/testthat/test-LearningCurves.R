@@ -14,8 +14,8 @@ test_that("LearningCurveSSL does not return error",{
   lc <- LearningCurveSSL(X,y,classifiers=classifiers,
                            measures=measures,n_l=10,repeats=3)
   
-  plot(lc)
-  print(lc)
+  expect_silent(plot(lc))
+  expect_output(print(lc))
   
   lc1 <- LearningCurveSSL(list("D1"=X,"D2"=X),list("D1"=y,"D2"=y),classifiers=classifiers,
                             measures=measures,n_l="enough",repeats=3,pre_pca=TRUE)
