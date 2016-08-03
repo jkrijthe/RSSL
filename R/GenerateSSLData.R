@@ -50,7 +50,8 @@ generateTwoCircles <- function(n=100, noise_var=0.2) {
 #' plot(data[,1],data[,2],col=data$Class,asp=1)
 #' @export
 generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
-  X<-rbind(mvrnorm(n/2,rep(-1,d),diag(rep(var,d))),mvrnorm(n/2,rep(1,d),diag(rep(var,d))))
+  X<-rbind(mvrnorm(n/2,rep(-1,d),var*diag(d)),
+           mvrnorm(n/2,rep(1,d),var*diag(d)))
   if (expected) {
     y<-rbind(matrix(-1,n/2,1),matrix(1,n/2,1))
   } else {
@@ -103,4 +104,48 @@ generateCrescentMoon<-function(n=100,d=2,sigma=1) {
   y<-factor(c(rep("+",n),rep("-",n)))
   
   data.frame(Class=y, rbind(X1=c1,X2=c2))
+}
+
+#' Generate Intersecting Spirals
+#'
+#' @param n Number of objects to generate per class
+#' @param sigma Noise added 
+#' @examples
+#' data <- generateSpirals(100,sigma=0.1)
+#' #plot3D::scatter3D(data$x,data$y,data$z,col="black")
+#' @export
+generateSpirals <- function(n=100,sigma=0.1) {
+  z <- runif(n)*5
+  x <- sin(z)
+  y <- cos(z)
+  
+  z2 <- runif(n)*5
+  x2 <- -sin(z2)
+  y2 <- -cos(z2)
+  data.frame(x=c(x,x2)+sigma*rnorm(2*n),y=c(y,y2)+sigma*rnorm(2*n),z=c(z,z2)+sigma*rnorm(2*n),Class=rep(factor(c("A","B")),each=n))
+}
+
+#' Generate Parallel planes
+#'
+#' @param n Number of objects to generate 
+#' @param classes Number of classes
+#' @param sigma Noise added 
+#' @examples
+#' library(ggplot2)
+#' df <- generateParallelPlanes(100,3)
+#' ggplot(df, aes(x=x,y=y,color=Class,shape=Class)) +
+#'  geom_point()
+#' @export
+generateParallelPlanes <- function(n=100,classes=3,sigma=0.1) {
+  x <- c()
+  y <- c()
+  for (i in 1:classes) {
+    yn <- rep(i,n)
+    xn <- runif(n)
+    yn <- yn+sigma*rnorm(n)
+    x <- c(x,xn)
+    y <- c(y,yn)
+  }
+  
+  data.frame(x,y,Class=rep(factor(c(LETTERS[1:classes])),each=n))
 }
