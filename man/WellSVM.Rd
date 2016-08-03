@@ -14,17 +14,19 @@ WellSVM(X, y, X_u, C1 = 1, C2 = 0.1, gamma = 1, x_center = TRUE,
 
 \item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{C1}{A regularization parameter for labeled data, default 1;}
+\item{C1}{double; A regularization parameter for labeled data, default 1;}
 
-\item{C2}{A regularization parameter for unlabeled data, default 0.1;}
+\item{C2}{double; A regularization parameter for unlabeled data, default 0.1;}
 
-\item{gamma}{Gaussian kernel parameter, i.e., k(x,y) = exp(-gamma^2||x-y||^2/avg) where avg is the average distance among instances; when gamma = 0, linear kernel is used. default gamma = 1;}
+\item{gamma}{double; Gaussian kernel parameter, i.e., k(x,y) = exp(-gamma^2||x-y||^2/avg) where avg is the average distance among instances; when gamma = 0, linear kernel is used. default gamma = 1;}
 
 \item{x_center}{logical;  Should the features be centered?}
 
 \item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{use_Xu_for_scaling}{logical; whether the unlabeled objects should be used to determine the mean and scaling for the normalization}
+
+\item{max_iter}{integer; Maximum number of iterations}
 }
 \description{
 WellSVM is a minimax relaxation of the mixed integer programming problem of finding the optimal labels for the unlabeled data in the SVM objective function. This implementation is a translation of the Matlab implementation of Li (2013) into R.
