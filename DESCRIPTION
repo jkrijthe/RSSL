@@ -1,13 +1,12 @@
 Package: RSSL
 Version: 0.4
-Date: 2015-04-30
-Title: Implementations of Semi-Supervised Learning Approaches for Classification
-    and Regression
+Title: Implementations of Semi-supervised Learning Approaches for Classification
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
 Depends:
     R(>= 2.10.0)
 Imports:
+    methods,
     Rcpp,
     MASS,
     kernlab,
@@ -17,7 +16,9 @@ Imports:
     dplyr,
     reshape2,
     scales,
-    tidyr
+    tidyr,
+    flexclust,
+    limSolve
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     e1071,
@@ -26,7 +27,6 @@ Suggests:
     sampling,
     foreign,
     bootstrap,
-    methods,
     plyr,
     animation,
     reshape,
@@ -73,6 +73,7 @@ Collate:
     'LogisticLossClassifier.R'
     'MCLinearDiscriminantClassifier.R'
     'MCNearestMeanClassifier.R'
+    'MCPLDA.R'
     'MajorityClassClassifier.R'
     'Measures.R'
     'Plotting.R'
@@ -80,13 +81,16 @@ Collate:
     'RSSL.R'
     'RcppExports.R'
     'S3VM.R'
+    'S4VM.R'
     'SVM.R'
     'SVMlin_binary.R'
     'SelfLearning.R'
     'TSVMcccp.R'
     'TSVMuniversum.R'
     'USMLeastSquaresClassifier.R'
+    'WellSVM.R'
     'scaleMatrix.R'
+    'svmd.R'
     'svmlin.R'
     'testdata-data.R'
 VignetteBuilder: rmarkdown

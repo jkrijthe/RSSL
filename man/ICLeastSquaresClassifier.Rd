@@ -7,7 +7,7 @@
 ICLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
   intercept = TRUE, x_center = FALSE, scale = FALSE, method = "LBFGS",
   projection = "supervised", lambda_prior = 0, trueprob = NULL,
-  eps = 1e-09, y_scale = FALSE)
+  eps = 1e-09, y_scale = FALSE, use_Xu_for_scaling = TRUE)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -37,6 +37,8 @@ ICLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
 \item{eps}{numeric; Stopping criterion for the maximinimization}
 
 \item{y_scale}{logical; whether the target vector should be centered}
+
+\item{use_Xu_for_scaling}{logical; whether the unlabeled objects should be used to determine the mean and scaling for the normalization}
 
 \item{...}{additional arguments}
 }

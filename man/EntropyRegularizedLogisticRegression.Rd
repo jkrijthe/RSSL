@@ -23,7 +23,7 @@ EntropyRegularizedLogisticRegression(X, y, X_u = NULL, lambda = 0,
 
 \item{init}{Initial parameters for the gradient descent}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{x_center}{logical;  Should the features be centered?}
 }

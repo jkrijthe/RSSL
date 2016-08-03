@@ -5,26 +5,29 @@
 \title{Updated Second Moment Least Squares Classifier}
 \usage{
 USMLeastSquaresClassifier(X, y, X_u, lambda = 0, intercept = TRUE,
-  x_center = FALSE, scale = FALSE, y_scale = FALSE, ...)
+  x_center = FALSE, scale = FALSE, y_scale = FALSE, ...,
+  use_Xu_for_scaling = TRUE)
 }
 \arguments{
-\item{X}{Design matrix}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{labels}
+\item{y}{factor or integer vector; Label vector}
 
-\item{X_u}{Design matrix unlabeled data}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
 \item{lambda}{numeric; L2 regularization parameter}
 
-\item{intercept}{logical; Whether an intercept should be added to the model}
+\item{intercept}{logical; Whether an intercept should be included}
 
-\item{x_center}{logical; Whether the features should be centered}
+\item{x_center}{logical;  Should the features be centered?}
 
-\item{scale}{logical; Whether the features should be scaled}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
-\item{y_scale}{logical; Whether the class vector should be scaled}
+\item{y_scale}{logical; whether the target vector should be centered}
 
-\item{...}{Unused}
+\item{...}{Not used}
+
+\item{use_Xu_for_scaling}{logical; whether the unlabeled objects should be used to determine the mean and scaling for the normalization}
 }
 \description{
 See for instance \cite{Shaffer1991}. Use all data to estimate E(X'X).

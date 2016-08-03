@@ -6,7 +6,9 @@
 \usage{
 EMLeastSquaresClassifier(X, y, X_u, x_center = FALSE, scale = FALSE,
   verbose = FALSE, intercept = TRUE, lambda = 0, eps = 1e-09,
-  y_scale = FALSE)
+  y_scale = FALSE, alpha = 1, beta = 1, init = "supervised",
+  method = "block", objective = "label", save_all = FALSE,
+  max_iter = 1000)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -28,6 +30,20 @@ EMLeastSquaresClassifier(X, y, X_u, x_center = FALSE, scale = FALSE,
 \item{eps}{Stopping criterion for the minimization}
 
 \item{y_scale}{logical; whether the target vector should be centered}
+
+\item{alpha}{numeric; the mixture of the new responsibilities and the old in each iteration of the algorithm (default: 1)}
+
+\item{beta}{numeric; value between 0 and 1 that determines how much to move to the new solution from the old solution at each step of the block gradient descent}
+
+\item{init}{objective character; "random" for random initialization of labels, "supervised" to use supervised solution as initialization or a numeric vector with a coefficient vector to use to calculate the initialization}
+
+\item{method}{character; one of "block", for block gradient descent or "simple" for LBFGS optimization (default="block")}
+
+\item{objective}{character; "responsibility" for hard label self-learning or "label" for soft-label self-learning}
+
+\item{save_all}{logical; saves all classifiers trained during block gradient descent}
+
+\item{max_iter}{integer; maximum number of iterations}
 
 \item{...}{Additional Parameters, Not used}
 }

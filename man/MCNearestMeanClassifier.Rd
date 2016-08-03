@@ -16,7 +16,7 @@ MCNearestMeanClassifier(X, y, X_u, method = "closedform", scale = FALSE,
 
 \item{method}{Estimation procedure: c("closedform","ml")}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{x_center}{logical;  Should the features be centered?}
 }

@@ -18,7 +18,7 @@ NearestMeanClassifier(X, y, method = "closedform", prior = NULL,
 
 \item{x_center}{logical;  Should the features be centered?}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 }
 \value{
 S4 object of class LeastSquaresClassifier with the following slots:

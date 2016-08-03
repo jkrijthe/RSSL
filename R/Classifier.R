@@ -30,13 +30,14 @@ setClass("LinearClassifier",
 #' @param y factor or integer vector; Label vector
 #' @param X_u matrix; Design matrix for unlabeled data
 #' @param verbose logical; Controls the verbosity of the output
-#' @param scale boolean; Should the features be normalized? (default: FALSE)
+#' @param scale logical; Should the features be normalized? (default: FALSE)
 #' @param eps numeric; Stopping criterion for the maximinimization
 #' @param x_center logical;  Should the features be centered?
 #' @param intercept logical; Whether an intercept should be included
 #' @param lambda numeric; L2 regularization parameter
 #' @param y_scale logical; whether the target vector should be centered
 #' @param kernel kernlab::kernel to use
+#' @param use_Xu_for_scaling logical; whether the unlabeled objects should be used to determine the mean and scaling for the normalization
 #' @param ... Not used
 #' @export
-BaseClassifier <- function(X,y,X_u,verbose,scale,eps,x_center,intercept,lambda,y_scale,kernel,...) {}
+BaseClassifier <- function(X,y,X_u,verbose,scale,eps,x_center,intercept,lambda,y_scale,kernel,use_Xu_for_scaling,...) {}

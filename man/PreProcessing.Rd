@@ -5,7 +5,7 @@
 \title{Preprocess the input to a classification function}
 \usage{
 PreProcessing(X, y, X_u = NULL, scale = FALSE, intercept = FALSE,
-  x_center = FALSE)
+  x_center = FALSE, use_Xu_for_scaling = TRUE)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -19,6 +19,8 @@ PreProcessing(X, y, X_u = NULL, scale = FALSE, intercept = FALSE,
 \item{intercept}{Whether to include an intercept in the design matrices}
 
 \item{x_center}{logical (default: TRUE); Whether the feature vectors should be centered}
+
+\item{use_Xu_for_scaling}{logical (default: TRUE); Should the unlabeled data be used to determine scaling?}
 }
 \value{
 list object with the following objects:

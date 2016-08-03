@@ -16,7 +16,7 @@ TSVMuniversvm(X, y, X_u = NULL, x_center = FALSE, scale = FALSE,
 
 \item{x_center}{logical;  Should the features be centered?}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{binary_path}{character; Path to universvm binary}
 

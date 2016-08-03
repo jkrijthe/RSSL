@@ -4,7 +4,7 @@
 \alias{svmlin}
 \title{svmlin implementation by Sindhwani}
 \usage{
-svmlin(X, y, X_u, algorithm = 1, lambda = 1, lambda_u = 1,
+svmlin(X, y, X_u = NULL, algorithm = 1, lambda = 1, lambda_u = 1,
   max_switch = 10000, pos_frac = 0.5, Cp = 1, Cn = 1, verbose = FALSE,
   intercept = TRUE, scale = FALSE, x_center = FALSE)
 }
@@ -12,6 +12,8 @@ svmlin(X, y, X_u, algorithm = 1, lambda = 1, lambda_u = 1,
 \item{X}{Matrix or sparseMatrix containing the labeled feature vectors, without intercept}
 
 \item{y}{factor containing class assignments}
+
+\item{X_u}{Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept}
 
 \item{algorithm}{Algorithm choice, see details (default:1)}
 
@@ -29,7 +31,11 @@ svmlin(X, y, X_u, algorithm = 1, lambda = 1, lambda_u = 1,
 
 \item{verbose}{Should output be verbose? (default: FALSE)}
 
-\item{Xu}{Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept}
+\item{intercept}{logical; Whether an intercept should be included}
+
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
+
+\item{x_center}{logical;  Should the features be centered?}
 }
 \description{
 R interface to the svmlin software by Vikas Sindhwani for fast linear transductive SVMs.
@@ -43,8 +49,8 @@ Algorithms
 }
 \examples{
 data(svmlin_example)
-t_svmlin_1 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,Xu=NULL, lambda = 0.001)
-t_svmlin_2 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,Xu=svmlin_example$X_train[-c(1:50),], lambda = 10,lambda_u=100,algorithm = 2)
+t_svmlin_1 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,X_u=NULL, lambda = 0.001)
+t_svmlin_2 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,X_u=svmlin_example$X_train[-c(1:50),], lambda = 10,lambda_u=100,algorithm = 2)
 # Calculate Accuracy
 mean(predict(t_svmlin_1,svmlin_example$X_test)==svmlin_example$y_test)
 mean(predict(t_svmlin_2,svmlin_example$X_test)==svmlin_example$y_test)

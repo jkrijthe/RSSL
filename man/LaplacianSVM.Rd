@@ -18,7 +18,7 @@ LaplacianSVM(X, y, X_u = NULL, lambda = 1, gamma = 1, scale = TRUE,
 
 \item{gamma}{numeric; Weight of the unlabeled data}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{kernel}{kernlab::kernel to use}
 

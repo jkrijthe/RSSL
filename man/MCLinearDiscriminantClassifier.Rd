@@ -20,7 +20,7 @@ MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
 
 \item{x_center}{logical;  Should the features be centered?}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 }
 \description{
 Using an update of the estimated means and covariance proposed in (Loog 2014). 

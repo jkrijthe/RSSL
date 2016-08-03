@@ -25,7 +25,7 @@ LaplacianKernelLeastSquaresClassifier(X, y, X_u, lambda = 0, gamma = 0,
 
 \item{x_center}{logical;  Should the features be centered?}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{y_scale}{logical; whether the target vector should be centered}
 }

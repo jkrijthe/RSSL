@@ -5,7 +5,7 @@
 \title{Semi-Supervised Linear Discriminant Analysis using Expectation Maximization}
 \usage{
 EMLinearDiscriminantClassifier(X, y, X_u, method = "EM", scale = FALSE,
-  eps = 1e-08, verbose = FALSE)
+  eps = 1e-08, verbose = FALSE, max_iter = 100)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -16,11 +16,13 @@ EMLinearDiscriminantClassifier(X, y, X_u, method = "EM", scale = FALSE,
 
 \item{method}{character; Currently only "EM"}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{eps}{Stopping criterion for the maximinimization}
 
 \item{verbose}{logical; Controls the verbosity of the output}
+
+\item{max_iter}{integer; Maximum number of iterations}
 }
 \description{
 Expectation Maximization

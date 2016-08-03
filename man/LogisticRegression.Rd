@@ -16,7 +16,7 @@ LogisticRegression(X, y, lambda = 0, intercept = TRUE, scale = FALSE,
 
 \item{intercept}{logical; Whether an intercept should be included}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{init}{numeric; Initialization of parameters for the optimization}
 

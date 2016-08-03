@@ -34,13 +34,18 @@
 #' GenerateSlicedCookie
 #' Generate2ClassGaussian
 #' 
-#' @importFrom kernlab vanilladot rbfdot kernelMatrix
+#' @importFrom kernlab vanilladot rbfdot kernelMatrix as.kernelMatrix
 #' @import quadprog 
 #' @import Matrix
 #' @import ggplot2
 #' @import dplyr
 #' @import reshape2
+#' @importFrom methods as is new
+#' @importFrom stats binomial cov delete.response df dist fitted glm.fit median model.extract model.frame model.matrix model.response na.fail na.omit napredict nlm optim princomp rbeta rnorm runif terms var
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom MASS mvrnorm ginv
+#' @importFrom limSolve linp
+#' @importFrom flexclust kcca kccaFamily dist2
 #' @useDynLib RSSL
 #' @importFrom Rcpp sourceCpp
 #' @docType package

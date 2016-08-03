@@ -12,6 +12,12 @@ setClass("EMLeastSquaresClassifier",
 #' @param eps Stopping criterion for the minimization
 #' @param verbose logical; Controls the verbosity of the output
 #' @param alpha numeric; the mixture of the new responsibilities and the old in each iteration of the algorithm (default: 1)
+#' @param method character; one of "block", for block gradient descent or "simple" for LBFGS optimization (default="block")
+#' @param objective character; "responsibility" for hard label self-learning or "label" for soft-label self-learning
+#' @param init objective character; "random" for random initialization of labels, "supervised" to use supervised solution as initialization or a numeric vector with a coefficient vector to use to calculate the initialization
+#' @param max_iter integer; maximum number of iterations
+#' @param beta numeric; value between 0 and 1 that determines how much to move to the new solution from the old solution at each step of the block gradient descent
+#' @param save_all logical; saves all classifiers trained during block gradient descent
 #' @inheritParams BaseClassifier
 #' @param ... Additional Parameters, Not used
 #' @family RSSL LeastSquares

@@ -5,7 +5,7 @@
 \title{Classifier used for enabling shared documenting of parameters}
 \usage{
 BaseClassifier(X, y, X_u, verbose, scale, eps, x_center, intercept, lambda,
-  y_scale, kernel, ...)
+  y_scale, kernel, use_Xu_for_scaling, ...)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -16,7 +16,7 @@ BaseClassifier(X, y, X_u, verbose, scale, eps, x_center, intercept, lambda,
 
 \item{verbose}{logical; Controls the verbosity of the output}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{eps}{numeric; Stopping criterion for the maximinimization}
 
@@ -29,6 +29,8 @@ BaseClassifier(X, y, X_u, verbose, scale, eps, x_center, intercept, lambda,
 \item{y_scale}{logical; whether the target vector should be centered}
 
 \item{kernel}{kernlab::kernel to use}
+
+\item{use_Xu_for_scaling}{logical; whether the unlabeled objects should be used to determine the mean and scaling for the normalization}
 
 \item{...}{Not used}
 }
