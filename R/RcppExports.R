@@ -9,3 +9,23 @@ svmlin_rcpp <- function(X, y, l, algorithm, lambda, lambda_u, max_switch, pos_fr
     .Call('RSSL_svmlin_rcpp', PACKAGE = 'RSSL', X, y, l, algorithm, lambda, lambda_u, max_switch, pos_frac, Cp, Cn, costs, verbose)
 }
 
+rowMax <- function(X) {
+    .Call('RSSL_rowMax', PACKAGE = 'RSSL', X)
+}
+
+which_rowMax <- function(X) {
+    .Call('RSSL_which_rowMax', PACKAGE = 'RSSL', X)
+}
+
+sort_matrix <- function(X) {
+    .Call('RSSL_sort_matrix', PACKAGE = 'RSSL', X)
+}
+
+rowwise_addition <- function(A, x) {
+    .Call('RSSL_rowwise_addition', PACKAGE = 'RSSL', A, x)
+}
+
+factor_to_dummy_cpp <- function(y, c) {
+    .Call('RSSL_factor_to_dummy_cpp', PACKAGE = 'RSSL', y, c)
+}
+
