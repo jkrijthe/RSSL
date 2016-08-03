@@ -9,3 +9,9 @@ NULL
 #' @description Useful for testing the svmlin interface and to serve as an example
 #' @docType data
 NULL
+
+#' @name wdbc
+#' @title wdbc data to for unit testing
+#' @description Useful for testing the S4VM and WellSVM implementations
+#' @docType data
+NULL
