@@ -5,7 +5,8 @@
 \title{Gaussian Random Fields and Harmonic functions}
 \usage{
 GRFClassifier(X, y, X_u, adjacency_kernel = NULL, sigma = 0.1, eta = 0.1,
-  CMN = TRUE, scale = FALSE, x_center = FALSE, y_u = NULL)
+  class_mass_normalization = TRUE, scale = FALSE, x_center = FALSE,
+  y_u = NULL)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -20,9 +21,9 @@ GRFClassifier(X, y, X_u, adjacency_kernel = NULL, sigma = 0.1, eta = 0.1,
 
 \item{eta}{The influence of the external classifier (not currently used)}
 
-\item{CMN}{Should the Class Mass Normalization heuristic be applied? (default: TRUE)}
+\item{class_mass_normalization}{Should the Class Mass Normalization heuristic be applied? (default: TRUE)}
 
-\item{scale}{boolean; Should the features be normalized? (default: FALSE)}
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{x_center}{logical;  Should the features be centered?}
 
@@ -45,9 +46,29 @@ classifier <- GRFClassifier(dmat, tvec, dmatU,
                 adjacency_kernel = rbfdot(10))
 
 plotframe <- data.frame(dmatU, 
-                        Output=classifier@responsibilities)
+                        Output=classifier@responsibilities[,1])
 
 ggplot(plotframe,aes(x=X1,y=X2,color=Output)) +
   geom_point() + coord_equal()
+
+data <- generateParallelPlanes()
+data$Class <- NA
+data$Class[1] <- "a"
+data$Class[101] <- "b"
+data$Class[201] <- "c"
+data$Class <- factor(data$Class)
+
+GRFClassifier(Class~.,data,NULL)@responsibilities
+
+data <- generateSpirals()
+data$Class<-NA
+data$Class[1] <- "a"
+data$Class[200] <- "b"
+data$Class <- factor(data$Class)
+
+GRFClassifier(Class~.,data,NULL)@responsibilities
+}
+\references{
+Zhu, X., Ghahramani, Z. & Lafferty, J., 2003. Semi-supervised learning using gaussian fields and harmonic functions. In Proceedings of the 20th International Conference on Machine Learning. pp. 912-919.
 }
 

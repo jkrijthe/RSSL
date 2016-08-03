@@ -11,7 +11,24 @@ classifier <- GRFClassifier(dmat, tvec, dmatU,
                 adjacency_kernel = rbfdot(10))
 
 plotframe <- data.frame(dmatU, 
-                        Output=classifier@responsibilities)
+                        Output=classifier@responsibilities[,1])
 
 ggplot(plotframe,aes(x=X1,y=X2,color=Output)) +
   geom_point() + coord_equal()
+
+data <- generateParallelPlanes()
+data$Class <- NA
+data$Class[1] <- "a"
+data$Class[101] <- "b"
+data$Class[201] <- "c"
+data$Class <- factor(data$Class)
+
+GRFClassifier(Class~.,data,NULL)@responsibilities
+
+data <- generateSpirals()
+data$Class<-NA
+data$Class[1] <- "a"
+data$Class[200] <- "b"
+data$Class <- factor(data$Class)
+
+GRFClassifier(Class~.,data,NULL)@responsibilities
