@@ -9,10 +9,35 @@ add_missinglabels_mar <- function(df,formula=NULL,prob=0.1) {
     df <- model.frame(formula,df)
   }
   n <- nrow(df)
-  yu <- df[sample(1:n,ceiling(prob*n)),1]
+  y_true <- df[,1]
   df[sample(1:n,ceiling(prob*n)),1] <- NA
-  attr(df,"yu") <- yu
+  attr(df,"y_true") <- y_true
   return(df)
+}
+
+#' Access the true labels when they are stored as an attribute in a data frame
+#' @param df data.frame;
+#' @export
+true_labels <- function(df) {
+  stopifnot(is.data.frame(df))
+  if (!is.null(attr(df,"y_true"))) {
+    attr(df,"y_true")
+  } else {
+    stop("data.frame does not contain true labels")
+  }
+}
+
+#' Access the true labels for the objects with missing labels when they are stored as an attribute in a data frame
+#' @param df data.frame;
+#' @export
+missing_labels <- function(df) {
+  stopifnot(is.data.frame(df))
+  
+  if (!is.null(attr(df,"y_true"))) {
+    attr(df,"y_true")[is.na(df[,1])]
+  } else {
+    stop("data.frame does not contain true labels")
+  }
 }
 
 #' Convert data.frame to matrices for semi-supervised learners
@@ -40,7 +65,7 @@ SSLDataFrameToMatrices <- function(model,D) {
   classnames<-levels(y)
   if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
   X <- model.matrix(attr(mf, "terms"), data=mf)
-  X <- X[, colnames(X) != "(Intercept)"] # Remove intercept
+  X <- X[, colnames(X) != "(Intercept)",drop=FALSE] # Remove intercept
   X_u <- X[is.na(y),,drop=FALSE]
   X <- X[!is.na(y),,drop=FALSE]
   y <- y[!is.na(y)]
