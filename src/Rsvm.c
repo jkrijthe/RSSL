@@ -235,6 +235,8 @@ void svmtraind (double *x, int *r, int *c,
 	       int    *cross,
            int    *sparse,
 	       int    *probability,
+	       int    *ubound,
+	       double *upbound,
 	       
 	       int    *nclasses,
 	       int    *nr,
@@ -250,7 +252,8 @@ void svmtraind (double *x, int *r, int *c,
 	       double *cresults,
 	       double *ctotal1,
 	       double *ctotal2,
-	       char   **error)
+	       char   **error,
+	       double *obj)
 {
     struct svm_parameter par;
     struct svm_problem   prob;
@@ -272,6 +275,7 @@ void svmtraind (double *x, int *r, int *c,
     par.C           = *cost;
     par.nu          = *nu;
     par.nr_weight   = *nweights;
+    par.ubound      = *ubound;
     if (par.nr_weight > 0) {
 	par.weight      = (double *) malloc (sizeof(double) * par.nr_weight);
 	memcpy(par.weight, weights, par.nr_weight * sizeof(double));
@@ -285,6 +289,7 @@ void svmtraind (double *x, int *r, int *c,
     /* set problem */
     prob.l = *r;
     prob.y = y;
+    prob.upbound = upbound;
     
 #ifndef _DENSE_REP
     if (*sparse > 0)
@@ -345,6 +350,7 @@ void svmtraind (double *x, int *r, int *c,
 	
 	*nr  = model->l;
 	*nclasses = model->nr_class;
+	*obj = model->obj;
 	memcpy (rho, model->rho, *nclasses * (*nclasses - 1)/2 * sizeof(double));
 
 	if (*probability && par.svm_type != ONE_CLASS) {
@@ -503,7 +509,7 @@ void svmpredictd  (int    *decisionvalues,
     m.param.probability = *compprob;      
 
     m.free_sv           = 1;
-
+    
 #ifndef _DENSE_REP
     /* create sparse training matrix */
     if (*sparsex > 0)

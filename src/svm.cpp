@@ -471,6 +471,9 @@ public:
 	void Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 		   double *alpha_, double Cp, double Cn, double eps,
 		   SolutionInfo* si, int shrinking);
+	void Solve_b(int l, const QMatrix& Q, const double *p_, const schar *y_,
+              double *alpha_, double Cp, double Cn, double *upbound_, double eps,
+              SolutionInfo* si, int shrinking);
 protected:
 	int active_size;
 	schar *y;
@@ -487,10 +490,16 @@ protected:
 	double *G_bar;		// gradient, if we treat free variables as 0
 	int l;
 	bool unshrink;	// XXX
-
+  bool ubound;
+  double *upbound;
+  
 	double get_C(int i)
 	{
-		return (y[i] > 0)? Cp : Cn;
+	  if (ubound) {
+	    return upbound[i];
+	  } else {
+		  return (y[i] > 0)? Cp : Cn;
+	  }
 	}
 	void update_alpha_status(int i)
 	{
@@ -522,6 +531,11 @@ void Solver::swap_index(int i, int j)
 	swap(p[i],p[j]);
 	swap(active_set[i],active_set[j]);
 	swap(G_bar[i],G_bar[j]);
+	
+	if (ubound) {
+	  swap(upbound[i],upbound[j]);
+	}
+	
 }
 
 void Solver::reconstruct_gradient()
@@ -580,7 +594,8 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	this->Cn = Cn;
 	this->eps = eps;
 	unshrink = false;
-
+	this->ubound = 0;
+  
 	// initialize alpha_status
 	{
 		alpha_status = new char[l];
@@ -846,6 +861,279 @@ void Solver::Solve(int l, const QMatrix& Q, const double *p_, const schar *y_,
 	delete[] G;
 	delete[] G_bar;
 }
+
+
+void Solver::Solve_b(int l, const QMatrix& Q, const double *p_, const schar *y_,
+                     double *alpha_, double Cp, double Cn, double *upbound_, double eps,
+                     SolutionInfo* si, int shrinking)
+{
+  this->l = l;
+  this->Q = &Q;
+  QD=Q.get_QD();
+  clone(p, p_,l);
+  clone(y, y_,l);
+  clone(alpha,alpha_,l);
+  clone(upbound,upbound_,l);
+  this->Cp = Cp;
+  this->Cn = Cn;
+  this->eps = eps;
+  unshrink = false;
+  this->ubound = 1;
+  
+  // initialize alpha_status
+  {
+    alpha_status = new char[l];
+    for(int i=0;i<l;i++)
+      update_alpha_status(i);
+  }
+  
+  // initialize active set (for shrinking)
+  {
+    active_set = new int[l];
+    for(int i=0;i<l;i++)
+      active_set[i] = i;
+    active_size = l;
+  }
+  
+  // initialize gradient
+  {
+    G = new double[l];
+    G_bar = new double[l];
+    int i;
+    for(i=0;i<l;i++)
+    {
+      G[i] = p[i];
+      G_bar[i] = 0;
+    }
+    for(i=0;i<l;i++)
+      if(!is_lower_bound(i))
+      {
+        const Qfloat *Q_i = Q.get_Q(i,l);
+        double alpha_i = alpha[i];
+        int j;
+        for(j=0;j<l;j++)
+          G[j] += alpha_i*Q_i[j];
+        if(is_upper_bound(i))
+          for(j=0;j<l;j++)
+            G_bar[j] += get_C(i) * Q_i[j];
+      }
+  }
+  
+  // optimization step
+  
+  int iter = 0;
+  int counter = min(l,1000)+1;
+  
+  while(1)
+  {
+    // show progress and do shrinking
+    
+    if(--counter == 0)
+    {
+      counter = min(l,1000);
+      if(shrinking) do_shrinking();
+      info(".");
+    }
+    
+    int i,j;
+    if(select_working_set(i,j)!=0)
+    {
+      // reconstruct the whole gradient
+      reconstruct_gradient();
+      // reset active set size and check
+      active_size = l;
+      info("*");
+      if(select_working_set(i,j)!=0)
+        break;
+      else
+        counter = 1;	// do shrinking next iteration
+    }
+    
+    ++iter;
+    
+    // update alpha[i] and alpha[j], handle bounds carefully
+    
+    const Qfloat *Q_i = Q.get_Q(i,active_size);
+    const Qfloat *Q_j = Q.get_Q(j,active_size);
+    
+    double C_i = get_C(i);
+    double C_j = get_C(j);
+    
+    double old_alpha_i = alpha[i];
+    double old_alpha_j = alpha[j];
+    
+    if(y[i]!=y[j])
+    {
+      double quad_coef = Q_i[i]+Q_j[j]+2*Q_i[j];
+      if (quad_coef <= 0)
+        quad_coef = TAU;
+      double delta = (-G[i]-G[j])/quad_coef;
+      double diff = alpha[i] - alpha[j];
+      alpha[i] += delta;
+      alpha[j] += delta;
+      
+      if(diff > 0)
+      {
+        if(alpha[j] < 0)
+        {
+          alpha[j] = 0;
+          alpha[i] = diff;
+        }
+      }
+      else
+      {
+        if(alpha[i] < 0)
+        {
+          alpha[i] = 0;
+          alpha[j] = -diff;
+        }
+      }
+      if(diff > C_i - C_j)
+      {
+        if(alpha[i] > C_i)
+        {
+          alpha[i] = C_i;
+          alpha[j] = C_i - diff;
+        }
+      }
+      else
+      {
+        if(alpha[j] > C_j)
+        {
+          alpha[j] = C_j;
+          alpha[i] = C_j + diff;
+        }
+      }
+    }
+    else
+    {
+      double quad_coef = Q_i[i]+Q_j[j]-2*Q_i[j];
+      if (quad_coef <= 0)
+        quad_coef = TAU;
+      double delta = (G[i]-G[j])/quad_coef;
+      double sum = alpha[i] + alpha[j];
+      alpha[i] -= delta;
+      alpha[j] += delta;
+      
+      if(sum > C_i)
+      {
+        if(alpha[i] > C_i)
+        {
+          alpha[i] = C_i;
+          alpha[j] = sum - C_i;
+        }
+      }
+      else
+      {
+        if(alpha[j] < 0)
+        {
+          alpha[j] = 0;
+          alpha[i] = sum;
+        }
+      }
+      if(sum > C_j)
+      {
+        if(alpha[j] > C_j)
+        {
+          alpha[j] = C_j;
+          alpha[i] = sum - C_j;
+        }
+      }
+      else
+      {
+        if(alpha[i] < 0)
+        {
+          alpha[i] = 0;
+          alpha[j] = sum;
+        }
+      }
+    }
+    
+    // update G
+    
+    double delta_alpha_i = alpha[i] - old_alpha_i;
+    double delta_alpha_j = alpha[j] - old_alpha_j;
+    
+    for(int k=0;k<active_size;k++)
+    {
+      G[k] += Q_i[k]*delta_alpha_i + Q_j[k]*delta_alpha_j;
+    }
+    
+    // update alpha_status and G_bar
+    
+    {
+      bool ui = is_upper_bound(i);
+      bool uj = is_upper_bound(j);
+      update_alpha_status(i);
+      update_alpha_status(j);
+      int k;
+      if(ui != is_upper_bound(i))
+      {
+        Q_i = Q.get_Q(i,l);
+        if(ui)
+          for(k=0;k<l;k++)
+            G_bar[k] -= C_i * Q_i[k];
+        else
+          for(k=0;k<l;k++)
+            G_bar[k] += C_i * Q_i[k];
+      }
+      
+      if(uj != is_upper_bound(j))
+      {
+        Q_j = Q.get_Q(j,l);
+        if(uj)
+          for(k=0;k<l;k++)
+            G_bar[k] -= C_j * Q_j[k];
+        else
+          for(k=0;k<l;k++)
+            G_bar[k] += C_j * Q_j[k];
+      }
+    }
+  }
+  
+  // calculate rho
+  
+  si->rho = calculate_rho();
+  
+  // calculate objective value
+  {
+    double v = 0;
+    int i;
+    for(i=0;i<l;i++)
+      v += alpha[i] * (G[i] + p[i]);
+    
+    si->obj = v/2;
+  }
+  
+  // put back the solution
+  {
+    for(int i=0;i<l;i++)
+      alpha_[active_set[i]] = alpha[i];
+  }
+  
+  // juggle everything back
+  /*{
+   for(int i=0;i<l;i++)
+   while(active_set[i] != i)
+   swap_index(i,active_set[i]);
+   // or Q.swap_index(i,active_set[i]);
+  }*/
+  
+  si->upper_bound_p = Cp;
+  si->upper_bound_n = Cn;
+  
+  info("\noptimization finished, #iter = %d\n",iter);
+  
+  delete[] p;
+  delete[] y;
+  delete[] alpha;
+  delete[] alpha_status;
+  delete[] active_set;
+  delete[] G;
+  delete[] G_bar;
+}
+
+
 
 // return 1 if already optimal, return 0 otherwise
 int Solver::select_working_set(int &out_i, int &out_j)
@@ -1510,6 +1798,7 @@ static void solve_c_svc(
 	double *minus_ones = new double[l];
 	schar *y = new schar[l];
 
+  
 	int i;
 
 	for(i=0;i<l;i++)
@@ -1535,6 +1824,47 @@ static void solve_c_svc(
 
 	delete[] minus_ones;
 	delete[] y;
+}
+
+//
+// construct and solve various formulations
+//
+static void solve_c_svc_b(
+    const svm_problem *prob, const svm_parameter* param,
+    double *alpha, Solver::SolutionInfo* si, double Cp, double Cn)
+{
+  int l = prob->l;
+  double *minus_ones = new double[l];
+  schar *y = new schar[l];
+  double *upbound = new double[l];
+  int ubound = 1;
+  int i;
+  
+  for(i=0;i<l;i++)
+  {
+    alpha[i] = 0;
+    minus_ones[i] = -1;
+    if(prob->y[i] > 0) y[i] = +1; else y[i] = -1;
+    upbound[i] = prob->upbound[i];	
+  }
+  
+  Solver s;
+  s.Solve_b(l, SVC_Q(*prob,*param,y), minus_ones, y,
+            alpha, Cp, Cn, upbound, param->eps, si, param->shrinking);
+  
+  double sum_alpha=0;
+  for(i=0;i<l;i++)
+    sum_alpha += alpha[i];
+  
+  if (Cp==Cn)
+    info("nu = %f\n", sum_alpha/(Cp*prob->l));
+  
+  for(i=0;i<l;i++)
+    alpha[i] *= y[i];
+  
+  delete[] upbound;
+  delete[] minus_ones;
+  delete[] y;
 }
 
 static void solve_nu_svc(
@@ -1707,6 +2037,7 @@ struct decision_function
 {
 	double *alpha;
 	double rho;
+	double obj;
 };
 
 static decision_function svm_train_one(
@@ -1718,7 +2049,11 @@ static decision_function svm_train_one(
 	switch(param->svm_type)
 	{
 		case C_SVC:
-			solve_c_svc(prob,param,alpha,&si,Cp,Cn);
+			if (param->ubound) {
+			  solve_c_svc_b(prob,param,alpha,&si,Cp,Cn);
+			} else {
+			  solve_c_svc(prob,param,alpha,&si,Cp,Cn);
+			}
 			break;
 		case NU_SVC:
 			solve_nu_svc(prob,param,alpha,&si);
@@ -1763,6 +2098,7 @@ static decision_function svm_train_one(
 	decision_function f;
 	f.alpha = alpha;
 	f.rho = si.rho;
+	f.obj = si.obj;
 	return f;
 }
 
@@ -2169,7 +2505,9 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 	svm_model *model = Malloc(svm_model,1);
 	model->param = *param;
 	model->free_sv = 0;	// XXX
-
+  model->obj = 0.0;
+  
+  
 	if(param->svm_type == ONE_CLASS ||
 	   param->svm_type == EPSILON_SVR ||
 	   param->svm_type == NU_SVR)
@@ -2180,7 +2518,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		model->nSV = NULL;
 		model->probA = NULL; model->probB = NULL;
 		model->sv_coef = Malloc(double *,1);
-
+    
 		if(param->probability && 
 		   (param->svm_type == EPSILON_SVR ||
 		    param->svm_type == NU_SVR))
@@ -2237,10 +2575,13 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 #else
 		svm_node **x = Malloc(svm_node *,l);
 #endif
+		double *upbound = Malloc(double,l);
+		
 		int i;
-		for(i=0;i<l;i++)
+		for(i=0;i<l;i++) {
 			x[i] = prob->x[perm[i]];
-
+		  if (param->ubound) { upbound[i] = prob->upbound[perm[i]];}
+		}
 		// calculate weighted C
 
 		double *weighted_C = Malloc(double, nr_class);
@@ -2286,16 +2627,19 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 				sub_prob.x = Malloc(svm_node *,sub_prob.l);
 #endif
 				sub_prob.y = Malloc(double,sub_prob.l);
+				sub_prob.upbound = Malloc(double, sub_prob.l);
 				int k;
 				for(k=0;k<ci;k++)
 				{
 					sub_prob.x[k] = x[si+k];
 					sub_prob.y[k] = +1;
+					if (param->ubound) { sub_prob.upbound[k] = upbound[si+k]; }
 				}
 				for(k=0;k<cj;k++)
 				{
 					sub_prob.x[ci+k] = x[sj+k];
 					sub_prob.y[ci+k] = -1;
+					if (param->ubound) { sub_prob.upbound[ci+k] = upbound[sj+k]; }
 				}
 
 				if(param->probability)
@@ -2310,6 +2654,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 						nonzero[sj+k] = true;
 				free(sub_prob.x);
 				free(sub_prob.y);
+				free(sub_prob.upbound);
 				++p;
 			}
 
@@ -2360,6 +2705,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		info("Total nSV = %d\n",total_sv);
 
 		model->l = total_sv;
+		model->obj = f[0].obj;
 #ifdef _DENSE_REP
 		model->SV = Malloc(svm_node,total_sv);
 #else
@@ -2414,6 +2760,7 @@ svm_model *svm_train(const svm_problem *prob, const svm_parameter *param)
 		free(count);
 		free(perm);
 		free(start);
+		free(upbound);
 		free(x);
 		free(weighted_C);
 		free(nonzero);

@@ -44,6 +44,7 @@ function (formula, data = NULL, ..., subset, na.action = na.omit, scale = TRUE)
     return (ret)
 }
 
+#' @export
 svmd.default <-
 function (x,
           y           = NULL,
@@ -65,7 +66,8 @@ function (x,
           fitted      = TRUE,
           ...,
           subset,
-          na.action = na.omit)
+          na.action = na.omit,
+          upbound     = NULL)
 {
     if (is(x, "KernelMatrix") || is(x, "kernelMatrix"))
         kernel <- "precomputed"
@@ -257,7 +259,15 @@ function (x,
     }
 
     err <- empty_string <- paste(rep(" ", 255), collapse = "")
-
+  
+    if (is.null(upbound)) {
+      ubound <- 0
+      upbound <- 0.0
+    } else {
+      if (length(upbound)!=length(y)) { stop("incorrect number of upper bounds.")}
+      ubound <- 1
+    }
+    
     if (is.null(type)) stop("type argument must not be NULL!")
     if (is.null(kernel)) stop("kernel argument must not be NULL!")
     if (is.null(degree)) stop("degree argument must not be NULL!")
@@ -300,6 +310,8 @@ function (x,
                 as.integer (cross),
                 as.integer (sparse),
                 as.integer (probability),
+                as.integer (ubound),
+                as.double  (upbound),
 
                 ## results
                 nclasses = integer  (1),
@@ -317,8 +329,8 @@ function (x,
                 ctotal1  = double   (1),
                 ctotal2  = double   (1),
                 error    = err,
-
-                PACKAGE = "kebabs")
+                obj      = double   (1),
+                PACKAGE = "RSSL")
 
     if (cret$error != empty_string)
         stop(paste(cret$error, "!", sep=""))
@@ -367,7 +379,8 @@ function (x,
                  t(matrix(cret$coefs[1:((cret$nclasses - 1) * cret$nr)],
                           nrow = cret$nclasses - 1,
                           byrow = TRUE)),
-                 na.action = nac
+                 na.action = nac,
+                 obj=cret$obj
                  )
 
     ## cross-validation-results
@@ -488,7 +501,7 @@ function (object, newdata,
                   center = object$x.scale$"scaled:center",
                   scale  = object$x.scale$"scaled:scale"
                   )
-
+    
     ret <- .C ("svmpredictd",
                as.integer (decision.values),
                as.integer (probability),
@@ -538,9 +551,9 @@ function (object, newdata,
                             (object$nclasses - 1) / 2),
                prob = double(nrow(newdata) * object$nclasses),
 
-               PACKAGE = "kebabs"
+               PACKAGE = "RSSL"
                )
-
+  
     ret2 <- if (is.character(object$levels)) # classification: return factors
         factor (object$levels[ret$ret], levels = object$levels)
     else if (object$type == 2) # one-class-classification: return TRUE/FALSE

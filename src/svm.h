@@ -24,6 +24,7 @@ struct svm_problem
 	int l;
 	double *y;
 	struct svm_node *x;
+	double *upbound;
 };
 
 #else
@@ -38,6 +39,7 @@ struct svm_problem
 	int l;
 	double *y;
 	struct svm_node **x;
+	double *upbound;
 };
 #endif
 
@@ -63,6 +65,7 @@ struct svm_parameter
 	double p;	/* for EPSILON_SVR */
 	int shrinking;	/* use the shrinking heuristics */
 	int probability; /* do probability estimates */
+	int ubound; /* whether upper bounds are used */
 };
 
 //
@@ -92,6 +95,7 @@ struct svm_model
 	/* XXX */
 	int free_sv;		/* 1 if svm_model is created by svm_load_model*/
 				/* 0 if svm_model is created by svm_train */
+	double obj;				
 };
 
 struct svm_model *svm_train(const struct svm_problem *prob, const struct svm_parameter *param);
