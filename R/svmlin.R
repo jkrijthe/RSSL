@@ -16,7 +16,7 @@ setClass("svmlinClassifier",
 #'
 #' @param X Matrix or sparseMatrix containing the labeled feature vectors, without intercept
 #' @param y factor containing class assignments
-#' @param Xu Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept
+#' @param X_u Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept
 #' @param algorithm Algorithm choice, see details (default:1)
 #' @param lambda  regularization parameter lambda (default 1)
 #' @param lambda_u regularization parameter lambda_u (default 1)
@@ -25,13 +25,14 @@ setClass("svmlinClassifier",
 #' @param Cp relative cost for positive examples (only available with algorithm 1)
 #' @param Cn relative cost for positive examples (only available with algorithm 1)
 #' @param verbose Should output be verbose? (default: FALSE)
+#' @inheritParams BaseClassifier
 #'
 #' @references Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs.     Proceedings of ACM SIGIR, 2006
 #'  @references V. Sindhwani and S. Sathiya Keerthi. Newton Methods for Fast Solution of Semi-supervised Linear SVMs. Book Chapter in Large Scale Kernel Machines, MIT Press, 2006
 #' @examples
 #' data(svmlin_example)
-#' t_svmlin_1 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,Xu=NULL, lambda = 0.001)
-#' t_svmlin_2 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,Xu=svmlin_example$X_train[-c(1:50),], lambda = 10,lambda_u=100,algorithm = 2)
+#' t_svmlin_1 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,X_u=NULL, lambda = 0.001)
+#' t_svmlin_2 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,X_u=svmlin_example$X_train[-c(1:50),], lambda = 10,lambda_u=100,algorithm = 2)
 #' # Calculate Accuracy
 #' mean(predict(t_svmlin_1,svmlin_example$X_test)==svmlin_example$y_test)
 #' mean(predict(t_svmlin_2,svmlin_example$X_test)==svmlin_example$y_test)
@@ -46,7 +47,7 @@ setClass("svmlinClassifier",
 #' mean(predict(g_sup,testdata$X_test)==testdata$y_test)
 #' mean(predict(g_semi,testdata$X_test)==testdata$y_test)
 #' @export
-svmlin <- function(X, y, X_u, algorithm=1, lambda=1, lambda_u=1, max_switch=10000, pos_frac=0.5, Cp=1.0, Cn=1.0,verbose=FALSE,intercept=TRUE,scale=FALSE,x_center=FALSE) {
+svmlin <- function(X, y, X_u=NULL, algorithm=1, lambda=1, lambda_u=1, max_switch=10000, pos_frac=0.5, Cp=1.0, Cn=1.0,verbose=FALSE,intercept=TRUE,scale=FALSE,x_center=FALSE) {
   
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X<-ModelVariables$X
