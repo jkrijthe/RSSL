@@ -42,7 +42,7 @@ setMethod("predict", signature(object="NormalBasedClassifier"), function(object,
   factor(as.numeric(which_rowMax(G)), labels=object@classnames,levels=1:length(object@classnames))
 })
 
-#' Return the MINUS log likelihood on the given dataset
+#' Return the negative log likelihood on the given dataset
 #' @rdname loss-methods
 #' @aliases loss,NormalBasedClassifier-method 
 setMethod("loss", signature(object="NormalBasedClassifier"), function(object, newdata, y=NULL) {

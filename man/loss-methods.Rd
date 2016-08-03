@@ -61,7 +61,7 @@ numeric; the total loss on the test data
 \description{
 Loss of a classifier or regression function
 
-Return the MINUS log likelihood on the given dataset
+Return the negative log likelihood on the given dataset
 
 Hinge loss on new objects of a trained LinearSVM
 
