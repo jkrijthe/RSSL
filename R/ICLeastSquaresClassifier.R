@@ -46,13 +46,13 @@ setClass("ICLeastSquaresClassifier",
 #'        line_coefficients(w2)$slope,lty=1)
 #' @family RSSL LeastSquares
 #' @export
-ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda_prior=0,trueprob=NULL,eps=10e-10,y_scale=FALSE) {
+ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda_prior=0,trueprob=NULL,eps=10e-10,y_scale=FALSE,use_Xu_for_scaling=TRUE) {
   
   #   if (!is.factor(y)) { stop("Input labels should be a factor!")}
   #if (length(levels(y))!=2) { stop("We need a two class problem.")}
   
   ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center)
+  ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=x_center,use_Xu_for_scaling=use_Xu_for_scaling)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
   scaling<-ModelVariables$scaling

@@ -34,6 +34,7 @@ clapply <- function(X,FUN,...,mc.cores=getOption("mc.cores", 2L)) {
 #' @param scale If TRUE, apply a z-transform to the design matrix X
 #' @param intercept Whether to include an intercept in the design matrices
 #' @param x_center logical (default: TRUE); Whether the feature vectors should be centered
+#' @param use_Xu_for_scaling logical (default: TRUE); Should the unlabeled data be used to determine scaling?
 #' @return list object with the following objects:
 #' \item{X}{design matrix of the labeled data}
 #' \item{y}{integer vector indicating the labels of the labeled data}
@@ -42,7 +43,7 @@ clapply <- function(X,FUN,...,mc.cores=getOption("mc.cores", 2L)) {
 #' \item{scaling}{a scaling object used to scale the test observations in the same way as the training set}
 #' \item{modelform}{a formula object containing the used model}
 #' @export
-PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE) {
+PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALSE,use_Xu_for_scaling=TRUE) {
   
   # Make sure we get a matrix from the model representation
   if (is(X,"formula") & is.data.frame(y)) {
@@ -88,7 +89,7 @@ PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALS
       cols<-1:ncol(X)
     }
     
-    if (!is.null(X_u)) {
+    if (!is.null(X_u) && use_Xu_for_scaling) {
         Xe<-rbind(X,X_u)
         
         scaling<-scaleMatrix(Xe[,cols,drop=FALSE], center = TRUE, scale = scale)
@@ -98,6 +99,9 @@ PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALS
       
       scaling<-scaleMatrix(X[,cols,drop=FALSE], center = TRUE, scale = scale)
       X[,cols]<-predict(scaling,as.matrix(X[,cols,drop=FALSE]))
+      if (!is.null(X_u)) {
+        X_u[,cols]<-predict(scaling,as.matrix(X_u[,cols,drop=FALSE]))
+      }
     }
 
   } else {scaling=NULL}
@@ -157,3 +161,12 @@ classlabels_to_indicatormatrix <- function(y,classnames) {
   if (length(classnames)==2) { Y <- Y[,1,drop=FALSE] }
   return(Y)
 }
+
+factor_to_dummy <- function(y) {
+  stopifnot(is.factor(y))
+  levs <- levels(y)
+  Y <- factor_to_dummy_cpp(y,length(levs))
+  colnames(Y) <- levs
+  Y
+}
+
