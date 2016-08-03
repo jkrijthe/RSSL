@@ -144,7 +144,7 @@ setMethod("posterior", signature(object="NormalBasedClassifier"), function(objec
   for (c in 1:length(object@sigma)) {
     S <- object@sigma[[c]] # Covariance matrix
     k <- ncol(S) # Dimensionality
-    G[,c] <- log(object@prior[c,,drop=FALSE]) - (k/2) * log(2*pi) - 0.5*log(det(S)) - rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE])) 
+    G[,c] <- log(object@prior[c,,drop=FALSE]) - (k/2) * log(2*pi) - 0.5*log(det(S)) - (1/2)*rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE])) 
   }
   
   posteriors <- G - (log(rowSums(exp(G-apply(G,1,max))))+apply(G,1,max)) # More stable way of doing logsumexp
