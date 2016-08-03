@@ -1,34 +1,37 @@
-# Sample .travis.yml for R projects from https://github.com/craigcitro/r-travis
+language: r
+cache: packages
 
-language: c
-sudo: required
-before_install:
-  - curl -OL http://raw.github.com/craigcitro/r-travis/master/scripts/travis-tool.sh
-  - chmod 755 ./travis-tool.sh
-  - ./travis-tool.sh bootstrap
+matrix:
+  include:
+    - os: linux
+      dist: precise
+      sudo: false
+    - os: linux
+      dist: trusty
+      sudo: required
+      env: R_CODECOV=true
+      r_check_args: '--use-valgrind'
+    - os: osx
+      osx_image: xcode8
+      latex: false
+    - os: osx
+      osx_image: beta-xcode6.1
+      disable_homebrew: true
 
-install:
-  - ./travis-tool.sh install_deps
+addons:
+  apt:
+    packages:
+    - valgrind
 
-script: ./travis-tool.sh run_tests
+r_github_packages:
+  - jimhester/covr
 
-after_failure:
-  - ./travis-tool.sh dump_logs
-
-env:
-  global:
-    - WARNINGS_ARE_ERRORS=1
-    - R_BUILD_ARGS=--no-manual
-    - R_CHECK_ARGS=--no-manual --as-cran
+warnings_are_errors: true
 
 notifications:
   email:
     on_success: change
     on_failure: change
 
-r_github_packages:
-  - jimhester/covr
-
 after_success:
-  - ./travis-tool.sh install_github jimhester/covr
-  - Rscript -e 'library(covr);codecov()'
+  - if [[ "${R_CODECOV}" ]]; then R -e 'covr::codecov()'; fi
