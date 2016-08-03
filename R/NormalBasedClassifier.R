@@ -27,18 +27,19 @@ setMethod("predict", signature(object="NormalBasedClassifier"), function(object,
                                        y=NULL,
                                        scaling=object@scaling,
                                        intercept=FALSE)
-  X<-ModelVariables$X
+  X <- ModelVariables$X
   
-  M<-object@means
+  M <- object@means
 
   G <- matrix(NA,nrow(X),length(object@sigma))
   
   for (c in 1:length(object@sigma)) {
     S <- object@sigma[[c]]
-    G[,c] <- log(object@prior[c,,drop=FALSE]) - 0.5 * log(det(S)) - rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]))
+    C <- -ncol(X) * log(2 * pi) * 0.5 - 0.5 * log(det(S))
+    G[,c] <- C + log(object@prior[c,,drop=FALSE]) - rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]))/2
   }
   
-  factor(apply(G, 1, which.max), labels=object@classnames,levels=1:length(object@classnames))
+  factor(as.numeric(which_rowMax(G)), labels=object@classnames,levels=1:length(object@classnames))
 })
 
 #' Return the MINUS log likelihood on the given dataset
