@@ -70,6 +70,21 @@ c.CrossValidation <- function(...) {
 #' @param mc.cores integer; Number of cores to be used
 #' @param ... arguments passed to underlying functions
 #' 
+#' @examples
+#' X <- model.matrix(Species~.-1,data=iris)
+#' y <- iris$Species
+#' 
+#' classifiers <- list("LS"=function(X,y,X_u,y_u) {LeastSquaresClassifier(X,y,lambda=0)}, 
+#'                     "RLS"=function(X,y,X_u,y_u) {LeastSquaresClassifier(X,y,lambda=10)})
+#' measures <- list("Accuracy" =  measure_accuracy,
+#'                  "Loss" = measure_losstest,
+#'                  "Loss labeled" = measure_losslab,
+#'                  "Loss Lab+Unlab" = measure_losstrain
+#'                  )
+#' lc <- CrossValidationSSL(X,y,classifiers=classifiers,measures=measures)
+#' print(lc)
+#' plot(lc)
+#' 
 #' @export
 CrossValidationSSL <- function(X, y,...) {
   UseMethod("CrossValidationSSL")
@@ -274,13 +289,17 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
 plot.CrossValidation <-function(x,y,...) {
   if ("Dataset" %in% names(x$results)) {
     x$results %>% 
-      ggplot(aes_string(x="Classifier",y="value")) + 
-      geom_jitter() +
-      facet_wrap(~Measure+Dataset,scales="free")
+      ggplot(aes_string(x="Classifier",y="value",color="Classifier")) + 
+      geom_boxplot() +
+      facet_wrap(~Measure+Dataset,scales="free") +
+      theme(legend.position="bottom") +
+      scale_color_discrete(name="Repeat")
   } else {
     x$results %>% 
-    ggplot(aes_string(x="Classifier",y="value")) + 
-      geom_jitter() +
-      facet_wrap(~Measure,scales="free")
+    ggplot(aes_string(x="Classifier",y="value",color="factor(repeats)")) + 
+      geom_boxplot() +
+      facet_wrap(~Measure,scales="free") +
+      theme(legend.position="bottom") +
+      scale_color_discrete(name="Repeat")
   }
 }

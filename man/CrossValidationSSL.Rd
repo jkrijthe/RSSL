@@ -65,4 +65,20 @@ Note that objects can be used multiple times in for testing, when training on a 
 
 The "test" option of \code{leaveout}, on the other hand, uses the folds as the test sets. This means every object will be used as a test object exactly once. The remaining objects in each training iteration are split randomly into a labeled and an unlabeled part, where the number of the labeled objects is controlled by the user through the n_labeled parameter.
 }
+\examples{
+X <- model.matrix(Species~.-1,data=iris)
+y <- iris$Species
+
+classifiers <- list("LS"=function(X,y,X_u,y_u) {LeastSquaresClassifier(X,y,lambda=0)}, 
+                    "RLS"=function(X,y,X_u,y_u) {LeastSquaresClassifier(X,y,lambda=10)})
+measures <- list("Accuracy" =  measure_accuracy,
+                 "Loss" = measure_losstest,
+                 "Loss labeled" = measure_losslab,
+                 "Loss Lab+Unlab" = measure_losstrain
+                 )
+lc <- CrossValidationSSL(X,y,classifiers=classifiers,measures=measures)
+print(lc)
+plot(lc)
+
+}
 
