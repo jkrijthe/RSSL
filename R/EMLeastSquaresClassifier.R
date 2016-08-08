@@ -29,7 +29,7 @@ EMLeastSquaresClassifier <- function(X, y, X_u, x_center=FALSE, scale=FALSE, ver
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=FALSE)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
-  Y<-ModelVariables$Y
+  Y<-ModelVariables$Y[,1,drop=FALSE]
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform

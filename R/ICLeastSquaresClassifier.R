@@ -58,7 +58,11 @@ ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, interce
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
-  y <- ModelVariables$Y
+  if (ncol(ModelVariables$Y)==2) {
+    y <- ModelVariables$Y[,1,drop=FALSE]
+  } else {
+    y <- ModelVariables$Y
+  }
   Y <- y
   
   

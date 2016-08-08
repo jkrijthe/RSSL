@@ -73,7 +73,11 @@ KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=vanilladot(), x_
   scaling <- ModelVariables$scaling
   classnames <- ModelVariables$classnames
   modelform <- ModelVariables$modelform
-  Y <- ModelVariables$Y
+  if (ncol(ModelVariables$Y)==2) {
+    Y <- ModelVariables$Y[,1,drop=FALSE]
+  } else {
+    Y <- ModelVariables$Y
+  }
   
   ## Start Implementation
   n<-nrow(X)
@@ -115,7 +119,11 @@ KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=vanilladot(), x_
 setMethod("loss", signature(object="KernelLeastSquaresClassifier"), function(object, newdata, y=NULL,...) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
   X<-ModelVariables$X
-  Y<-ModelVariables$Y
+  if (ncol(ModelVariables$Y)==2) {
+    Y <- ModelVariables$Y[,1,drop=FALSE]
+  } else {
+    Y <- ModelVariables$Y
+  }
   
   if (is.null(y)) { stop("No labels supplied.")}
   

@@ -27,58 +27,22 @@ NearestMeanClassifier <- function(X, y, method="closedform", prior=NULL, x_cente
                                 x_center=x_center, 
                                 scale=scale,
                                 intercept=FALSE)
-  X<-ModelVariables$X
-  y<-ModelVariables$y
-  scaling<-ModelVariables$scaling
-  classnames<-ModelVariables$classnames
-  modelform<-ModelVariables$modelform
+  X <- ModelVariables$X
+  Y <- ModelVariables$Y
+  y <- ModelVariables$y
   
-  Y <- model.matrix(~as.factor(y)-1)
-  
-  if (method=="closedform") {
-    
-    if (is.null(prior)) prior <- matrix(colMeans(Y),2,1)
-    means <- t((t(X) %*% Y))/(colSums(Y))
-    sigma <- mean((X-(Y %*% means))^2)
-    sigma <- diag(ncol(X))*sigma
-    sigma <- lapply(1:ncol(Y),function(c){sigma})
-    
-  } else if (method=="ml") {
-    
-    if (is.null(prior)) prior<-matrix(colMeans(Y),2,1)
-    
-    opt_func<-function(theta, X, y) {
-      means<-matrix(theta[1:(ncol(Y)*ncol(X))],ncol(Y),ncol(X))
-      sigma<-theta[(ncol(Y)*ncol(X))+1]
-      sigma<-diag(ncol(X))*sigma
-      sigma<-lapply(1:ncol(Y),function(c){sigma})
-      
-      model<-new("NearestMeanClassifier", 
-                 modelform=modelform, 
-                 prior=prior, 
-                 means=means, 
-                 sigma=sigma,
-                 classnames=1:ncol(Y),
-                 scaling=scaling)
-      loss(model,X,y)
-    }
-    
-    theta<-rep(0.01,3)
-    opt_result <- optim(theta, opt_func, gr=NULL, X, y, method="L-BFGS-B", lower=c(-Inf,-Inf,0.000000001))
-    theta<-opt_result$par
-    
-    means<-matrix(theta[1:(ncol(Y)*ncol(X))],ncol(Y),ncol(X))
-    sigma<-theta[(ncol(Y)*ncol(X))+1]
-    sigma<-diag(ncol(X))*sigma
-    sigma<-lapply(1:ncol(Y),function(c){sigma})
-  }
+  if (is.null(prior)) prior <- matrix(colMeans(Y),2,1)
+  means <- t((t(X) %*% Y))/(colSums(Y))
+  sigma <- mean((X-(Y %*% means))^2)
+  sigma <- diag(ncol(X))*sigma
+  sigma <- lapply(1:ncol(Y),function(c){sigma})
   
   ## Return object
   new("NearestMeanClassifier", 
-      modelform=modelform, 
+      modelform=ModelVariables$modelform, 
       prior=prior, 
       means=means, 
       sigma=sigma,
-      classnames=classnames,
-      scaling=scaling)
+      classnames=ModelVariables$classnames,
+      scaling=ModelVariables$scaling)
 }

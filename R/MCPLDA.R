@@ -16,21 +16,17 @@ MCPLDA <- function(X, y, X_u, x_center=FALSE, scale=FALSE, max_iter=1000) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,x_center=x_center,scale=scale,intercept=FALSE)
-  X<-ModelVariables$X
-  X_u<-ModelVariables$X_u
-  y<-ModelVariables$y
-  scaling<-ModelVariables$scaling
-  classnames<-ModelVariables$classnames
-  modelform<-ModelVariables$modelform
-  
-  Y <- model.matrix(~as.factor(y)-1)
+  X <- ModelVariables$X
+  X_u <- ModelVariables$X_u
+  y <- ModelVariables$y
+  Y <- ModelVariables$Y
   
   res <- minimaxlda(X,Y,X_u,max_iter)
   
-  new("MCPLDA", modelform=modelform, 
+  new("MCPLDA", modelform=ModelVariables$modelform, 
       means=res$m, prior=as.matrix(res$p), 
       sigma=lapply(1:ncol(Y),function(x) {solve(res$iW)}),
-      classnames=classnames,scaling=scaling,
+      classnames=ModelVariables$classnames,scaling=ModelVariables$scaling,
       responsibilities=res$uw)
 }
 
@@ -52,7 +48,7 @@ svdinvsqrtm <- function(X) {
   res <- svd(X)
   s <- res$d
   s[s>0] <- 1/sqrt(s[s>0])
-  Y <- res$u %*% s %*% t(res$v)
+  Y <- res$u %*% diag(s) %*% t(res$v)
   return(Y)
 }
 
@@ -70,10 +66,9 @@ svdinv <- function(X) {
 }
 
 svdeig <- function(A,B) {
-
   T <- svdinvsqrtm(B);
   res <- svd(t(T) %*% A %*% T)
-  E <- T%*% res$u
+  E <- T %*% res$u
   return(list(E=E,D=diag(res$d)))
 }
 

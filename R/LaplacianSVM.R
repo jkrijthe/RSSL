@@ -18,7 +18,7 @@ LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=van
   ModelVariables<-PreProcessing(X=X, y=y, X_u=X_u, scale=scale, intercept=FALSE, x_center=TRUE)
   X <- ModelVariables$X
   X_u <- ModelVariables$X_u
-  Y <- ModelVariables$Y
+  Y <- ModelVariables$Y[,1,drop=FALSE]
   scaling <- ModelVariables$scaling
   classnames <- ModelVariables$classnames
   modelform <- ModelVariables$modelform

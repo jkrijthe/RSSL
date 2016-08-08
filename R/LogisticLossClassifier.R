@@ -27,7 +27,7 @@ LogisticLossClassifier <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, 
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
   X<-ModelVariables$X
   y<-ModelVariables$y
-  Y<-ModelVariables$Y
+  Y<-ModelVariables$Y[,1,drop=FALSE]
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
@@ -66,9 +66,9 @@ LogisticLossClassifier <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, 
 #' @rdname loss-methods
 #' @aliases loss,LogisticLossClassifier-method  
 setMethod("loss", signature(object="LogisticLossClassifier"), function(object, newdata, y=NULL, ...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=TRUE)
+  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=TRUE,classnames = object@classnames)
   X <- ModelVariables$X
-  Y <- ModelVariables$Y
+  Y <- ModelVariables$Y[,1,drop=FALSE]
   y <- ModelVariables$y
   
   if (is.null(y)) { stop("No labels supplied.")}

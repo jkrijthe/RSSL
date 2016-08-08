@@ -22,7 +22,7 @@ USMLeastSquaresClassifier<-function(X, y, X_u, lambda=0, intercept=TRUE, x_cente
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
-  y <- ModelVariables$Y
+  y <- ModelVariables$Y[,1,drop=FALSE]
   if (y_scale) {
     y_scale <- mean(y)
     y <- y-y_scale
@@ -68,7 +68,7 @@ USMLeastSquaresClassifier<-function(X, y, X_u, lambda=0, intercept=TRUE, x_cente
 setMethod("loss", signature(object="USMLeastSquaresClassifier"), function(object, newdata, y=NULL,...) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=y,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
   X <- ModelVariables$X
-  Y <- ModelVariables$Y
+  Y <- ModelVariables$Y[,1,drop=FALSE]
   
   if (is.null(Y)) { stop("No labels supplied.")}
   if (ncol(Y)!=1) { stop("Multiclass loss not implemented yet")}

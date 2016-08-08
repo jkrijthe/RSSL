@@ -13,7 +13,7 @@ LaplacianKernelLeastSquaresClassifier <- function(X, y, X_u, lambda=0, gamma=0, 
   scaling <- ModelVariables$scaling
   classnames <- ModelVariables$classnames
   modelform <- ModelVariables$modelform
-  Y <- ModelVariables$Y
+  Y <- ModelVariables$Y[,1,drop=FALSE]
   
   ## Start Implementation
   l<-nrow(X)

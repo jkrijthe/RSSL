@@ -24,7 +24,7 @@ WellSVM <- function(X,y,X_u,C1=1,C2=0.1,gamma=1,x_center=TRUE,scale=FALSE,use_Xu
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
-  y <- 2*ModelVariables$Y-1
+  y <- 2*ModelVariables$Y[,1,drop=FALSE]-1
   
   
   x <- t(rbind(X,X_u))

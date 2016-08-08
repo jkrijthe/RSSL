@@ -30,7 +30,7 @@ S4VM<-function(X,y,X_u, C1=100, C2=0.1, sample_time=100, gamma=0, x_center=FALSE
   Xu<-ModelVariables$X_u
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
-  Y <- ModelVariables$Y
+  Y <- ModelVariables$Y[,1,drop=FALSE]
   label <- as.numeric(Y*2-1)
   y <- label
   

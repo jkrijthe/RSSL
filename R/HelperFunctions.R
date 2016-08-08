@@ -72,12 +72,7 @@ PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALS
     }
     
     classnames<-levels(y)
-    if (length(classnames)>2) {
-      Y <- model.matrix(~y-1, data.frame(y))
-    } else {
-      Y <- model.matrix(~y-1, data.frame(y))[,1,drop=FALSE]
-    }
-
+    Y <- classlabels_to_indicatormatrix(y,classnames)
   } else {
     stop("No valid input for X, y and X_u.")
   }
@@ -126,8 +121,14 @@ PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALS
 #' @export
 PreProcessingPredict<-function(modelform,newdata,y=NULL,classnames=NULL,scaling=NULL,intercept=FALSE) {
   if (!is.null(modelform)) {
-    problem<- SSLDataFrameToMatrices(modelform,newdata)
-    return(PreProcessingPredict(NULL,problem$X,problem$y,classnames=classnames,scaling=scaling,intercept=intercept))
+    #problem <- SSLDataFrameToMatrices(modelform,newdata)
+    mf <- model.frame(modelform, data=newdata, na.action=NULL)
+    y <- model.response(mf)
+    classnames<-levels(y)
+    if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
+    X <- model.matrix(attr(mf, "terms"), data=mf)
+    X <- X[, colnames(X) != "(Intercept)",drop=FALSE]
+    return(PreProcessingPredict(NULL,X,y,classnames=classnames,scaling=scaling,intercept=intercept))
   } else {
     if (!(is.matrix(newdata) || is.data.frame(newdata) || class(newdata)=="dgCMatrix")) { stop("Training data and Testing data don't match.")}
     if (is.data.frame(newdata)) {
@@ -150,22 +151,22 @@ PreProcessingPredict<-function(modelform,newdata,y=NULL,classnames=NULL,scaling=
     }
   }
 
-  Y <- classlabels_to_indicatormatrix(y,classnames) 
+  Y <- classlabels_to_indicatormatrix(y,classnames)
 
   return(list(X=X,Y=Y,y=y))
 }
 
 classlabels_to_indicatormatrix <- function(y,classnames) {
-  if (is.null(y)) {return(NULL)}
-  Y <- model.matrix(~y-1, data.frame(y))
-  if (length(classnames)==2) { Y <- Y[,1,drop=FALSE] }
+  if (is.null(y)) { return(NULL) }
+  if (!is.null(classnames)) { y <- factor(y,classnames) }
+  Y <- factor_to_dummy(y)
   return(Y)
 }
 
 factor_to_dummy <- function(y) {
   stopifnot(is.factor(y))
   levs <- levels(y)
-  Y <- factor_to_dummy_cpp(y,length(levs))
+  Y <- factor_to_dummy_cpp(na.omit(y),length(levs))
   colnames(Y) <- levs
   Y
 }

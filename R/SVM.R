@@ -16,12 +16,12 @@ setClass("SVM",
 #' @inheritParams BaseClassifier
 #' @return S4 object of type SVM
 #' @export
-SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,eps=1e-9) {
+SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,x_center=TRUE,eps=1e-9) {
   
   ## Preprocessing to correct datastructures and scaling  
-  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=TRUE)
+  ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
   X<-ModelVariables$X
-  y<-ModelVariables$Y
+  y<-ModelVariables$Y[,1,drop=FALSE]
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
@@ -43,7 +43,7 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,ep
       Xtrain <- X
       K <- X %*% t(X)
     }
-    
+     
     Dmat <- (diag(y) %*% K %*% diag(y)) + eps*diag(nrow(X)) #Add small constant to diagonal to ensure numerical PSD
     dvec <- matrix(1, nrow(X), 1)
     Amat <- diag(nrow(X))
@@ -52,9 +52,12 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,ep
     
     opt_result <- solve.QP(Dmat, dvec, Amat, bvec, meq=1)
     alpha <- opt_result$solution*y
-    SVs <- (abs(alpha) > 0.001) & (abs(alpha) < (C-0.001))
+    idx <- ((opt_result$iact-2) %% length(alpha))+1
+    
+    bias <- K[-idx,,drop=FALSE] %*% alpha - y[-idx]
+    print(bias)
+    bias <- -median(bias)
 
-    bias <- -median(K[SVs,] %*% alpha - y[SVs])
     #TODO: check this: should we exclude objects not on the margin (alpha=1) in calculating b?
     #print(K[SVs,] %*% alpha - y[SVs])   
   }  else{
@@ -106,7 +109,7 @@ setMethod("predict", signature(object="SVM"), function(object, newdata) {
 setMethod("loss", signature(object="SVM"), function(object, newdata, y=NULL) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=y,object@scaling,intercept=TRUE,classnames=object@classnames)
   X <- ModelVariables$X
-  Y <- ModelVariables$Y
+  Y <- ModelVariables$Y[,1,drop=FALSE]
   y <- as.numeric((Y*2)-1)
   
   output <- decisionvalues(object,newdata)

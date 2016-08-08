@@ -10,7 +10,7 @@ setClass("LinearSVM",
 #' Linear SVM Classifier
 #'
 #' @param C Cost variable
-#' @param method Estimation procedure c("Dual","Primal","BGD","SGD","Pegasos")
+#' @param method Estimation procedure c("Dual","Primal","BGD")
 #' @param scale Whether a z-transform should be applied (default: TRUE)
 #' @param eps Small value to ensure positive definiteness of the matrix in QP formulation
 #' @param reltol relative tolerance using during BFGS optimization
@@ -27,7 +27,7 @@ LinearSVM<-function(X, y, C=1, method="Dual", scale=TRUE, eps=1e-9, reltol=10e-1
   scaling <- ModelVariables$scaling
   classnames <- ModelVariables$classnames
   modelform <- ModelVariables$modelform
-  Y <- ModelVariables$Y
+  Y <- ModelVariables$Y[,1,drop=FALSE]
   intercept <- TRUE
   opt_result <- NULL 
   y <- as.numeric((Y*2)-1)
@@ -45,10 +45,13 @@ LinearSVM<-function(X, y, C=1, method="Dual", scale=TRUE, eps=1e-9, reltol=10e-1
     
     opt_result <- solve.QP(Dmat, dvec, Amat, bvec, meq=1)
     alpha<-opt_result$solution
-    SVs <- alpha>0.01
     w <- matrix(alpha*y,1,nrow(X)) %*% X
-    #print(X[SVs,] %*% t(w) - y[SVs])
-    b <- -median(X[SVs,] %*% t(w) - y[SVs])
+    
+    idx <- ((opt_result$iact-2) %% length(alpha))+1
+    
+    b <- X[-idx,,drop=FALSE] %*% t(w) - y[-idx]
+    print(b)
+    b <- -median(b)
     w<-c(b, w)
     
   } else if (method=="Primal") {
@@ -98,7 +101,7 @@ setMethod("decisionvalues", signature(object="LinearSVM"), function(object, newd
 
 #' @rdname rssl-predict
 #' @aliases predict,LinearSVM-method
-setMethod("predict", signature(object="LinearSVM"), function(object, newdata) {
+setMethod("predict", signature(object="LinearSVM"), function(object, newdata,probs=FALSE) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=TRUE)
   X<-ModelVariables$X
   
@@ -116,7 +119,7 @@ setMethod("predict", signature(object="LinearSVM"), function(object, newdata) {
 setMethod("loss", signature(object="LinearSVM"), function(object, newdata, y=NULL) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=y,object@scaling,intercept=TRUE,classnames=object@classnames)
   X <- ModelVariables$X
-  Y <- ModelVariables$Y
+  Y <- ModelVariables$Y[,1,drop=FALSE]
   y <- as.numeric((Y*2)-1)
   
   w <- matrix(object@w,nrow=ncol(X))

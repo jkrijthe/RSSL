@@ -22,7 +22,11 @@ KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanillado
   scaling <- ModelVariables$scaling
   classnames <- ModelVariables$classnames
   modelform <- ModelVariables$modelform
-  Y <- ModelVariables$Y
+  if (ncol(ModelVariables$Y)==2) {
+    Y <- ModelVariables$Y[,1,drop=FALSE]
+  } else {
+    Y <- ModelVariables$Y
+  }
   
   stopifnot(ncol(Y)==1)
   
