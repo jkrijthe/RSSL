@@ -1,6 +1,5 @@
 context("Logistic Loss Classifier")
 
-
 # Simple dataset used in the tests
 data(testdata)
 modelform <- testdata$modelform

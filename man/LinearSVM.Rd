@@ -14,7 +14,7 @@ LinearSVM(X, y, C = 1, method = "Dual", scale = TRUE, eps = 1e-09,
 
 \item{C}{Cost variable}
 
-\item{method}{Estimation procedure c("Dual","Primal","BGD","SGD","Pegasos")}
+\item{method}{Estimation procedure c("Dual","Primal","BGD")}
 
 \item{scale}{Whether a z-transform should be applied (default: TRUE)}
 
