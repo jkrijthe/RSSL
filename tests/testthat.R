@@ -1,7 +1,2 @@
 library(testthat)
-library(data.table)
-library(quadprog)
-library(Matrix)
-library(grid)
-library(e1071)
 test_check("RSSL")

@@ -1,5 +1,5 @@
 Package: RSSL
-Version: 0.4
+Version: 0.5
 Title: Implementations of Semi-supervised Learning Approaches for Classification
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
@@ -12,34 +12,23 @@ Imports:
     kernlab,
     quadprog,
     Matrix,
-    ggplot2,
     dplyr,
+    tidyr,
+    ggplot2,
     reshape2,
     scales,
-    tidyr,
     flexclust,
     limSolve
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
-    e1071,
-    class,
-    SparseM,
-    sampling,
-    foreign,
-    bootstrap,
-    plyr,
-    animation,
-    reshape,
     testthat,
-    data.table,
-    gridExtra,
     rmarkdown,
-    ggthemes,
+    SparseM,
+    gridExtra,
     numDeriv,
     LiblineaR
 Description: Implementations of semi-supervised learning approaches for
-    classification and regression. Serves as benchmarks to new approaches and
-    contains implementations of the authors' own methods.
+    classification.
 License: GPL (>= 2)
 URL: http://www.github.com/jkrijthe/RSSL
 BugReports: http://www.github.com/jkrijthe/RSSL
@@ -83,10 +72,8 @@ Collate:
     'S3VM.R'
     'S4VM.R'
     'SVM.R'
-    'SVMlin_binary.R'
     'SelfLearning.R'
-    'TSVMcccp.R'
-    'TSVMuniversum.R'
+    'TSVM.R'
     'USMLeastSquaresClassifier.R'
     'WellSVM.R'
     'scaleMatrix.R'
