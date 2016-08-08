@@ -38,6 +38,27 @@ generateTwoCircles <- function(n=100, noise_var=0.2) {
   data.frame(X,Class=y)           
 }
 
+#' Generate data from 2 alternating classes
+#' 
+#' @param n integer; Number of examples to generate
+#' @param d integer; dimensionality of the problem
+#' @param var numeric; size of the variance parameter
+#' 
+#' @examples
+#' data <- generateABA(n=1000,d=2,var=1)
+#' plot(data[,1],data[,2],col=data$Class,asp=1)
+#' @export
+generateABA<-function(n=100,d=2,var=1) {
+  if (n%%4!=0) {stop("Please set n as a multiple of 4.")}
+  
+  X<-rbind(mvrnorm(n/4,rep(-1,d),var*diag(d)),
+           mvrnorm(n/4,rep(+1,d),var*diag(d)),
+           mvrnorm(n/2,rep(0,d),var*diag(d)))
+  y<-rbind(matrix(-1,n/2,1),matrix(1,n/2,1))
+  
+  return(data.frame(X,Class=factor(y)))
+}
+
 #' Generate data from 2 gaussian distributed classes
 #' 
 #' @param n integer; Number of examples to generate
@@ -46,7 +67,7 @@ generateTwoCircles <- function(n=100, noise_var=0.2) {
 #' @param expected logical; whether the decision boundary should be the expected or perpendicular
 #' 
 #' @examples
-#' data <- generate2ClassGaussian(1000,expected=FALSE)
+#' data <- generate2ClassGaussian(n=1000,d=2,expected=FALSE)
 #' plot(data[,1],data[,2],col=data$Class,asp=1)
 #' @export
 generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
