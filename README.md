@@ -1,5 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![CRAN version](http://www.r-pkg.org/badges/version/RSSL)](http://cran.rstudio.com/web/packages/RSSL/index.html) [![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL) [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master) [![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](http://cran.rstudio.com/web/packages/RSSL/index.html)
+[![CRAN version](http://www.r-pkg.org/badges/version/RSSL)](http://cran.rstudio.com/web/packages/RSSL/index.html) [![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL) [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master) [![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.rstudio.com/web/packages/RSSL/index.html)
 
 R Semi-Supervised Learning package
 ==================================
