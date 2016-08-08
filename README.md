@@ -30,29 +30,43 @@ library(RSSL)
 The following code generates a simple dataset, trains a supervised and two semi-supervised classifiers and evaluates their performance:
 
 ``` r
-# Generate dataset
-df <- generate2ClassGaussian(d=2,expected=TRUE)
-df_lab <- df[sample(nrow(df),10),]
-df_unlab <- df[sample(nrow(df),1000),]
-df_unlab$Class <- NA
-df_combined <- rbind(df_lab, df_unlab)
+library(dplyr,warn.conflicts = FALSE)
+library(ggplot2,warn.conflicts = FALSE)
 
-# Train Classifiers
-t_sup <- LeastSquaresClassifier(Class~., df_lab)
-t_self <- SelfLearning(Class~., df_combined, method=LeastSquaresClassifier)
-t_ic <- ICLeastSquaresClassifier(Class~., df_combined)
+set.seed(2)
+df <- generate2ClassGaussian(200, d=2, var = 0.2, expected=TRUE)
 
-# Evaluate performance: Squared Loss & Error Rate
-mean(loss(t_sup,df))
-mean(loss(t_self,df))
-mean(loss(t_ic,df))
+# Randomly remove labels
+df <- df %>% add_missinglabels_mar(Class~.,prob=0.98) 
 
-mean(predict(t_sup,df)!=df$Class)
-mean(predict(t_self,df)!=df$Class)
-mean(predict(t_ic,df)!=df$Class)
+# Train classifier
+g_nm <- NearestMeanClassifier(Class~.,df,prior=matrix(0.5,2))
+g_self <- SelfLearning(Class~.,df,
+                       method=NearestMeanClassifier,
+                       prior=matrix(0.5,2))
+
+# Plot dataset
+df %>% 
+  ggplot(aes(x=X1,y=X2,color=Class,size=Class)) +
+  geom_point() +
+  coord_equal() +
+  scale_size_manual(values=c("-1"=3,"1"=3), na.value=1) +
+  geom_classifier("Supervised"=g_nm,
+                  "Semi-supervised"=g_self)
 ```
 
-For an overview of different classifiers and examples on how to use them, see the [classifier overview vignette](https://github.com/jkrijthe/RSSL/blob/master/vignettes/SSL-Classifiers.Rmd).
+![](README-example-1.png)
+
+``` r
+
+# Evaluate performance: Squared Loss & Error Rate
+mean(loss(g_nm,df))
+mean(loss(g_self,df))
+
+
+mean(predict(g_nm,df)!=df$Class)
+mean(predict(g_self,df)!=df$Class)
+```
 
 Acknowledgement
 ===============
