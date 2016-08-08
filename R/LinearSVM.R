@@ -50,7 +50,6 @@ LinearSVM<-function(X, y, C=1, method="Dual", scale=TRUE, eps=1e-9, reltol=10e-1
     idx <- ((opt_result$iact-2) %% length(alpha))+1
     
     b <- X[-idx,,drop=FALSE] %*% t(w) - y[-idx]
-    print(b)
     b <- -median(b)
     w<-c(b, w)
     
