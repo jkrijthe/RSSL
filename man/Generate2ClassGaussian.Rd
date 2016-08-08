@@ -19,7 +19,7 @@ generate2ClassGaussian(n = 10000, d = 100, var = 1, expected = TRUE)
 Generate data from 2 gaussian distributed classes
 }
 \examples{
-data <- generate2ClassGaussian(1000,expected=FALSE)
+data <- generate2ClassGaussian(n=1000,d=2,expected=FALSE)
 plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 

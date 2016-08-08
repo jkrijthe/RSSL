@@ -72,6 +72,6 @@ abline(line_coefficients(w2)$intercept,
 Krijthe, J.H. & Loog, M., 2015. Implicitly Constrained Semi-Supervised Least Squares Classification. In E. Fromont, T. De Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances in Intelligent Data Analysis XIV (Lecture Notes in Computer Science Volume 9385). Saint Etienne. France, pp. 158-169.
 }
 \seealso{
-Other RSSL LeastSquares: \code{\link{EMLeastSquaresClassifier}}
+Other RSSL.LeastSquares: \code{\link{EMLeastSquaresClassifier}}
 }
 

@@ -5,7 +5,7 @@
 \title{SVM Classifier}
 \usage{
 SVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = FALSE,
-  kernel = NULL, eps = 1e-09)
+  kernel = NULL, x_center = TRUE, eps = 1e-09)
 }
 \arguments{
 \item{X}{Design matrix}
@@ -21,6 +21,8 @@ SVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = FALSE,
 \item{intercept}{Whether an intercept should be added (default: FALSE)}
 
 \item{kernel}{kernlab::kernel to use}
+
+\item{x_center}{logical;  Should the features be centered?}
 
 \item{eps}{Small value to ensure positive definiteness of the matrix in the QP formulation}
 }

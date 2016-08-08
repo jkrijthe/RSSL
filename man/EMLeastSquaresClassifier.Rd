@@ -51,6 +51,6 @@ EMLeastSquaresClassifier(X, y, X_u, x_center = FALSE, scale = FALSE,
 Minimize the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.
 }
 \seealso{
-Other RSSL LeastSquares: \code{\link{ICLeastSquaresClassifier}}
+Other RSSL.LeastSquares: \code{\link{ICLeastSquaresClassifier}}
 }
 
