@@ -4,8 +4,8 @@
 \alias{MCNearestMeanClassifier}
 \title{Moment Constrained Semi-supervised Nearest Mean Classifier}
 \usage{
-MCNearestMeanClassifier(X, y, X_u, method = "closedform", scale = FALSE,
-  x_center = FALSE)
+MCNearestMeanClassifier(X, y, X_u, update_sigma = FALSE, prior = NULL,
+  x_center = FALSE, scale = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -14,11 +14,13 @@ MCNearestMeanClassifier(X, y, X_u, method = "closedform", scale = FALSE,
 
 \item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{method}{Estimation procedure: c("closedform","ml")}
+\item{update_sigma}{logical; Whether the estimate of the variance should be updated after the means have been updated using the unlabeled data}
 
-\item{scale}{logical; Should the features be normalized? (default: FALSE)}
+\item{prior}{matrix; class priors for the classes}
 
 \item{x_center}{logical;  Should the features be centered?}
+
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
 }
 \value{
 S4  object; a list consisting of
@@ -33,7 +35,6 @@ To fit a true nearest mean classifier, set prior to equal class priors. Based on
 Loog, M., 2010. Constrained Parameter Estimation for Semi-Supervised Learning: The Case of the Nearest Mean Classifier. In Proceedings of the 2010 European Conference on Machine learning and Knowledge Discovery in Databases. pp. 291-304.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{MCLinearDiscriminantClassifier}},
-  \code{\link{TSVMuniversvm}}
+Other RSSL.classifiers: \code{\link{MCLinearDiscriminantClassifier}}
 }
 

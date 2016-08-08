@@ -4,7 +4,7 @@
 \alias{MCLinearDiscriminantClassifier}
 \title{Moment Constrained Semi-supervised Linear Discriminant Analysis.}
 \usage{
-MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
+MCLinearDiscriminantClassifier(X, y, X_u, method = "invariant",
   prior = NULL, x_center = TRUE, scale = FALSE)
 }
 \arguments{
@@ -14,9 +14,9 @@ MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
 
 \item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{method}{character; Currently only "closedform"}
+\item{method}{character; One of c("invariant","closedform")}
 
-\item{prior}{Matrix (k by 1) of class prior probabilities. If NULL, estimated from data}
+\item{prior}{Matrix (k by 1); Class prior probabilities. If NULL, estimated from data}
 
 \item{x_center}{logical;  Should the features be centered?}
 
@@ -24,7 +24,7 @@ MCLinearDiscriminantClassifier(X, y, X_u, method = "closedform",
 }
 \description{
 Using an update of the estimated means and covariance proposed in (Loog 2014). 
-Using the method="invariant" option, uses the scale invariant parameter update proposed in (Loog 2014), while method="closedform" using the non-scale invariant version from (Loog 2012). The alternative way to minimize this objective function directly has not been implemented yet.
+Using the method="invariant" option, uses the scale invariant parameter update proposed in (Loog 2014), while method="closedform" using the non-scale invariant version from (Loog 2012).
 }
 \references{
 Loog, M., 2012. Semi-supervised linear discriminant analysis using moment constraints. Partially Supervised Learning, LNCS, 7081, pp.32-41.
@@ -32,7 +32,6 @@ Loog, M., 2012. Semi-supervised linear discriminant analysis using moment constr
 Loog, M., 2014. Semi-supervised linear discriminant analysis through moment-constraint parameter estimation. Pattern Recognition Letters, 37, pp.24-31.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{MCNearestMeanClassifier}},
-  \code{\link{TSVMuniversvm}}
+Other RSSL.classifiers: \code{\link{MCNearestMeanClassifier}}
 }
 
