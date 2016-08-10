@@ -200,7 +200,7 @@ wlda <- function(a,w) {
 projection_simplex <- function(y) {
   N <- nrow(y)
   m <- ncol(y)
-  
+
   S <- sort_matrix(y)
   #Sold <- t(apply(y,1,sort,decreasing=TRUE))
   #if(!all(S==Sold)) warning("Check failed!")
@@ -256,7 +256,7 @@ minimaxlda <- function(a,w,u,iter) {
   
   # unlabeled weights init
   uw <- LLGradsup
-  uw[uw<-1e3] <- -1e3
+  uw[uw < -1e3] <- -1e3
   uwtmp <- projection_simplex(uw)
   uw <- projection_simplex(uwtmp);
   
@@ -300,7 +300,7 @@ minimaxlda <- function(a,w,u,iter) {
     grad <- LLGradtra;
     uwtmp <- uw - alpha*grad/i
     uw <- uwtmp
-    uw[uw<-1e3] <- -1e3
+    uw[uw < -1e3] <- -1e3
     uwtmp <- projection_simplex(uw)
     uw <- projection_simplex(uwtmp) # project twice to be sure??
     
