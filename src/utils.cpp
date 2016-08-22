@@ -8,7 +8,7 @@ arma::mat rowMax(const arma::mat& X) {
   arma::mat A = arma::zeros<arma::mat>(X.n_rows,1);
   
   for (int i=0; i<X.n_rows; i++) {
-    Rcout << X.row(i).max() << std::endl;
+    // Rcout << X.row(i).max() << std::endl;
     A(i) = X.row(i).max();
   }
   return(A);
