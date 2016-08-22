@@ -36,16 +36,17 @@ y_e <- unlist(list(problem$y,problem$y_u))
 Xe<-rbind(X,X_u)
 
 g_sup <- SVM(X,y,scale=FALSE)
-g_constraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = TRUE)
-g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = FALSE)
-g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=1,Cstar=1)
+g_constraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = TRUE,x_center = FALSE,verbose=TRUE)
+g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,C=10,Cstar=0.001,balancing_constraint = FALSE,x_center = FALSE,verbose=TRUE)
+g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=10,Cstar=0.001,verbose=TRUE,x_center = FALSE)
 g_oracle <- SVM(Xe,y_e,scale=FALSE)
 
 w1 <- g_sup@alpha %*% X
-w2 <- g_constraint@alpha %*% rbind(X,X_u,X_u,colMeans(X_u))
-w3 <- g_noconstraint@alpha %*% rbind(X,X_u,X_u)
+w2 <- c(g_constraint@bias,g_constraint@alpha %*% rbind(X,X_u,X_u,colMeans(X_u)))
+w3 <- c(g_noconstraint@bias,g_noconstraint@alpha %*% rbind(X,X_u,X_u))
 w4 <- g_lin@w
 w5 <- g_oracle@alpha %*% Xe
+print(sum(abs(w4-w3)))
 
 plot(X[,1],X[,2],col=factor(y),asp=1,ylim=c(-3,3))
 points(X_u[,1],X_u[,2],col="darkgrey",pch=16,cex=1)
