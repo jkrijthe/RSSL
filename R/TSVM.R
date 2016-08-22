@@ -15,6 +15,7 @@ setClass("TSVM",
 #' @param verbose logical; print debugging messages, only works for vanilladot() kernel (default: FALSE)
 #' @param balancing_constraint logical; Whether a balancing constraint should be enfored that causes the fraction of objects assigned to each label in the unlabeled data to be similar to the label fraction in the labeled data.
 #' @inheritParams BaseClassifier
+#' @example inst/examples/example-TSVM.R
 #' @references Collobert, R. et al., 2006. Large scale transductive SVMs. Journal of Machine Learning Research, 7, pp.1687-1712.
 #' 
 #' @export
@@ -118,31 +119,43 @@ TSVM <- function(X, y, X_u, C, Cstar, kernel=kernlab::vanilladot(), balancing_co
     #Compute the bias term
     w <- (alpha) %*% Ke
     
-    #alpha %*% rbind(X,X_u,X_u,colMeans(X_u))
+    act <- solution$iact-1
+    act <- act[act>0]
     
-    # if (balancing_constraint) {
-    #   idx <- ((solution$iact-2) %% (length(alpha)-1)) +1
-    # } else {
-    #   idx <- ((solution$iact-2) %% length(alpha)) + 1
-    # }
-    # print(y[-idx]*(1-(w*y)[-idx]))
-    # browser() w[-idx]-y[-idx]
-    # b <- median(y[-idx]*(1-(w*y)[-idx]))
+    act_sup <- act[act <= 2*L]
+    remove_sup <- ((act_sup-1) %% L) + 1
+    
+    act_semi <- (act)[act > 2*L]-2*L
+    
+    if (balancing_constraint) {
+      remove_semi <- ((act_semi-1) %% (length(y)-(L+1)) + 1) + L
+      idx <- c(remove_sup,remove_semi,length(y))
+    } else {
+      remove_semi <- ((act_semi-1) %% (length(y)-(L)) + 1) + L
+      idx <- c(remove_sup,remove_semi)
+    }
+    #print(y[-idx]*(1-(w*y)[-idx]))
+    
+    if (length(idx) > 0) {
+      b <- median(y[-idx]*(1-(w*y)[-idx]))
+    } else {
+      b <- 0
+      warning("Could not find b in TSVM")
+    }
+    # Old method to find support vectors
+    # ord<-order(pmin(
+    #   c(abs((y*alpha)[c(1:L)]),
+    #    abs((y*alpha)[(L+1):(N)]+beta)
+    #   ),
+    #   c(abs(C-(y*alpha)[c(1:L)]),
+    #    abs(Cstar-((y*alpha)[(L+1):(N)]+beta))
+    #   )
+    # ),decreasing=TRUE)
     # 
-    # w <- (alpha) %*% Ke
-
-    ord<-order(pmin(
-      c(abs((y*alpha)[c(1:L)]),
-       abs((y*alpha)[(L+1):(N)]+beta)
-      ),
-      c(abs(C-(y*alpha)[c(1:L)]),
-       abs(Cstar-((y*alpha)[(L+1):(N)]+beta))
-      )
-    ),decreasing=TRUE)
-
-    b <- (y*(1-(w*y)))[ord[1:10]]
-    if (abs(b[1]-b[2])>10e-4) warning("Problem finding b in TSVM solution")
-    b <- b[1]
+    # b <- (y*(1-(w*y)))[ord[1:10]]
+    # print(b)
+    # if (abs(b[1]-b[2])>10e-4) warning("Problem finding b in TSVM solution")
+    # b <- b[1]
     # 
     # vals<-c(
     #   y[c(1:L,N+1)][(y*alpha)[c(1:L)]>eps & (y*alpha)[c(1:L)]<(C-eps)]*(1-(w*y)[c(1:L,N+1)][(y*alpha)[c(1:L)]>eps & (y*alpha)[c(1:L)]<(C-eps)]),
