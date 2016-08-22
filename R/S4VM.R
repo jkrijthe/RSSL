@@ -11,20 +11,23 @@ setClass("S4VM",
 #'
 #' R port of the MATLAB implementation of the original authors of the Safe Semi-supervised Support Vector Machine Classifier by Li & Zhou (2011). 
 #' 
-#' The method randomly generates multiple low-density separators (controlled by the sample_time parameter) and merges their predictions by solving a linear programming problem meant to penalize the cost of decreasing the performance of the classifier. S4VM is a bit of a misnomer, since it is a transductive method that only returns predicted labels for the unlabeled objects. The main difference in this implementation compared to the original implementation is the clustering of the low-density separators: in our implementation empty clusters are not dropped during the k-means procedure. In the paper by Li (2011) the features are first normalized to [0,1], which is not automatically done by this function.
+#' The method randomly generates multiple low-density separators (controlled by the sample_time parameter) and merges their predictions by solving a linear programming problem meant to penalize the cost of decreasing the performance of the classifier. S4VM is a bit of a misnomer, since it is a transductive method that only returns predicted labels for the unlabeled objects. The main difference in this implementation compared to the original implementation is the clustering of the low-density separators: in our implementation empty clusters are not dropped during the k-means procedure. In the paper by Li (2011) the features are first normalized to [0,1], which is not automatically done by this function. Note that the solution may not correspond to a linear classifier even if the linear kernel is used.
 #' @references Yu-Feng Li and Zhi-Hua Zhou. Towards Making Unlabeled Data Never Hurt. In: Proceedings of the 28th International Conference on Machine Learning (ICML'11), Bellevue, Washington, 2011.
 #' @param C1 numeric; regularization parameter for labeled data
 #' @param C2 numeric; regularization parameter for unlabeled data
 #' @param gamma numeric; width of RBF kernel
 #' @param sample_time numeric; Number of low-density separators that are generated
+#' @param lambda_tradeoff numeric; Parameter that determines the amount of "risk" in obtaining a worse solution than the supervised solution
 #' @return S4 S4VM object with slots:
 #' \item{predictions}{Predictions on the unlabeled objects}
 #' \item{labelings}{Labelings for the different clusters}
 #' @inheritParams BaseClassifier
+#' @example inst/examples/example-S4VM.R
 #' @export
-S4VM<-function(X,y,X_u, C1=100, C2=0.1, sample_time=100, gamma=0, x_center=FALSE,scale=FALSE) {
+S4VM<-function(X,y,X_u=NULL, C1=100, C2=0.1, sample_time=100, gamma=0, x_center=FALSE,scale=FALSE,lambda_tradeoff=3) {
 
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
+  
   X<-ModelVariables$X
   y<-ModelVariables$y
   Xu<-ModelVariables$X_u
@@ -33,8 +36,6 @@ S4VM<-function(X,y,X_u, C1=100, C2=0.1, sample_time=100, gamma=0, x_center=FALSE
   Y <- ModelVariables$Y[,1,drop=FALSE]
   label <- as.numeric(Y*2-1)
   y <- label
-  
-  Xu <- X_u
   
   labelNum <- nrow(X)
   unlabelNum <- nrow(Xu)
@@ -84,31 +85,40 @@ S4VM<-function(X,y,X_u, C1=100, C2=0.1, sample_time=100, gamma=0, x_center=FALSE
   }
   
   #[IDX,~,~,D] <- kmeans(Y,clusterNum,'Distance','cityblock','EmptyAction','drop')
-  clusterNum <- min(nrow(unique(Y)),c(clusterNum))
-  clustering <- flexclust::kcca(Y, clusterNum, family=flexclust::kccaFamily("kmedians"), control=list(initcent="kmeanspp")) # We do not explicitly drop empty clusters
+  clusterNum <- min(c(nrow(unique(Y)),clusterNum))
+  if (clusterNum==1) {
+    warning("Only found one cluster of solutions!")
+    IDX <- 1
+    D <- flexclust::dist2(Y,Y[1,,drop=FALSE],method="manhattan")
+    D <- colSums(D) # Total distance from cluster to all objects
+  }
+  else {
+    clustering <- flexclust::kcca(Y, clusterNum, family=flexclust::kccaFamily("kmedians"), control=list(initcent="kmeanspp")) # We do not explicitly drop empty clusters
+    IDX <- clustering@cluster
+    D <- flexclust::dist2(Y,clustering@centers,method="manhattan")
+    D <- colSums(D) # Total distance from cluster to all objects
+  }
   
-  IDX <- clustering@cluster
-  D <- flexclust::dist2(Y,clustering@centers,method="manhattan")
-  D <- colSums(D) # Total distance from cluster to all objects
 
   # Determine the number of clusters that are left, currently not done because none are dropped
   #clusterIndex <- which(isnan(D)==0);
   #clusterNum=size(find(isnan(D)==0),2);
   
   prediction <- matrix(0,(labelNum+unlabelNum),clusterNum)
-  
+
   for (i in seq_len(clusterNum)) {
     index <- which(IDX==i)
     tempS <- S[index]
-    tempY <- Y[index,]
+    tempY <- Y[index,,drop=FALSE]
     #[~,index2]=max(tempS)
     index2 <- which.max(tempS)
-    prediction[,i] <- t(tempY[index2,])
+    prediction[,i] <- t(tempY[index2,,drop=FALSE])
   }
   
   
   # use linear programming to get the final prediction
-  predictions <- linearProgramming(prediction,ysvm,labelNum,3)
+  
+  predictions <- linearProgramming(prediction,ysvm,labelNum,lambda_tradeoff)
   
   return(new("S4VM",
              labelings=prediction,
@@ -138,9 +148,15 @@ linearProgramming <- function(yp,ysvm,labelNum,lambda) {
   lb <- c(rep(-1,u))
   ub <- c(rep(-1,u))
   C <- c(-C,lb,ub)
-  prediction <- limSolve::linp(E=NULL,F=NULL,G=A,H=C,Cost=g,ispos=FALSE)$X
   
-  if (prediction[1]<0) {
+  prediction <- solve.QP(Dmat = diag(length(g))*1e-8,dvec=-g,
+           Amat=t(A),bvec=C)$solution
+  
+  # Alternative requires limSolve package
+  #alternative <- limSolve::linp(E=NULL,F=NULL,G=A,H=C,Cost=g,ispos=FALSE)$X
+  #print(max(abs(prediction-alternative)))
+  
+  if (prediction[1] < -1e-5) {
     label <- ysvm
   } else {
     prediction <- prediction[-1]
@@ -172,6 +188,7 @@ localDescent <- function(instance,label,labelNum,unlabelNum,gamma,C,beta,alpha) 
   predictLabel <- as.integer(as.character(res))
   values <- attr(res,"decision.values")
   acc <- mean(predictLabel==predictLabelLastLast) # Is not really used anymore
+  #print(acc)
   
   if (values[1]*predictLabel[1]<0) {
     values <- -values
@@ -210,8 +227,7 @@ localDescent <- function(instance,label,labelNum,unlabelNum,gamma,C,beta,alpha) 
     predictLabel <- as.integer(as.character(res))
     values <- attr(res,"decision.values")
     acc <- mean(predictLabel==labelNew)
-    
-    
+    #print(acc)
     numIterative <- numIterative+1
     if (values[1]*predictLabel[1]<0) {
       values <- -values;
@@ -240,6 +256,7 @@ localDescent <- function(instance,label,labelNum,unlabelNum,gamma,C,beta,alpha) 
     }
 
   }
+  #print(numIterative)
   return(list(predictLabel=predictLabel,acc=acc,values=values,model=model))
 }
 
