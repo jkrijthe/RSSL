@@ -21,7 +21,30 @@ setClass("EMLeastSquaresClassifier",
 #' @inheritParams BaseClassifier
 #' @param ... Additional Parameters, Not used
 #' @family RSSL LeastSquares
+#' @examples
+#' library(dplyr)
+#' library(ggplot2)
 #' 
+#' set.seed(1)
+#'
+#'df <- generate2ClassGaussian(200,d=2,var=0.2) %>% 
+#'  add_missinglabels_mar(Class~.,prob = 0.96)
+#'
+#'# Soft-label vs. hard-label self-learning
+#'classifiers <- list(
+#'  "Supervised"=LeastSquaresClassifier(Class~.,df),
+#'  "EM-Soft"=EMLeastSquaresClassifier(Class~.,df,objective="label"),
+#'  "EM-Hard"=EMLeastSquaresClassifier(Class~.,df,objective="responsibility")
+#')
+#'
+#'df %>% 
+#'  ggplot(aes(x=X1,y=X2,color=Class)) +
+#'  geom_point() +
+#'  coord_equal() +
+#'  scale_y_continuous(limits=c(-2,2)) +
+#'  stat_classifier(aes(linetype=..classifier..),
+#'                  classifiers=classifiers)
+#'                  
 #' @export
 EMLeastSquaresClassifier <- function(X, y, X_u, x_center=FALSE, scale=FALSE, verbose=FALSE, intercept=TRUE,lambda=0, eps=10e-10, y_scale=FALSE, alpha=1,beta=1, init="supervised", method="block", objective="label", save_all=FALSE, max_iter=1000) {
   
@@ -29,10 +52,14 @@ EMLeastSquaresClassifier <- function(X, y, X_u, x_center=FALSE, scale=FALSE, ver
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=intercept,x_center=FALSE)
   X<-ModelVariables$X
   X_u<-ModelVariables$X_u
+  
+  
   Y<-ModelVariables$Y[,1,drop=FALSE]
   scaling<-ModelVariables$scaling
   classnames<-ModelVariables$classnames
   modelform<-ModelVariables$modelform
+  
+  if(length(classnames)!=2) { stop("EMLeastSquaresClassifier requires 2 classes.")}
   
   n <- nrow(X)
   m <- ncol(X)
