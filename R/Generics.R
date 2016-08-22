@@ -1,3 +1,14 @@
+#' Responsilibities assigned to the unlabeled objects
+#' 
+#' @param object Classifier; Trained Classifier
+#' @param ... additional parameters
+#' @return numeric; responsibilities on the unlabeled objects
+#' 
+#' @export
+#' @docType methods
+#' @rdname responsibilities-methods
+setGeneric("responsibilities",function(object, ...) {standardGeneric("responsibilities")})
+
 #' Loss of a classifier or regression function
 #' 
 #' @param object Classifier; Trained Classifier
