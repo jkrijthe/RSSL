@@ -2,7 +2,7 @@ context("Implicitly Constrained Least Squares Classifier")
 
 # Simple dataset used in the tests
 data(testdata)
-modelform <- testdata$modelform
+modelform <- formula(y~X1+X2)
 classname<-all.vars(modelform)[1] 
 D <- testdata$D
 D_test <- testdata$D_test

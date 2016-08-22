@@ -7,8 +7,25 @@ test_that("sample_k_per_level works", {
 
 test_that("PreProcessingPredict does not drop unlabeled objects", {
   df <- generate2ClassGaussian(n=100)
-  out1 <- PreProcessingPredict(Class~.,df)
+  formula_trans <-  terms(formula(Class~.),data=df)
+  out1 <- PreProcessingPredict(formula_trans,df)
   df2 <- df %>% add_missinglabels_mar(Class~.,0.8)
-  out2 <- PreProcessingPredict(Class~.,df2)
+  out2 <- PreProcessingPredict(formula_trans,df2)
   expect_equal(out1$X, out2$X)
+})
+
+test_that("logsumexp gives reasonable results",{
+  X <- matrix(runif(1000)*200,100,10)
+  expect_equal(log(rowSums(exp(X))),as.numeric(logsumexp(X)))
+})
+
+test_that("rowMax gives correct result",{
+  X <- matrix(runif(10000)*200,100,100)
+  expect_equal(as.numeric(rowMax(X)),apply(X,1,max))
+  expect_equal(as.numeric(which_rowMax(X)),apply(X,1,which.max))
+  
+  # # Some benchmarking
+  # library(microbenchmark)
+  # microbenchmark(rowMax(X), apply(X,1,max),
+  #                which_rowMax(X), apply(X,1,which.max))
 })

@@ -5,17 +5,28 @@ X_u <- matrix(c(-1,-1,-1,0,0,0,-0.4,-0.5,-0.6,1.2,1.3,1.25),ncol=2)
 y <- factor(c(-1,1))
 ynum <- factor_to_dummy(y)[1,]
 
-g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,x_center=TRUE)
-g_constraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,
+g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=1,Cstar=1,x_center=TRUE)
+g_constraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=1,
                      balancing_constraint = TRUE,x_center=TRUE)
-g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,
+g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=1,
                        balancing_constraint = FALSE,x_center=TRUE)
 
-
-# g_svm <- SVM(X=X,y=y,C=1,scale=FALSE,x_center=FALSE)
-# TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,
-#      balancing_constraint = TRUE,x_center=FALSE)
-
+test_that("TSVM equal to SVM if Cstar is near zero",{
+  # Note the balancing_constraint=FALSE for this to work.
+  g_sup <- LinearSVM(X=X,y=y,C=1,scale=FALSE)
+  g_semi <- LinearTSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0,x_center=FALSE)
+  expect_equal(g_sup@w,g_semi@w,tolerance=1e-4)
+  expect_equal(decisionvalues(g_sup,X_u),decisionvalues(g_semi,X_u),tolerance=1e-4)
+  
+  g_sup <- SVM(X=X,y=y,C=1,scale=FALSE)
+  g_semi <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.00001,x_center=FALSE,balancing_constraint = FALSE)
+  expect_equal(decisionvalues(g_sup,X_u),decisionvalues(g_semi,X_u),tolerance=10e-5)
+  
+  g_sup <- SVM(X=X,y=y,C=100,kernel=kernlab::rbfdot(1),scale=FALSE)
+  g_semi <- TSVM(X=X,y=y,X_u=X_u,C=100,Cstar=0.00001,kernel=kernlab::rbfdot(1),x_center=FALSE,verbose=FALSE,balancing_constraint = FALSE)
+  expect_equal(decisionvalues(g_sup,X_u),decisionvalues(g_semi,X_u),tolerance=10e-4)
+  
+})
 
 test_that("Example gives same result for Linear and Kernel implementation",{
 

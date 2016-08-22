@@ -17,7 +17,7 @@ test_that("Kernel and Linear give same result: 2 class", {
   testdata <- data.frame(tvec,dmat[,1:4])
   colnames(testdata)<-c("Class","X1","X2")
   
-  g_kernel<-KernelLeastSquaresClassifier(dmat[,1:4],tvec,kernel=vanilladot(),lambda=0.000001,scale = TRUE)
+  g_kernel<-KernelLeastSquaresClassifier(dmat[,1:4],tvec,kernel=kernlab::vanilladot(),lambda=0.000001,scale = TRUE)
   g_linear<-LeastSquaresClassifier(dmat[,1:4],tvec,intercept=TRUE)
   expect_equal(predict(g_kernel,dmat[,1:4]),  predict(g_linear,dmat[,1:4]))
   expect_equal(loss(g_kernel,dmat[,1:4],tvec),  loss(g_linear,dmat[,1:4],tvec),tolerance =10e-6)
@@ -29,10 +29,19 @@ test_that("Kernel and Linear give same result: 3 class", {
   testdata <- data.frame(tvec,dmat[,1:2])
   colnames(testdata)<-c("Class","X1","X2")
   
-  g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,kernel=vanilladot(),lambda=0.000001,scale = TRUE)
-  g_linear<-LeastSquaresClassifier(dmat[,1:2],tvec,intercept=TRUE)
-  expect_equal(predict(g_kernel,dmat[,1:2]),  predict(g_linear,dmat[,1:2]))
-  expect_equal(loss(g_kernel,dmat[,1:2],tvec),  loss(g_linear,dmat[,1:2],tvec),tolerance =10e-6)
+  g_kernel <- KernelLeastSquaresClassifier(dmat[,1:2],tvec,
+                kernel=kernlab::vanilladot(),lambda=0.000001,scale = TRUE)
+  g_linear <- LeastSquaresClassifier(dmat[,1:2],tvec,intercept=TRUE)
+  
+  expect_equal(as.numeric(decisionvalues(g_kernel,dmat[,1:2])),  
+                    as.numeric(decisionvalues(g_linear,dmat[,1:2])),
+                    tolerance=10e-7)
+  
+  expect_equal(predict(g_kernel,dmat[,1:2]),  
+               predict(g_linear,dmat[,1:2]))
+  
+  expect_equal(loss(g_kernel,dmat[,1:2],tvec),
+               loss(g_linear,dmat[,1:2],tvec),tolerance =10e-6)
 })
 
 test_that("Linear and Kernel implementation give the same answer.", {

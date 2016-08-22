@@ -1,8 +1,10 @@
 context("Logistic Regression")
 
+library(LiblineaR)
+
 # Simple dataset used in the tests
 data(testdata)
-modelform <- testdata$modelform
+modelform <- formula(y~.)
 classname<-all.vars(modelform)[1] 
 D <- testdata$D
 D_test <- testdata$D_test
@@ -62,8 +64,23 @@ test_that("Gradient is superficially correct",{
   }
 })
 
-test_that("LogisticRegression gives same solution as glm",{
-
+test_that("LogisticRegression gives same solution as other implementations",{
+  
+  # LiblineaR
+  
+  # Note LiblineaR penalizes the intercept!
+  g_liblin <- LiblineaR(X,y,cost=0.5,epsilon = 0.000000001,bias=FALSE)
+  g_lr <- LogisticRegression(X,y,lambda=1,intercept=FALSE)
+  
+  expect_equal(as.numeric(g_liblin$W), g_lr@w,tolerance=10e-5)
+  expect_equivalent(predict(g_liblin,X_test)$predictions, predict(g_lr,X_test))
+  
+  # glmnet
+  # g_glm <- glmnet(X,y,family="binomial",alpha=0,lambda=0.2,standardize=FALSE)
+  # g_lr <- LogisticRegression(X,y,lambda=1)
+  # expect_equal(as.numeric(coef(g_glm)),g_lr@w,tolerance=10e-7)
+  
+  # glm
   g_fast <- LogisticRegressionFast(X[,1,drop=FALSE],y)
   g_lr <- LogisticRegression(X[,1,drop=FALSE],y)
   expect_equal(as.numeric(g_fast@w), g_lr@w,tolerance=10e-4)

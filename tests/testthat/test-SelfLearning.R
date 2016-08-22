@@ -26,3 +26,24 @@ test_that("Example where classifier should not change.", {
                loss(g_self,X_u,y))
   expect_equal(g_sup@theta,g_self@model@theta)
 })
+
+
+test_that("Self-learning decreases loss",{
+  g_matrix <- SelfLearning(testdata$X,testdata$y,testdata$X_u,method=LeastSquaresClassifier)
+  l_prev<-Inf
+  for (i in seq_len(g_matrix@n_iter)) {
+    g_iter <- SelfLearning(testdata$X,testdata$y,testdata$X_u,method=LeastSquaresClassifier,max_iter=i)
+    if (i>1) {
+      l_new <- mean(loss(g_matrix,rbind(testdata$X,testdata$X_u),
+                         unlist(list(testdata$y,g_iter@i_labels[[i-1]]))))
+      expect_true(l_new < l_prev)
+      l_new <- l_prev
+    }
+    l_new <- mean(loss(g_matrix,rbind(testdata$X,testdata$X_u),
+                       unlist(list(testdata$y,g_iter@i_labels[[i]]))))
+    expect_true(l_new < l_prev)
+    l_new <- l_prev
+    
+  }
+      
+})

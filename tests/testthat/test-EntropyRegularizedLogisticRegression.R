@@ -2,7 +2,7 @@ context("ERLogisticLossClassifier")
 
 # Simple dataset used in the tests
 data(testdata)
-modelform <- testdata$modelform
+modelform <- formula(y ~ .)
 classname<-all.vars(modelform)[1] 
 D <- testdata$D
 D_test <- testdata$D_test
@@ -22,8 +22,8 @@ test_that("Same result for different input modalities",{
 
 
 test_that("Entropy Regularized LR is the same as LR when parameter is set to 0",{
-  g_sup <- LogisticRegression(X,y,lambda=100)
-  g_semi <- EntropyRegularizedLogisticRegression(X,y,X_u,lambda=100,lambda_entropy=0.0)
+  g_sup <- LogisticRegression(X,y,lambda=1)
+  g_semi <- EntropyRegularizedLogisticRegression(X,y,X_u,lambda=1,lambda_entropy=0.0)
   
   expect_equal(g_sup@w,g_semi@w,tolerance=10e-6)
   expect_equal(loss(g_sup,X_test,y_test),

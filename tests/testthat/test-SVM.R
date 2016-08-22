@@ -7,18 +7,26 @@ set.seed(91)
 testdata <- generateSlicedCookie(50,expected=TRUE)
 extra_testdata <- generateSlicedCookie(100,expected=TRUE)
 
-g1 <- SVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10)
-g2 <- LinearSVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10)
-g3 <- LinearSVM(formula(Class~.), testdata, C=1000, method="Primal",eps=1e-10)
+g1 <- SVM(formula(Class~.), testdata, C=1000,eps=1e-10)
+g2 <- LinearSVM(formula(Class~.), testdata, C=10000, method="Dual",eps=1e-10)
+g3 <- LinearSVM(formula(Class~.), testdata, C=10000, method="Primal",eps=1e-10)
 
 test_that("Batch Gradient Descent gives a warning", {
   expect_warning(g4 <- LinearSVM(formula(Class~.), testdata, C=500, method="BGD",reltol=1e-100, maxit=1000,eps=1e-10))
 })
 
 test_that("Same result as kernlab implementation", {
-  g_nonscaled  <- SVM(formula(Class~.), testdata, C=1000, method="Dual",eps=1e-10,scale=FALSE)
+  g_nonscaled  <- SVM(formula(Class~.), testdata, C=1000,eps=1e-10,scale=FALSE)
   g_kernlab <- ksvm(formula(Class~.),data=testdata, C=1000,kernel=vanilladot(),scaled=FALSE)
   expect_equal(g_nonscaled@alpha[g_kernlab@alphaindex[[1]]],-g_kernlab@coef[[1]],tolerance=1e-2)
+})
+
+test_that("Same result as svmd implementation", {
+  g_nonscaled  <- SVM(formula(Class~.), testdata, C=1,eps=1e-5,scale=FALSE,x_center=FALSE)
+  g_kernlab <- svmd(formula(Class~.), kernel="linear", testdata,cost=1, scale = FALSE)
+
+  expect_equal(g_nonscaled@alpha[g_kernlab$index],
+                as.numeric(-g_kernlab$coefs),tolerance=10e-4)
 })
 
 test_that("Same result for SVM and Linear SVM.", {

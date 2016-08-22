@@ -45,3 +45,12 @@ test_that("Multiclass gives an output",{
   expect_equal(length(levels(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test))),3)
   expect_equal(sum(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test)==problem$y_test),61)
 })
+
+test_that("PCA does not change the decision values",{
+  g_norm <- LeastSquaresClassifier(testdata$X,testdata$y)
+  Xpc <- princomp(testdata$X)$scores
+  g_pc <- LeastSquaresClassifier(Xpc,testdata$y)
+  
+  decisionvalues(g_norm,testdata$X)
+  decisionvalues(g_pc,Xpc)
+})
