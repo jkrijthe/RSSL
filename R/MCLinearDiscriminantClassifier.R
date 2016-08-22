@@ -59,36 +59,34 @@ MCLinearDiscriminantClassifier <- function(X, y, X_u, method="invariant", prior=
     sigma<-lapply(1:ncol(Y),function(c){sigma})
     
   } else if (method=="invariant") {
+    res <- svdeig(T.all,T.labeled)
+    E <- res$E
+    D <- res$D
+    Trans <- t(svdinv(E)) %*% svdsqrtm(D) %*% t(E)
     
-    E <- svdeig(T.all,T.labeled)$E
-    
-    ## Different tranformations
-    # browser()
-    # E2 <- svdeig(T.labeled,T.all)$E
-    # D1 <- svdeig(T.all,T.labeled)$D
-    # D2 <- svdeig(T.labeled,T.all)$D
-    # E3 <- (eigen(ginv(T.all) %*% T.labeled)$vectors)
-    # E4 <- (eigen(ginv(T.labeled) %*% T.all)$vectors)
-    # 
-    # 
-    # t(svdinv(E)) %*% svdinvsqrtm(D1) %*% t(E)
-    # t(svdinv(E2)) %*% svdinvsqrtm(D2) %*% t(E2)
-    # 
-    # E <- E3
-    # D_T <- t(E) %*% T.labeled %*% E
-    # D_theta <- t(E) %*% T.all %*% E
-    # t(ginv(E)) %*% t(matrixsqrt(D_theta)) %*% ginv(matrixsqrt(D_T)) %*% t(E)
-    # 
-    # E <- E4
-    # D_T <- t(E) %*% T.labeled %*% E
-    # D_theta <- t(E) %*% T.all %*% E
-    # t(ginv(E)) %*% t(matrixsqrt(D_theta)) %*% ginv(matrixsqrt(D_T)) %*% t(E)
+    ## Different ways of solving this:
+      # browser()
+      # E1 <- svdeig(T.all,T.labeled)$E
+      # E2 <- svdeig(T.labeled,T.all)$E
+      # D1 <- svdeig(T.all,T.labeled)$D
+      # D2 <- svdeig(T.labeled,T.all)$D
+      # E3 <- (eigen(ginv(T.all) %*% T.labeled)$vectors)
+      # E4 <- (eigen(ginv(T.labeled) %*% T.all)$vectors)
+      # 
+      # t(svdinv(E1)) %*% svdsqrtm(D1) %*% t(E1)
+      # t(svdinv(E2)) %*% svdinvsqrtm(D2) %*% t(E2)
+      # 
+      # E <- E3
+      # D_T <- t(E) %*% T.labeled %*% E
+      # D_theta <- t(E) %*% T.all %*% E
+      # t(ginv(E)) %*% t(matrixsqrt(D_theta)) %*% ginv(matrixsqrt(D_T)) %*% t(E)
+      # 
+      # E <- E4
+      # D_T <- t(E) %*% T.labeled %*% E
+      # D_theta <- t(E) %*% T.all %*% E
+      # t(ginv(E)) %*% t(matrixsqrt(D_theta)) %*% ginv(matrixsqrt(D_T)) %*% t(E)
     
     ## end
-    
-    D_T <- t(E) %*% T.labeled %*% E
-    D_theta <- t(E) %*% T.all %*% E
-    Trans <- t(ginv(E)) %*% t(matrixsqrt(D_theta)) %*% ginv(matrixsqrt(D_T)) %*% t(E)
                               
     means <- t(Trans %*% t(means-matrix(1,nrow(means),1) %*% m.labeled ) + 
                  t(matrix(1,nrow(means),1) %*% m.all))
