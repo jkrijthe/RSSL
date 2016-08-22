@@ -4,6 +4,14 @@
 #' @export
 cov_ml<-function(X) { ((nrow(X)-1)/nrow(X))*cov(X) }
 
+#' Numerically more stable way to calculate log sum exp
+#' @param M matrix; m by n input matrix, sum with be over the rows
+#' @return matrix; m by 1 matrix
+#' @export 
+logsumexp <- function(M) {
+  log(rowSums(exp(M-rowMax(M) %*% matrix(1,1,ncol(M))))) + rowMax(M)
+}
+
 #' Calculate the standard error of the mean from a vector of numbers
 #' @param x numeric; vector for which to calculate standard error
 #' @export
@@ -47,10 +55,10 @@ PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALS
   
   # Make sure we get a matrix from the model representation
   if (is(X,"formula") & is.data.frame(y)) {
-    modelform <- X
+    modelform <- stats::formula(terms(X,data=y))
     problem <- SSLDataFrameToMatrices(X,y)
     out <- PreProcessing(problem$X,problem$y,problem$X_u,scale=scale,intercept=intercept,x_center=x_center)
-    out$modelform <- X
+    out$modelform <- modelform
     return(out)
   } else if ((is.matrix(X) || is.data.frame(X) || class(X)=="dgCMatrix") && (is.factor(y))) {
     
@@ -121,11 +129,18 @@ PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALS
 #' @export
 PreProcessingPredict<-function(modelform,newdata,y=NULL,classnames=NULL,scaling=NULL,intercept=FALSE) {
   if (!is.null(modelform)) {
-    #problem <- SSLDataFrameToMatrices(modelform,newdata)
-    mf <- model.frame(modelform, data=newdata, na.action=NULL)
-    y <- model.response(mf)
-    classnames<-levels(y)
-    if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
+    
+    targetname <- as.character(terms(modelform)[[2]])
+    
+    if (targetname %in% colnames(newdata)) {
+      mf <- model.frame(modelform, data=newdata, na.action=NULL)
+      y <- model.response(mf)
+      if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
+    } else {
+      mf <- model.frame(delete.response(terms(modelform)), data=newdata, na.action=NULL)
+      y <- NULL
+    }
+    
     X <- model.matrix(attr(mf, "terms"), data=mf)
     X <- X[, colnames(X) != "(Intercept)",drop=FALSE]
     return(PreProcessingPredict(NULL,X,y,classnames=classnames,scaling=scaling,intercept=intercept))
@@ -150,9 +165,12 @@ PreProcessingPredict<-function(modelform,newdata,y=NULL,classnames=NULL,scaling=
       X[,1:ncol(X)]<-predict(scaling,as.matrix(X[,1:ncol(X),drop=FALSE]))
     }
   }
-
-  Y <- classlabels_to_indicatormatrix(y,classnames)
-
+  if (is.null(y)) {
+    Y <- NULL
+  } else {
+    Y <- classlabels_to_indicatormatrix(y,classnames)
+  }
+  
   return(list(X=X,Y=Y,y=y))
 }
 
