@@ -1,30 +1,29 @@
 #' @include Classifier.R
 setClass("GRFClassifier",
-         representation(theta="matrix",
-                        responsibilities="ANY",
+         representation(responsibilities="ANY",
                         scaling="ANY",
-                        optimization="ANY",
-                        intercept="ANY",
-                        Xtrain="matrix",
-                        ytrain="ANY",
-                        eta="numeric",
-                        sigma="numeric",
                         predictions="factor"),
          prototype(name="GRFClassifier",scaling=NULL), 
          contains="Classifier")
 
 #' Gaussian Random Fields and Harmonic functions
 #' 
-#' @param adjacency_kernel kernlab::kernel; kernel object
-#' @param sigma parameter for kernel if no kernel is given
-#' @param eta The influence of the external classifier (not currently used)
-#' @param y_u Labels given by external classifier (Not used)
-#' @param class_mass_normalization Should the Class Mass Normalization heuristic be applied? (default: TRUE)
+#' Label propagation as proposed in Zhu et al. (2003).
+#' 
+#' @param adjacency character; "nn" for nearest neighbour graph or "heat" for radial basis adjacency matrix
+#' @param adjacency_sigma double; width of the rbf adjacency matrix
+#' @param adjacency_k integer; number of neighbours for the nearest neighbour adjacency matrix
+#' @param adjacency_distance character; distance metric for nearest neighbour adjacency matrix
+#' @param class_mass_normalization logical; Should the Class Mass Normalization heuristic be applied? (default: TRUE)
 #' @references Zhu, X., Ghahramani, Z. & Lafferty, J., 2003. Semi-supervised learning using gaussian fields and harmonic functions. In Proceedings of the 20th International Conference on Machine Learning. pp. 912-919.
 #' @inheritParams BaseClassifier
-#' @example tests/examples/exampleGRFClassifier.R
+#' @example inst/examples/example-GRFClassifier.R
 #' @export
-GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,class_mass_normalization=TRUE,scale=FALSE,x_center=FALSE,y_u=NULL) {
+GRFClassifier<-function(X,y,X_u,
+                        adjacency="nn", adjacency_distance="euclidean",
+                        adjacency_k=6, adjacency_sigma=0.1,
+                        class_mass_normalization=TRUE,
+                        scale=FALSE,x_center=FALSE) {
 
   mv <- PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X <- mv$X
@@ -37,10 +36,10 @@ GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,class_ma
   
   Xin <- rbind(X,X_u)
   
-  if (!is.null(adjacency_kernel)) {
-    W <- kernelMatrix(adjacency_kernel,Xin,Xin)
+  if (adjacency=="nn") {
+    W <- adjacency_knn(Xin,adjacency_distance,adjacency_k)
   } else {
-    W <- exp(-as.matrix(dist(Xin))^2/sigma) # A possible Kernel
+    W <- exp(-as.matrix(dist(Xin))^2/adjacency_sigma) # A possible Kernel
   }
   
   harmonic_f <- harmonic_function(W,Y)
@@ -59,24 +58,21 @@ GRFClassifier<-function(X,y,X_u,adjacency_kernel=NULL,sigma=0.1,eta=0.1,class_ma
              scaling=mv$scaling,
              responsibilities=responsibilities,
              predictions=predictions,
-             Xtrain=X,
-             classnames=classnames,
-             ytrain=y,
-             sigma=sigma,
-             eta=eta
+             classnames=classnames
              ))
 }
 
 #' @rdname rssl-predict
+#' @aliases responsibilities,GRFClassifier-method
+setMethod("responsibilities", signature(object="GRFClassifier"),function(object,newdata,...) {
+  object@responsibilities
+})
+
+#' @rdname rssl-predict
 #' @aliases predict,GRFClassifier-method
-setMethod("predict", signature(object="GRFClassifier"),function(object,newdata,...) {
-  ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
-  X<-ModelVariables$X
-  
-  # Train the classifier here
-  t_class <- GRFClassifier(object@Xtrain,object@ytrain,X,object@sigma,object@eta)
-  class_ind <- as.integer(t_class@unlabels < 0.5)
-  factor(class_ind,levels=0:1,labels=object@classnames)
+setMethod("predict", signature(object="GRFClassifier"),function(object,newdata=NULL,...) {
+  if (!is.null(newdata)) { stop("This is a transductive method. Retrain with the unlabeled data to get predictions for unlabeled objects.")}
+  object@predictions
 })
 
 #' Direct R Translation of Xiaojin Zhu's Matlab code to determine harmonic solution
