@@ -16,6 +16,7 @@ setClass("EntropyRegularizedLogisticRegression",
 #' @return S4 object of class EntropyRegularizedLogisticRegression with the following slots:
 #' \item{w}{weight vector}
 #' \item{classnames}{the names of the classes}
+#' @example inst/examples/example-EntropyRegularizedLogisticRegression.R
 #' @export
 EntropyRegularizedLogisticRegression <- function(X,y,X_u=NULL,lambda=0.0,lambda_entropy=1.0,intercept=TRUE, init=NA,scale=FALSE,x_center=FALSE) {
 
@@ -54,7 +55,7 @@ EntropyRegularizedLogisticRegression <- function(X,y,X_u=NULL,lambda=0.0,lambda_
                       classnames=classnames,
                       method="BFGS",
                       control = list(fnscale=-1))
-  #print(opt_result$par)
+  
   w<-opt_result$par
   
   new("EntropyRegularizedLogisticRegression",
@@ -62,6 +63,7 @@ EntropyRegularizedLogisticRegression <- function(X,y,X_u=NULL,lambda=0.0,lambda_
       classnames=classnames, 
       w=w,
       intercept=intercept,
+      opt_result=opt_result,
       scaling=NULL)
 }
 
@@ -73,7 +75,6 @@ loss_erlr <- function(w, X, y, X_u, classnames, lambda, lambda_entropy) {
 }
 
 grad_erlr <- function(w, X, y, X_u, classnames, lambda, lambda_entropy) {
-  
   grad_logisticregression(w, X, y,
                           classnames = classnames, 
                           lambda=lambda) + 
@@ -83,16 +84,21 @@ grad_erlr <- function(w, X, y, X_u, classnames, lambda, lambda_entropy) {
 loss_entropy <- function(w, X_u) {
   w <- matrix(w,ncol(X_u))
   inner <- cbind(rep(0,nrow(X_u)), X_u %*% w)
-  G <- exp(inner - log(rowSums(exp(inner))))
+  G <- exp(inner - as.numeric(logsumexp(inner)))
   sum(G * log(G))
 }  
 
 grad_entropy <- function(w, X_u) {
   w <- matrix(w,ncol(X_u))
   inner <- cbind(rep(0,nrow(X_u)), X_u %*% w)
-  G <- exp(inner - log(rowSums(exp(inner))))
+  G <- exp(inner - as.numeric(logsumexp(inner)))
+
+  G[G>1-1e-16] <- 1-1e-16
+  
   weight <- G*(1-G) * (log(G)-log(1-G))
   weight <- weight[,2]
+  
+  if(any(is.nan(weight))) stop("Numerical issues in gradient calculation.")
   
   return(t(X_u) %*% weight)
 }
