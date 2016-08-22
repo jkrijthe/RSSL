@@ -14,6 +14,7 @@ setClass("SelfLearning",
 #' @param method Supervised classifier to use. Any function that accepts as its first argument a design matrix X and as its second argument a vector of labels y.
 #' @param prob If TRUE, run algorithm with soft labels, instead of hard labels
 #' @param cautious logical; not implemented
+#' @param max_iter integer; Maximum number of iterations
 #' @param ... additional arguments to be passed to method
 #' @examples
 #' data(testdata)
@@ -24,7 +25,7 @@ setClass("SelfLearning",
 #' 1-mean(predict(t_sup, testdata$X_test)==testdata$y_test) 
 #' loss(t_self, testdata$X_test, testdata$y_test)
 #' @export
-SelfLearning <- function(X, y, X_u=NULL, method, prob=FALSE, cautious=FALSE, ...) {
+SelfLearning <- function(X, y, X_u=NULL, method, prob=FALSE, cautious=FALSE, max_iter=100, ...) {
 
   # Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=FALSE,intercept=FALSE,x_center=FALSE)
@@ -47,7 +48,7 @@ SelfLearning <- function(X, y, X_u=NULL, method, prob=FALSE, cautious=FALSE, ...
   i_labels <- list()
   i_labels[[1]] <- y_unlabelled
   n_iter<-0
-  while (any(is.na(y_unlabelled_old)) | any(y_unlabelled_old!=y_unlabelled)) {
+  while ((any(is.na(y_unlabelled_old)) | any(y_unlabelled_old!=y_unlabelled)) & n_iter<max_iter) {
     n_iter <- n_iter+1
     
     y_unlabelled_old <- y_unlabelled
