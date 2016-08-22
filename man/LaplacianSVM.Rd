@@ -2,10 +2,11 @@
 % Please edit documentation in R/LaplacianSVM.R
 \name{LaplacianSVM}
 \alias{LaplacianSVM}
-\title{Laplacian SVM classifier.}
+\title{Laplacian SVM classifier}
 \usage{
 LaplacianSVM(X, y, X_u = NULL, lambda = 1, gamma = 1, scale = TRUE,
-  kernel = vanilladot(), adjacency_kernel = rbfdot(1/4))
+  kernel = vanilladot(), adjacency_distance = "euclidean",
+  adjacency_k = 6, normalized_laplacian = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -22,60 +23,107 @@ LaplacianSVM(X, y, X_u = NULL, lambda = 1, gamma = 1, scale = TRUE,
 
 \item{kernel}{kernlab::kernel to use}
 
-\item{adjacency_kernel}{kernlab::kernel to use as adjacency kernel}
+\item{adjacency_distance}{character; distance metric used to construct adjacency graph from the dist function. Default: "euclidean"}
+
+\item{adjacency_k}{integer; Number of of neighbours used to construct adjacency graph.}
+
+\item{normalized_laplacian}{logical; If TRUE use the normalized Laplacian, otherwise, the Laplacian is used}
 }
 \value{
 S4 object of type LaplacianSVM
 }
 \description{
-Laplacian SVM classifier.
+Manifold regularization applied to the least squares classifier as proposed in Belkin et al. (2006).
 }
 \examples{
 library(ggplot2)
-library("gridExtra")
-library(kernlab)
+library(dplyr)
 
-testdata <- generateSlicedCookie(expected=TRUE)
-testdata$Class[sample(1:nrow(testdata),nrow(testdata)-10)] <- NA
-t_svm <- SVM(Class~.,testdata, C=1,kernel=rbfdot(0.25),scale=FALSE)
-t_lapsvm <- LaplacianSVM(Class~., testdata, kernel=rbfdot(0.25), lambda=0.05, gamma=100,scale=FALSE)
-t_lapsvm@bias
-t_svm@bias
+## Example 1: Half moons
 
-testdata <- generateCrescentMoon(100,sigma=0.3)
-testdata[-sample(1:nrow(testdata),10),]$Class <- NA
-tvec<-na.omit(testdata$Class)
-dmatU <- as.matrix(testdata[is.na(testdata$Class),2:3])
-dmat <- as.matrix(testdata[!is.na(testdata$Class),2:3])
+# Generate a dataset
+set.seed(2)
+df_orig <- generateCrescentMoon(100,sigma = 0.3) 
+df <- df_orig \%>\% 
+  add_missinglabels_mar(Class~.,0.98)
 
-precision <- 50
-xgrid<-seq(min(dmatU[,1]),max(dmatU[,1]),length.out=precision)
-ygrid<-seq(min(dmatU[,2]),max(dmatU[,2]),length.out=precision)
-gridmat <- expand.grid(xgrid,ygrid)
+lambda <- 0.001
+C <- 1/(lambda*2*sum(!is.na(df$Class)))
+gamma <- 10000
+rbf_param <- 0.125
 
-t_svm <- SVM(dmat, tvec, kernel=rbfdot(0.1), C=1, scale = FALSE)
-t_lapsvm <- LaplacianSVM(X=dmat, y=tvec, X_u=dmatU, kernel=rbfdot(0.1), lambda=0.05, gamma=100, adjacency_kernel = rbfdot(0.1), scale = FALSE)
+# Train classifiers
+class_sup <- SVM(
+  Class~.,df,
+  kernel=kernlab::rbfdot(rbf_param),
+  C=C,scale=FALSE)
 
-plotframe <- cbind(gridmat, decisionvalues(t_svm,gridmat))
-colnames(plotframe)<- c("x","y","Output")
-ggplot(plotframe, aes(x=x,y=y)) +
-  geom_tile(aes(fill = Output)) +
-  stat_contour(aes(z=Output),breaks=c(-1,0.0,1),size=1) +
-  scale_fill_gradient(low="yellow", high="red",limits=c(-1,1)) +
-  geom_point(aes(x=X1,y=X2,shape=Class,size=Class),data=testdata) +
-  scale_shape_discrete(na.value=8) +
-  scale_size_discrete(range=c(5,5),na.value=0.5) +
-  ggtitle("SVM")
+class_lap <- LaplacianSVM(
+  Class~.,df,
+  kernel=kernlab::rbfdot(rbf_param),                                                lambda=lambda,gamma=gamma,
+  normalized_laplacian = TRUE,
+  scale=FALSE)
 
-plotframe <- cbind(gridmat, decisionvalues(t_lapsvm,gridmat))
-colnames(plotframe)<- c("x","y","Output")
-p_lapsvm <- ggplot(plotframe, aes(x=x,y=y)) +
-  geom_tile(aes(fill = Output)) +
-  stat_contour(aes(z=Output),breaks=c(-1,0.0,1),size=1) +
-  scale_fill_gradient(low="yellow", high="red",limits=c(-1,1)) +
-  geom_point(aes(x=X1,y=X2,shape=Class,size=Class),data=testdata) +
-  scale_shape_discrete(na.value=8) +
-  scale_size_discrete(range=c(5,5),na.value=0.5) +
-  ggtitle("Laplacian SVM")
+classifiers <- list("Lap"=class_lap,"Sup"=class_sup)
+
+# This takes a little longer to run:
+# class_tsvm <- TSVM(
+#   Class~.,df,
+#   kernel=kernlab::rbfdot(rbf_param),
+#   C=C,Cstar=10,s=-0.8,
+#   scale=FALSE,balancing_constraint=TRUE)
+# classifiers <- list("Lap"=class_lap,"Sup"=class_sup,"TSVM"=class_tsvm)
+
+# Plot classifiers
+df \%>\% 
+  ggplot(aes(x=X1,y=X2,color=Class)) +
+  geom_point() +
+  coord_equal() +
+  stat_classifier(aes(linetype=..classifier..),
+                  classifiers = classifiers ,
+                  color="black")
+
+# Calculate the loss
+lapply(classifiers,function(c) mean(loss(c,df_orig)))
+
+## Example 2: Two circles
+set.seed(3)
+df_orig <- generateTwoCircles(1000,noise=0.05)
+df <- df_orig \%>\% 
+  add_missinglabels_mar(Class~.,0.994)
+
+lambda <- 0.000001
+C <- 1/(lambda*2*sum(!is.na(df$Class)))
+gamma <- 100
+rbf_param <- 0.1
+
+# Train classifiers
+class_sup <- SVM(
+  Class~.,df,
+  kernel=kernlab::rbfdot(rbf_param),
+  C=C,scale=FALSE)
+
+class_lap <- LaplacianSVM(
+  Class~.,df,
+  kernel=kernlab::rbfdot(rbf_param),
+  adjacency_k=50, lambda=lambda,gamma=gamma,
+  normalized_laplacian = TRUE,
+  scale=FALSE)
+
+
+classifiers <- list("Lap"=class_lap,"Sup"=class_sup)
+
+# Plot classifiers
+df \%>\% 
+  ggplot(aes(x=X1,y=X2,color=Class,size=Class)) +
+  scale_size_manual(values=c("1"=3,"2"=3),na.value=1) +
+  geom_point() +
+  coord_equal() +
+  stat_classifier(aes(linetype=..classifier..),
+                  classifiers = classifiers ,
+                  color="black",size=1)
+}
+\references{
+Belkin, M., Niyogi, P. & Sindhwani, V., 2006. Manifold regularization: A geometric framework for learning from labeled and unlabeled examples. Journal of Machine Learning Research, 7, pp.2399-2434.
 }
 

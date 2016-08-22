@@ -66,7 +66,7 @@ mean(predict(g_sup,testdata$X_test)==testdata$y_test)
 mean(predict(g_semi,testdata$X_test)==testdata$y_test)
 }
 \references{
-Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs.     Proceedings of ACM SIGIR, 2006
+Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs. Proceedings of ACM SIGIR, 2006
  @references V. Sindhwani and S. Sathiya Keerthi. Newton Methods for Fast Solution of Semi-supervised Linear SVMs. Book Chapter in Large Scale Kernel Machines, MIT Press, 2006
 }
 

@@ -4,23 +4,21 @@
 \alias{SVM}
 \title{SVM Classifier}
 \usage{
-SVM(X, y, C = 1, method = "Dual", scale = TRUE, intercept = FALSE,
-  kernel = NULL, x_center = TRUE, eps = 1e-09)
+SVM(X, y, C = 1, kernel = NULL, scale = TRUE, intercept = FALSE,
+  x_center = TRUE, eps = 1e-09)
 }
 \arguments{
-\item{X}{Design matrix}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{Labels of the observations}
+\item{y}{factor or integer vector; Label vector}
 
-\item{C}{Cost variable}
-
-\item{method}{Estimation procedure c("Dual","Primal","BGD","SGD","Pegasos")}
-
-\item{scale}{Whether a z-transform should be applied (default: TRUE)}
-
-\item{intercept}{Whether an intercept should be added (default: FALSE)}
+\item{C}{numeric; Cost variable}
 
 \item{kernel}{kernlab::kernel to use}
+
+\item{scale}{logical; Should the features be normalized? (default: FALSE)}
+
+\item{intercept}{logical; Whether an intercept should be included}
 
 \item{x_center}{logical;  Should the features be centered?}
 

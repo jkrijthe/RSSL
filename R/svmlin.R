@@ -27,7 +27,7 @@ setClass("svmlinClassifier",
 #' @param verbose Should output be verbose? (default: FALSE)
 #' @inheritParams BaseClassifier
 #'
-#' @references Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs.     Proceedings of ACM SIGIR, 2006
+#' @references Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs. Proceedings of ACM SIGIR, 2006
 #'  @references V. Sindhwani and S. Sathiya Keerthi. Newton Methods for Fast Solution of Semi-supervised Linear SVMs. Book Chapter in Large Scale Kernel Machines, MIT Press, 2006
 #' @examples
 #' data(svmlin_example)

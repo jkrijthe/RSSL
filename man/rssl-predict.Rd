@@ -2,6 +2,7 @@
 % Please edit documentation in R/Generics.R, R/LeastSquaresClassifier.R, R/NormalBasedClassifier.R, R/LogisticRegression.R, R/GRFClassifier.R, R/KernelLeastSquaresClassifier.R, R/LinearSVM.R, R/LogisticLossClassifier.R, R/MajorityClassClassifier.R, R/SVM.R, R/SelfLearning.R, R/USMLeastSquaresClassifier.R, R/WellSVM.R, R/svmlin.R
 \docType{methods}
 \name{rssl-predict}
+\alias{decisionvalues,WellSVM-method}
 \alias{predict,GRFClassifier-method}
 \alias{predict,KernelLeastSquaresClassifier-method}
 \alias{predict,LeastSquaresClassifier-method}
@@ -15,6 +16,7 @@
 \alias{predict,USMLeastSquaresClassifier-method}
 \alias{predict,WellSVM-method}
 \alias{predict,svmlinClassifier-method}
+\alias{responsibilities,GRFClassifier-method}
 \alias{rssl-predict}
 \title{Predict using RSSL classifier}
 \usage{
@@ -25,7 +27,9 @@
 
 \S4method{predict}{LogisticRegression}(object, newdata, probs = FALSE)
 
-\S4method{predict}{GRFClassifier}(object, newdata, ...)
+\S4method{responsibilities}{GRFClassifier}(object, newdata, ...)
+
+\S4method{predict}{GRFClassifier}(object, newdata = NULL, ...)
 
 \S4method{predict}{KernelLeastSquaresClassifier}(object, newdata,
   probs = FALSE, ...)
@@ -44,6 +48,8 @@
   ...)
 
 \S4method{predict}{WellSVM}(object, newdata, probs = FALSE, ...)
+
+\S4method{decisionvalues}{WellSVM}(object, newdata)
 
 \S4method{predict}{svmlinClassifier}(object, newdata, probs = FALSE, ...)
 }

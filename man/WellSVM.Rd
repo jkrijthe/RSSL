@@ -31,6 +31,26 @@ WellSVM(X, y, X_u, C1 = 1, C2 = 0.1, gamma = 1, x_center = TRUE,
 \description{
 WellSVM is a minimax relaxation of the mixed integer programming problem of finding the optimal labels for the unlabeled data in the SVM objective function. This implementation is a translation of the Matlab implementation of Li (2013) into R.
 }
+\examples{
+library(ggplot2)
+library(dplyr)
+
+set.seed(1)
+df_orig <- generateSlicedCookie(200,expected=TRUE)
+df <- df_orig \%>\% 
+  add_missinglabels_mar(Class~.,0.98)
+
+classifiers <- list("Well"=WellSVM(Class~.,df,C1 = 1, C2=0.1, 
+                                   gamma = 0,x_center=TRUE,scale=TRUE),
+                    "Sup"=SVM(Class~.,df,C=1,x_center=TRUE,scale=TRUE))
+
+df \%>\% 
+  ggplot(aes(x=X1,y=X2,color=Class)) +
+  geom_point() +
+  coord_equal() +
+  stat_classifier(aes(color=..classifier..),
+                  classifiers = classifiers)
+}
 \references{
 Y.-F. Li, I. W. Tsang, J. T. Kwok, and Z.-H. Zhou. Scalable and Convex Weakly Labeled SVMs. Journal of Machine Learning Research, 2013.
 

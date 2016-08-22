@@ -5,7 +5,7 @@
 \title{Self-Learning approach to Semi-supervised Learning}
 \usage{
 SelfLearning(X, y, X_u = NULL, method, prob = FALSE, cautious = FALSE,
-  ...)
+  max_iter = 100, ...)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -19,6 +19,8 @@ SelfLearning(X, y, X_u = NULL, method, prob = FALSE, cautious = FALSE,
 \item{prob}{If TRUE, run algorithm with soft labels, instead of hard labels}
 
 \item{cautious}{logical; not implemented}
+
+\item{max_iter}{integer; Maximum number of iterations}
 
 \item{...}{additional arguments to be passed to method}
 }

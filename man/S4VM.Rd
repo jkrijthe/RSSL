@@ -4,8 +4,8 @@
 \alias{S4VM}
 \title{Safe Semi-supervised Support Vector Machine Classifier (S4VM)}
 \usage{
-S4VM(X, y, X_u, C1 = 100, C2 = 0.1, sample_time = 100, gamma = 0,
-  x_center = FALSE, scale = FALSE)
+S4VM(X, y, X_u = NULL, C1 = 100, C2 = 0.1, sample_time = 100,
+  gamma = 0, x_center = FALSE, scale = FALSE, lambda_tradeoff = 3)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -25,6 +25,8 @@ S4VM(X, y, X_u, C1 = 100, C2 = 0.1, sample_time = 100, gamma = 0,
 \item{x_center}{logical;  Should the features be centered?}
 
 \item{scale}{logical; Should the features be normalized? (default: FALSE)}
+
+\item{lambda_tradeoff}{numeric; Parameter that determines the amount of "risk" in obtaining a worse solution than the supervised solution}
 }
 \value{
 S4 S4VM object with slots:
@@ -35,7 +37,43 @@ S4 S4VM object with slots:
 R port of the MATLAB implementation of the original authors of the Safe Semi-supervised Support Vector Machine Classifier by Li & Zhou (2011).
 }
 \details{
-The method randomly generates multiple low-density separators (controlled by the sample_time parameter) and merges their predictions by solving a linear programming problem meant to penalize the cost of decreasing the performance of the classifier. S4VM is a bit of a misnomer, since it is a transductive method that only returns predicted labels for the unlabeled objects. The main difference in this implementation compared to the original implementation is the clustering of the low-density separators: in our implementation empty clusters are not dropped during the k-means procedure. In the paper by Li (2011) the features are first normalized to [0,1], which is not automatically done by this function.
+The method randomly generates multiple low-density separators (controlled by the sample_time parameter) and merges their predictions by solving a linear programming problem meant to penalize the cost of decreasing the performance of the classifier. S4VM is a bit of a misnomer, since it is a transductive method that only returns predicted labels for the unlabeled objects. The main difference in this implementation compared to the original implementation is the clustering of the low-density separators: in our implementation empty clusters are not dropped during the k-means procedure. In the paper by Li (2011) the features are first normalized to [0,1], which is not automatically done by this function. Note that the solution may not correspond to a linear classifier even if the linear kernel is used.
+}
+\examples{
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+set.seed(1)
+df_orig <- generateSlicedCookie(200,expected=TRUE)
+df <- df_orig \%>\% add_missinglabels_mar(Class~.,0.95)
+g_s <- SVM(Class~.,df,C=1,scale=TRUE,x_center=TRUE)
+g_s4 <- S4VM(Class~.,df,C1=1,C2=0.1,lambda_tradeoff = 3,scale=TRUE,x_center=TRUE)
+
+labs <- g_s4@labelings[-c(1:10),]
+colnames(labs) <- paste("Class",seq_len(ncol(g_s4@labelings)),sep="-")
+
+# Show the labelings that the algorithm is considering
+df \%>\%
+  filter(is.na(Class)) \%>\% 
+  bind_cols(data.frame(labs,check.names = FALSE)) \%>\% 
+  select(-Class) \%>\% 
+  gather(Classifier,Label,-X1,-X2) \%>\% 
+  ggplot(aes(x=X1,y=X2,color=Label)) +
+  geom_point() +
+  facet_wrap(~Classifier,ncol=5)
+
+# Plot the final labeling that was selected
+# Note that this may not correspond to a linear classifier
+# even if the linear kernel is used.
+# The solution does not seem to make a lot of sense,
+# but this is what the current implementation returns
+df \%>\% 
+  filter(is.na(Class)) \%>\% 
+  mutate(prediction=g_s4@predictions) \%>\% 
+  ggplot(aes(x=X1,y=X2,color=prediction)) +
+  geom_point() +
+  stat_classifier(color="black", classifiers=list(g_s))
 }
 \references{
 Yu-Feng Li and Zhi-Hua Zhou. Towards Making Unlabeled Data Never Hurt. In: Proceedings of the 28th International Conference on Machine Learning (ICML'11), Bellevue, Washington, 2011.

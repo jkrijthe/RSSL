@@ -4,9 +4,9 @@
 \alias{GRFClassifier}
 \title{Gaussian Random Fields and Harmonic functions}
 \usage{
-GRFClassifier(X, y, X_u, adjacency_kernel = NULL, sigma = 0.1, eta = 0.1,
-  class_mass_normalization = TRUE, scale = FALSE, x_center = FALSE,
-  y_u = NULL)
+GRFClassifier(X, y, X_u, adjacency = "nn", adjacency_distance = "euclidean",
+  adjacency_k = 6, adjacency_sigma = 0.1, class_mass_normalization = TRUE,
+  scale = FALSE, x_center = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -15,58 +15,70 @@ GRFClassifier(X, y, X_u, adjacency_kernel = NULL, sigma = 0.1, eta = 0.1,
 
 \item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{adjacency_kernel}{kernlab::kernel; kernel object}
+\item{adjacency}{character; "nn" for nearest neighbour graph or "heat" for radial basis adjacency matrix}
 
-\item{sigma}{parameter for kernel if no kernel is given}
+\item{adjacency_distance}{character; distance metric for nearest neighbour adjacency matrix}
 
-\item{eta}{The influence of the external classifier (not currently used)}
+\item{adjacency_k}{integer; number of neighbours for the nearest neighbour adjacency matrix}
 
-\item{class_mass_normalization}{Should the Class Mass Normalization heuristic be applied? (default: TRUE)}
+\item{adjacency_sigma}{double; width of the rbf adjacency matrix}
+
+\item{class_mass_normalization}{logical; Should the Class Mass Normalization heuristic be applied? (default: TRUE)}
 
 \item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
 \item{x_center}{logical;  Should the features be centered?}
-
-\item{y_u}{Labels given by external classifier (Not used)}
 }
 \description{
-Gaussian Random Fields and Harmonic functions
+Label propagation as proposed in Zhu et al. (2003).
 }
 \examples{
 library(ggplot2)
-library(kernlab)
+library(dplyr)
 
-testdata <- generateTwoCircles(200,noise=0.1)
-testdata[-sample(1:nrow(testdata),10),]$Class <- NA
-tvec<-na.omit(testdata$Class)
-dmatU <- as.matrix(testdata[is.na(testdata$Class),1:2])
-dmat <- as.matrix(testdata[!is.na(testdata$Class),1:2])
+set.seed(1)
+df_circles <- generateTwoCircles(400,noise=0.1) \%>\% 
+  add_missinglabels_mar(Class~.,0.99)
 
-classifier <- GRFClassifier(dmat, tvec, dmatU, 
-                adjacency_kernel = rbfdot(10))
+# Visualize the problem
+df_circles \%>\% 
+  ggplot(aes(x=X1,y=X2,color=Class)) +
+  geom_point() + 
+  coord_equal()
 
-plotframe <- data.frame(dmatU, 
-                        Output=classifier@responsibilities[,1])
+# Visualize the solution
+class_grf <- GRFClassifier(Class~.,df_circles,
+                           adjacency="heat",
+                           adjacency_sigma = 0.1)
+df_circles \%>\%
+  filter(is.na(Class)) \%>\% 
+  mutate(Responsibility=responsibilities(class_grf)[,1]) \%>\% 
+  ggplot(aes(x=X1,y=X2,color=Responsibility)) +
+  geom_point() + 
+  coord_equal()
 
-ggplot(plotframe,aes(x=X1,y=X2,color=Output)) +
-  geom_point() + coord_equal()
+# Generate problem
+df_para <- generateParallelPlanes()
+df_para$Class <- NA
+df_para$Class[1] <- "a"
+df_para$Class[101] <- "b"
+df_para$Class[201] <- "c"
+df_para$Class <- factor(df_para$Class)
 
-data <- generateParallelPlanes()
-data$Class <- NA
-data$Class[1] <- "a"
-data$Class[101] <- "b"
-data$Class[201] <- "c"
-data$Class <- factor(data$Class)
+# Visualize problem
+df_para \%>\% 
+  ggplot(aes(x=x,y=y,color=Class)) +
+  geom_point() + 
+  coord_equal()
 
-GRFClassifier(Class~.,data,NULL)@responsibilities
+# Estimate GRF classifier with knn adjacency matrix (default)
+class_grf <- GRFClassifier(Class~.,df_para)
 
-data <- generateSpirals()
-data$Class<-NA
-data$Class[1] <- "a"
-data$Class[200] <- "b"
-data$Class <- factor(data$Class)
-
-GRFClassifier(Class~.,data,NULL)@responsibilities
+df_para \%>\%
+  filter(is.na(Class)) \%>\% 
+  mutate(Assignment=factor(apply(responsibilities(class_grf),1,which.max))) \%>\% 
+  ggplot(aes(x=x,y=y,color=Assignment)) +
+  geom_point()
 }
 \references{
 Zhu, X., Ghahramani, Z. & Lafferty, J., 2003. Semi-supervised learning using gaussian fields and harmonic functions. In Proceedings of the 20th International Conference on Machine Learning. pp. 912-919.

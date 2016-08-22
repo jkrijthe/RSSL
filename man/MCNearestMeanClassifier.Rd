@@ -29,7 +29,7 @@ S4  object; a list consisting of
 \item{sigma}{the number of hits}
 }
 \description{
-To fit a true nearest mean classifier, set prior to equal class priors. Based on (Loog 2010).
+To fit a true nearest mean classifier, set prior to equal class priors (priors=c(0.5,0.5). Based on (Loog 2010).
 }
 \references{
 Loog, M., 2010. Constrained Parameter Estimation for Semi-Supervised Learning: The Case of the Nearest Mean Classifier. In Proceedings of the 2010 European Conference on Machine learning and Knowledge Discovery in Databases. pp. 291-304.
