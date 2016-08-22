@@ -18,19 +18,40 @@ print.LearningCurve <- function(x) {
 #' @return LearningCurve object
 #' 
 #' @examples
-#' X <- model.matrix(Species~.-1,data=iris)
-#' y <- iris$Species
+#' set.seed(1)
+#' df <- generate2ClassGaussian(2000,d=2,var=0.6)
 #' 
-#' classifiers <- list("LS"=function(X,y,X_u,y_u) {LeastSquaresClassifier(X,y,lambda=0)}, 
-#'                     "RLS"=function(X,y,X_u,y_u) {LeastSquaresClassifier(X,y,lambda=10)})
+#' classifiers <- list("LS"=function(X,y,X_u,y_u) {
+#'  LeastSquaresClassifier(X,y,lambda=0)}, 
+#'   "Self"=function(X,y,X_u,y_u) {
+#'     SelfLearning(X,y,X_u,LeastSquaresClassifier)}
+#' )
+#' 
 #' measures <- list("Accuracy" =  measure_accuracy,
-#'                  "Loss" = measure_losstest,
+#'                  "Loss Test" = measure_losstest,
 #'                  "Loss labeled" = measure_losslab,
 #'                  "Loss Lab+Unlab" = measure_losstrain
-#'                  )
-#' lc <- LearningCurveSSL(X,y,classifiers=classifiers,measures=measures,n_l=10,repeats=5)
-#' print(lc)
-#' plot(lc)
+#' )
+#' 
+#' # Increase the number of unlabeled objects
+#' lc1 <- LearningCurveSSL(as.matrix(df[,1:2]),df$Class,
+#'                         classifiers=classifiers,
+#'                         measures=measures, n_test=1800,
+#'                         n_l=10,repeats=10)
+#' 
+#' plot(lc1)
+#' 
+#' # Increase the fraction of labeled objects, example with 2 datasets
+#' lc2 <- LearningCurveSSL(X=list("Dataset 1"=as.matrix(df[,1:2]),
+#'                                "Dataset 2"=as.matrix(df[,1:2])),
+#'                         y=list("Dataset 1"=df$Class,
+#'                                "Dataset 2"=df$Class),
+#'                         classifiers=classifiers,
+#'                         measures=measures,
+#'                         type = "fraction",repeats=10,
+#'                         test_fraction=0.9)
+#' 
+#' plot(lc2)
 #' 
 #' @export
 LearningCurveSSL<-function(X, y, ...) {
@@ -99,7 +120,7 @@ LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, mc.cores=1) {
 #' For n_l, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
 #' 
 #' @export
-LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE,low_level_cores=1,...) {
+LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l=NULL, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE,low_level_cores=1,...) {
   
   if (!is.factor(y)) { stop("Labels are not a factor.") }
   if (nrow(X)!=length(y)) { stop("Number of objects in X and y do not match.") }
@@ -115,11 +136,15 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
     X <- t_pca$scores[,1:n_comp,drop=FALSE]
   }
   
-  if (n_l=="enough") { n_l <- max(ncol(X)+5,20) }
-  else if (n_l=="d") { n_l <- ncol(X)+1 }
-  else if (n_l=="2d") { n_l <- max(ncol(X)*2,10) }
-  else if (n_l=="half") { n_l <- ceiling(ncol(X)/2) }
-  else {n_l<-n_l}
+  if (type=="unlabeled") {
+    if (is.null(n_l)) stop("Set the number of labeled objects n_l")
+    
+    if (n_l=="enough") { n_l <- max(ncol(X)+5,20) }
+    else if (n_l=="d") { n_l <- ncol(X)+1 }
+    else if (n_l=="2d") { n_l <- max(ncol(X)*2,10) }
+    else if (n_l=="half") { n_l <- ceiling(ncol(X)/2) }
+    else {n_l <- n_l}
+  }
   
   # Set variables
   
