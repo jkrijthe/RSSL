@@ -42,3 +42,13 @@ setMethod("predict",signature=c("scaleMatrix"), function(object,newdata,...) {
   }
   return(newdata)
 })
+
+#' @rdname rssl-formatting
+#' @aliases show,scaleMatrix-method
+#' @export
+setMethod("show",signature=c("scaleMatrix"), function(object) {
+  cat("Centering: ", object@mean,"\n")
+  if (!is.null(object@scale)) {
+    cat("Scaling:   ", object@scale,"\n")
+  }
+})
