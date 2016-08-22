@@ -1,7 +1,7 @@
 #' @include Classifier.R
 setClass("LeastSquaresClassifier",
-         representation(theta="matrix",scaling="ANY",optimization="ANY",intercept="ANY",y_scale="numeric"),
-         prototype(name="LeastSquaresClassifier",scaling=NULL,y_scale=0), 
+         representation(theta="matrix",scaling="ANY",optimization="ANY",intercept="ANY",y_scale="numeric",threshold="numeric"),
+         prototype(name="LeastSquaresClassifier",scaling=NULL,y_scale=0,threshold=0.5), 
          contains="Classifier")
 
 #' Least Squares Classifier
@@ -158,12 +158,6 @@ setMethod("decisionvalues", signature(object="LeastSquaresClassifier"), function
   expscore <- sweep(expscore,2,object@y_scale,"+")
   
   return(expscore)
-})
-
-#' @rdname rssl-formatting
-#' @aliases show,LeastSquaresClassifier-method
-setMethod("show", signature(object="LeastSquaresClassifier"), function(object) {
-  print(object@theta)
 })
 
 #' @rdname line_coefficients-methods
