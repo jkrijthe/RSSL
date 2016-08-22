@@ -37,6 +37,7 @@ LogisticRegression <- function(X, y, lambda=0.0, intercept=TRUE, scale=FALSE, in
                       gr=grad_logisticregression, 
                       X=X, y=y, lambda=lambda,
                       classnames=classnames,
+                      intercept=intercept,
                       method="BFGS", 
                       control=list(fnscale=-1))
   
@@ -143,7 +144,7 @@ setMethod("line_coefficients", signature(object="LogisticRegression"), function(
   return(coefficients_after_scaling(w0=object@w[1]-(0.0),w=object@w[2:3],scaling=object@scaling))
 })
 
-loss_logisticregression <- function(w, X, y, classnames,lambda) {
+loss_logisticregression <- function(w, X, y, classnames, lambda,intercept=TRUE) {
   w <- matrix(w,nrow=ncol(X))
   
   # Multiclass:
@@ -154,11 +155,11 @@ loss_logisticregression <- function(w, X, y, classnames,lambda) {
   for (c in 1:length(classnames)) {
     ll <- ll + sum(expscore[y==classnames[c],c]) # Sum the numerators for each class
   }
-  
-  return(as.numeric(ll - lambda * w[-1] %*% w[-1]))
+  if (intercept)  return(as.numeric(ll - lambda * w[-1] %*% w[-1]))
+  else return(as.numeric(ll - lambda * t(w) %*% w))
 }
 
-grad_logisticregression <- function(w, X, y, classnames, lambda) {
+grad_logisticregression <- function(w, X, y, classnames, lambda,intercept=TRUE) {
   w <- matrix(w,nrow=ncol(X))
   
   # Two-class
@@ -173,5 +174,6 @@ grad_logisticregression <- function(w, X, y, classnames, lambda) {
       - (t(X) %*% (exp(expscore[,cu_class]) / rowSums(exp(expscore))))
   }
   
-  as.numeric(grad - 2* lambda* c(0,w[-1,]))
+  if (intercept) return(as.numeric(grad - 2* lambda* c(0,w[-1,])))
+  else return(as.numeric(grad - 2* lambda* w))
 }
