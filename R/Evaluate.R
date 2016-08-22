@@ -1,3 +1,64 @@
+#' Randomly split dataset in multiple parts
+#' 
+#' The data.frame should start with a vector containing labels
+#' 
+#' @param df data.frame; Data frame of interest
+#' @param formula formula; Formula to indicate the outputs
+#' @param splits numeric; Probability of of assigning to each part, automatically normalized, should be >1
+#' @param min_class integer; minimum number of objects per class in each part
+#' @return list of data.frames
+#' 
+#' @examples 
+#' library(dplyr)
+#' 
+#' df <- generate2ClassGaussian(200,d=2)
+#' dfs <- df %>% split_random(Class~.,split=c(0.5,0.3,0.2),min_class=1) 
+#' names(dfs) <- c("Train","Validation","Test")
+#' lapply(dfs,summary)
+#' 
+#' @export
+split_random <- function(df,formula=NULL,splits=c(0.5,0.5),min_class=0) {
+  if (!is.null(formula)) {
+    df <- model.frame(formula,df)
+  }
+  
+  if (length(splits)<2) { stop("Need at least two splits.")}
+  if (!is.factor(df[[1]])) {stop("First variable needs to be a factor.")}
+  splits <- splits/sum(splits)
+  m <- length(splits)
+  
+  
+  dfs <- list()
+  
+  idx <- seq_len(nrow(df))
+  
+  # index for each class
+  idx_per_class <- lapply(levels(df[[1]]),
+                          function(c) sample(idx[df[[1]]==c],m*min_class))
+  
+  # Add minimum required objects to each group
+  idx_per_group <- list()
+  for (i in seq_len(m)) {
+    idx_per_group[[i]] <- unlist(sapply(idx_per_class,
+                                        function(x) x[rep(seq_len(m),min_class)==i]),
+                                 recursive = FALSE)
+  }
+  
+  # Remove selected objects and shuffle
+  if (length(unlist(idx_per_group))>0) idx <- sample(idx[-unlist(idx_per_group)])
+  else idx <- sample(idx)
+  
+  # Randomly sample from remaining objects
+  boundaries <- c(0,ceiling(cumsum(splits)*length(idx)))
+  
+  for (i in seq_len(m)) {
+    idx_per_group[[i]] <- c(idx_per_group[[i]], 
+                            idx[(boundaries[i]+1):boundaries[i+1]])
+  }
+  
+  return(lapply(idx_per_group, function(ix) {df[ix,,drop=FALSE] }))
+}
+
 #' Throw out labels at random
 #' 
 #' @param df data.frame; Data frame of interest
