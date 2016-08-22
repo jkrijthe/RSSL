@@ -14,6 +14,7 @@ setClass("WellSVM",
 #' @param max_iter integer; Maximum number of iterations
 #' @inheritParams BaseClassifier
 #' @references Y.-F. Li, I. W. Tsang, J. T. Kwok, and Z.-H. Zhou. Scalable and Convex Weakly Labeled SVMs. Journal of Machine Learning Research, 2013.
+#' @example inst/examples/example-WellSVM.R
 #' @references R.-E. Fan, P.-H. Chen, and C.-J. Lin. Working set selection using second order information for training SVM. Journal of Machine Learning Research 6, 1889-1918, 2005.
 #' @export
 WellSVM <- function(X,y,X_u,C1=1,C2=0.1,gamma=1,x_center=TRUE,scale=FALSE,use_Xu_for_scaling=FALSE,max_iter=20) {
@@ -168,6 +169,22 @@ setMethod("predict", signature(object="WellSVM"), function(object, newdata, prob
 
   y1 <- (t(object@alpha)*(1 %*% object@y_set[1,,drop=FALSE]) ) %*% K0
   return(factor(y1<0,levels=c(FALSE,TRUE),labels=object@classnames))
+})
+
+#' @rdname rssl-predict
+#' @aliases decisionvalues,WellSVM-method
+setMethod("decisionvalues", signature(object="WellSVM"), function(object, newdata) {
+  ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
+  X <- ModelVariables$X
+  
+  if (object@gamma == 0) {
+    K0 = t(object@Xtrain) %*% t(X)
+  } else{
+    K0 = gaussian_kernel(object@Xtrain,object@gamma,t(X))$k
+  }
+  
+  y1 <- (t(object@alpha)*(1 %*% object@y_set[1,,drop=FALSE]) ) %*% K0
+  return(as.numeric(y1))
 })
 
 
