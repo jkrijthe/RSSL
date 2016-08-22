@@ -65,12 +65,26 @@ LinearSVM<-function(X, y, C=1, method="Dual", scale=TRUE, eps=1e-9, reltol=10e-1
     w <- opt_result$solution[1:ncol(X)]
     
   } else if (method=="BGD") {
+    # Give a warning that this method does not work as expected
     warning("BFGS might not converge to the optimal solution.")
     
     w0 <- rep(0.0, ncol(X)) #Initial parameter values
     
-    opt_result <- optim(w0, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=2*C,eps=0,method="BFGS",control=list(reltol=reltol,maxit=maxit))
+    opt_result <- optim(w0, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C,eps=0,method="BFGS",control=list(reltol=reltol,maxit=maxit))
+    
     w <- opt_result$par
+    
+    # Try reducing the C parameter
+    Cnew <-C
+    while(svm_opt_grad(w,X,y,C,eps)[1]==0.0) {
+      Cnew<-Cnew/2
+      w <- optim(w, svm_opt_func, X=X, y=y, C=Cnew,eps=0,control=list(reltol=1e-30,maxit=maxit))$par
+    }
+    w <- optim(w, svm_opt_func, gr=svm_opt_grad, X=X, y=y, C=C,eps=0,method="BFGS",control=list(reltol=reltol,maxit=maxit))$par
+    
+    #print(svm_opt_grad(w,X,y,C,eps))
+    #print(numDeriv::grad(svm_opt_grad,w,X=X,y=y,C=C,eps=eps,method="simple"))
+    
 
   } else {
     stop("Unknown optimization method.")
@@ -135,7 +149,7 @@ setMethod("line_coefficients", signature(object="LinearSVM"), function(object) {
 
 svm_opt_func <- function(w, X, y, C, eps=0.0) {
   d <- 1 - y * (X %*% w)
-  l <- C * sum(d[d>0]) +  w[-1] %*% w[-1] + eps
+  l <- C * sum(d[d>0]) +  0.5 * w[-1] %*% w[-1] + eps
   return(as.numeric(l))
 }
 
@@ -143,9 +157,9 @@ svm_opt_grad <- function(w, X, y, C, eps=0.0) {
   d <- 1 - y * (X %*% w)
   grad <- - y * X
   if (sum(d>0)>0) {
-    grad <- C * colSums(grad[d>0,,drop=FALSE]) + 2 * c(0,w[-1]+eps)
+    grad <- C * colSums(grad[d>0,,drop=FALSE]) + c(0,w[-1]+eps)
   } else {
-    grad <- 2 * c(0,w[-1])
+    grad <-  c(0,w[-1]+eps)
   }
   return(grad)
 }
