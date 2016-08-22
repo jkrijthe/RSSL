@@ -6,17 +6,12 @@ setClass("SVM",
 
 #' SVM Classifier
 #'
-#' @param X Design matrix
-#' @param y Labels of the observations
-#' @param C Cost variable
-#' @param method Estimation procedure c("Dual","Primal","BGD","SGD","Pegasos")
-#' @param scale Whether a z-transform should be applied (default: TRUE)
-#' @param intercept Whether an intercept should be added (default: FALSE)
+#' @param C numeric; Cost variable
 #' @param eps Small value to ensure positive definiteness of the matrix in the QP formulation
 #' @inheritParams BaseClassifier
 #' @return S4 object of type SVM
 #' @export
-SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,x_center=TRUE,eps=1e-9) {
+SVM<-function(X, y, C=1, kernel=NULL, scale=TRUE,intercept=FALSE,x_center=TRUE,eps=1e-9) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,scale=scale,intercept=intercept,x_center=x_center)
@@ -32,37 +27,31 @@ SVM<-function(X, y, C=1, method="Dual",scale=TRUE,intercept=FALSE,kernel=NULL,x_
 
   ## Start Implementation
   time.begin<-Sys.time()
-  if (method=="Dual") {
-    
-    if (!is.null(kernel)) {
-      if (inherits(kernel,"kernel")) {
-        Xtrain<-X
-        K<-kernelMatrix(kernel,X,X)
-      }
-    } else {
-      Xtrain <- X
-      K <- X %*% t(X)
+  
+  if (!is.null(kernel)) {
+    if (inherits(kernel,"kernel")) {
+      Xtrain<-X
+      K<-kernelMatrix(kernel,X,X)
     }
-     
-    Dmat <- (diag(y) %*% K %*% diag(y)) + eps*diag(nrow(X)) #Add small constant to diagonal to ensure numerical PSD
-    dvec <- matrix(1, nrow(X), 1)
-    Amat <- diag(nrow(X))
-    Amat <- t(rbind(y,Amat,-Amat))
-    bvec <- c(rep(0,nrow(X)+1),rep(-C,nrow(X)))
-    
-    opt_result <- solve.QP(Dmat, dvec, Amat, bvec, meq=1)
-    alpha <- opt_result$solution*y
-    idx <- ((opt_result$iact-2) %% length(alpha))+1
-    
-    bias <- K[-idx,,drop=FALSE] %*% alpha - y[-idx]
-    print(bias)
-    bias <- -median(bias)
-
-    #TODO: check this: should we exclude objects not on the margin (alpha=1) in calculating b?
-    #print(K[SVs,] %*% alpha - y[SVs])   
-  }  else{
-    stop("Unknown optimization method.")
+  } else {
+    Xtrain <- X
+    K <- X %*% t(X)
   }
+  
+  # Add small constant to diagonal to ensure numerical PSD 
+  Dmat <- (diag(y) %*% K %*% diag(y)) + eps*diag(nrow(X)) 
+  dvec <- matrix(1, nrow(X), 1)
+  Amat <- diag(nrow(X))
+  Amat <- t(rbind(y,Amat,-Amat))
+  bvec <- c(rep(0,nrow(X)+1),rep(-C,nrow(X)))
+  
+  opt_result <- solve.QP(Dmat, dvec, Amat, bvec, meq=1)
+  alpha <- opt_result$solution*y
+  idx <- ((opt_result$iact-2) %% length(alpha))+1
+  
+  bias <- K[-idx,,drop=FALSE] %*% alpha - y[-idx]
+  
+  bias <- -median(bias)
   
   time.passed<-Sys.time()-time.begin
   
