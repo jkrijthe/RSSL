@@ -16,8 +16,21 @@ setClass("Classifier",
 #' @rdname rssl-formatting
 #' @aliases show,Classifier-method
 setMethod("show", signature(object="Classifier"), function(object) {
-  cat(object@name,"\n")
+  cat(object@name,"\n\n")
+  if (!is.null(object@modelform)) {
+    cat("Formula: ",Reduce(paste, deparse(object@modelform)),"\n")
+  }
   cat("Classnames:\n",object@classnames,"\n")
+  if (.hasSlot(object,"theta")) {
+    cat("Classifier weights: ",object@theta,"\n")
+  }
+  if (.hasSlot(object,"w")) {
+    cat("Classifier weights: ",object@theta,"\n")
+  }
+  if (!is.null(object@scaling)) {
+    cat("Normalization applied:\n")
+    print(object@scaling)
+  }
 })
 
 setClass("LinearClassifier",
