@@ -1,7 +1,7 @@
 #' @include Classifier.R
 setClass("KernelLeastSquaresClassifier",
-         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",Xtrain="ANY",y_scale="numeric",kernel="ANY"),
-         prototype(name="KernelLeastSquaresClassifier",scaling=NULL,kernel=NULL,Xtrain=NULL,y_scale=0), 
+         representation(theta="matrix",unlabels="ANY",scaling="ANY",optimization="ANY",intercept="ANY",Xtrain="ANY",y_scale="numeric",kernel="ANY",threshold="numeric"),
+         prototype(name="KernelLeastSquaresClassifier",scaling=NULL,kernel=NULL,Xtrain=NULL,y_scale=0,threshold=0.5), 
          contains="Classifier")
 
 #' Kernelized Least Squares Classifier
@@ -20,49 +20,7 @@ setClass("KernelLeastSquaresClassifier",
 #' \item{classnames}{the names of the classes}
 #' \item{modelform}{formula object of the model used in regression}
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
-#' @examples
-#' library(ggplot2)
-#' library(kernlab)
-#' # Two class problem
-#' 
-#' dmat<-model.matrix(Species~.-1,iris[51:150,])
-#' tvec<-droplevels(iris$Species[51:150])
-#' testdata <- data.frame(tvec,dmat[,1:2])
-#' colnames(testdata)<-c("Class","X1","X2")
-#' 
-#' precision<-100
-#' xgrid<-seq(min(dmat[,1]),max(dmat[,1]),length.out=precision)
-#' ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
-#' gridmat <- expand.grid(xgrid,ygrid)
-#' 
-#' g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,
-#'    kernel=rbfdot(0.01),lambda=0.000001,scale = TRUE)
-#' plotframe <- cbind(gridmat, decisionvalues(g_kernel,gridmat))
-#' colnames(plotframe)<- c("x","y","Output")
-#' ggplot(plotframe, aes(x=x,y=y)) +
-#'   geom_tile(aes(fill = Output)) +
-#'   stat_contour(aes(z=Output),breaks=c(0.5),size=1) +
-#'   scale_fill_gradient(low="yellow", high="red",limits=c(0,1)) +
-#'   geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=3)
-#' 
-#' # Multiclass problem
-#' dmat<-model.matrix(Species~.-1,iris)
-#' tvec<-iris$Species
-#' testdata <- data.frame(tvec,dmat[,1:2])
-#' colnames(testdata)<-c("Class","X1","X2")
-#' 
-#' precision<-100
-#' xgrid<-seq(min(dmat[,1]),max(dmat[,1]),length.out=precision)
-#' ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
-#' gridmat <- expand.grid(xgrid,ygrid)
-#' 
-#' g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,
-#'    kernel=rbfdot(0.1),lambda=0.00001,scale = TRUE,x_center=TRUE)
-#' plotframe <- cbind(gridmat, 
-#'                    maxind=apply(decisionvalues(g_kernel,gridmat),1,which.max))
-#' ggplot(plotframe, aes(x=Var1,y=Var2)) +
-#'   geom_tile(aes(fill = factor(maxind,labels=levels(tvec)))) +
-#'   geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=4,alpha=0.5)
+#' @example inst/examples/example-KernelLeastSquaresClassifier.R
 #' @export
 KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
   
@@ -125,8 +83,8 @@ setMethod("loss", signature(object="KernelLeastSquaresClassifier"), function(obj
     Y <- ModelVariables$Y
   }
   
-  if (is.null(y)) { stop("No labels supplied.")}
-  
+  if (is.null(Y)) { stop("No labels supplied.")}
+
   expscore <- kernelMatrix(object@kernel,X,object@Xtrain)%*% object@theta
   Y <- sweep(Y,2,object@y_scale,"-")
   return(rowSums((expscore - Y)^2))
