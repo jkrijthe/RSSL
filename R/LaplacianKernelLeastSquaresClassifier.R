@@ -1,11 +1,11 @@
 #' Laplacian Regularized Least Squares Classifier
 #' 
-#' @param adjacency_kernel kernlab::kernel to use as adjacency kernel
 #' @param gamma numeric; Weight of the unlabeled data
+#' @inheritParams LaplacianSVM
 #' @inheritParams BaseClassifier
-#' @example tests/examples/exampleLaplacianKernelLeastSquaresClassifier.R
+#' @example inst/examples/example-LaplacianKernelLeastSquaresClassifier.R
 #' @export
-LaplacianKernelLeastSquaresClassifier <- function(X, y, X_u, lambda=0, gamma=0, kernel=vanilladot(), adjacency_kernel=rbfdot(1/4), x_center=TRUE, scale=TRUE, y_scale=TRUE) {
+LaplacianKernelLeastSquaresClassifier <- function(X, y, X_u, lambda=0, gamma=0, kernel=kernlab::vanilladot(), adjacency_distance="euclidean", adjacency_k=6, x_center=TRUE, scale=TRUE, y_scale=TRUE, normalized_laplacian=FALSE) {
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
   X <- ModelVariables$X
@@ -36,10 +36,18 @@ LaplacianKernelLeastSquaresClassifier <- function(X, y, X_u, lambda=0, gamma=0, 
     if (gamma>0) {
       Xtrain <- rbind(X,X_u)
       K <- kernelMatrix(kernel,Xtrain,Xtrain)
-      W <- kernelMatrix(adjacency_kernel,Xtrain,Xtrain)
-      L <- diag(rowSums(W)) - W
+      W <- adjacency_knn(Xtrain,distance=adjacency_distance,k=adjacency_k)
+      
+      d <- rowSums(W)
+      L <- diag(d) - W
+      if (normalized_laplacian) {
+        L <- diag(1/sqrt(d)) %*% L %*% diag(1/sqrt(d))
+      }
+      
       Y <- rbind(Y,matrix(0,u,ncol(Y)))
-      theta <- solve(Matrix::bdiag(diag(l),0*diag(u)) %*% K + lambda*diag(n)*l + (gamma*l/((l+u)^2))*L%*%K, Y)
+      J <- Matrix::bdiag(diag(l),0*diag(u))
+      
+      theta <- solve(J %*% K + lambda*diag(n)*l + (gamma*l/((l+u)^2))*L%*%K, Y)
       theta<-matrix(theta)
     } else {
       Xtrain <- X
@@ -60,4 +68,23 @@ LaplacianKernelLeastSquaresClassifier <- function(X, y, X_u, lambda=0, gamma=0, 
       Xtrain=Xtrain,
       y_scale=y_scale
   )
+}
+
+#' Calculate knn adjacency matrix
+#' 
+#' Calculates symmetric adjacency: objects are neighbours is either one of them is in the set of nearest neighbours of the other.
+#' 
+#' @param X matrix; input matrix
+#' @param distance character; distance metric used in the \code{dist} function
+#' @param k integer; Number of neighbours
+#' @return Symmetric binary adjacency matrix
+adjacency_knn <- function(X,distance="euclidean",k=6) {
+  
+  Ds <- as.matrix(dist(X,method=distance))
+  neighbours <- apply(Ds,1,function(x) sort(x,index.return=TRUE)$ix[2:(k+1)])  %>% as.integer
+  adj <- as.matrix(Matrix::sparseMatrix(i=rep(1:nrow(X),each=k),
+                                        j=neighbours,
+                                        x=1))
+  adj <- (adj | t(adj)) * 1
+  
 }

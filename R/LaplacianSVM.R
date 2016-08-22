@@ -4,15 +4,20 @@ setClass("LaplacianSVM",
          prototype(name="Support Vector Machine"),
          contains="Classifier")
 
-#' Laplacian SVM classifier.
-#'
-#' @param adjacency_kernel kernlab::kernel to use as adjacency kernel
+#' Laplacian SVM classifier
+#' 
+#' Manifold regularization applied to the least squares classifier as proposed in Belkin et al. (2006). 
+#' 
+#' @param adjacency_k integer; Number of of neighbours used to construct adjacency graph.
+#' @param adjacency_distance character; distance metric used to construct adjacency graph from the dist function. Default: "euclidean"
+#' @param normalized_laplacian logical; If TRUE use the normalized Laplacian, otherwise, the Laplacian is used
 #' @param gamma numeric; Weight of the unlabeled data
 #' @inheritParams BaseClassifier
 #' @return S4 object of type LaplacianSVM
-#' @example tests/examples/exampleLaplacianSVM.R
+#' @references Belkin, M., Niyogi, P. & Sindhwani, V., 2006. Manifold regularization: A geometric framework for learning from labeled and unlabeled examples. Journal of Machine Learning Research, 7, pp.2399-2434.
+#' @example inst/examples/example-LaplacianSVM.R
 #' @export
-LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=vanilladot(), adjacency_kernel=rbfdot(1/4)) {
+LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=vanilladot(), adjacency_distance="euclidean", adjacency_k=6,normalized_laplacian=FALSE) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X, y=y, X_u=X_u, scale=scale, intercept=FALSE, x_center=TRUE)
@@ -37,8 +42,15 @@ LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=van
   if (inherits(kernel,"kernel")) {
       Xtrain <- rbind(X,X_u)
       K <- kernelMatrix(kernel,Xtrain,Xtrain)
-      W <- kernelMatrix(adjacency_kernel,Xtrain,Xtrain)
-      L <- diag(rowSums(W)) - W
+
+      W <- adjacency_knn(Xtrain,distance=adjacency_distance,k=adjacency_k)
+      
+      d <- rowSums(W)
+      L <- diag(d) - W
+      if (normalized_laplacian) {
+        L <- diag(1/sqrt(d)) %*% L %*% diag(1/sqrt(d))
+      }
+      
       Y <- diag(y)
       J <- cbind(diag(l),matrix(0,l,u))
       #theta <- solve(Matrix::bdiag(diag(l),0*diag(u)) %*% K + lambda*diag(n)*l + (gamma*l/((l+u)^2))*L%*%K, Y)
@@ -51,7 +63,7 @@ LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=van
       Amat <- t(rbind(y,Amat,-Amat))
       bvec <- c(rep(0,nrow(X)+1),rep(-1/l,nrow(X)))
       
-      beta <- solve.QP(Q+eps*diag(nrow(Q)), rep(1,l), Amat, bvec, meq=1)$solution
+      beta <- solve.QP(Q, rep(1,l), Amat, bvec, meq=1)$solution
       
       alpha <- (Qprime %*% beta)
       
@@ -74,8 +86,9 @@ LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=van
           bias <- -median(K[SVmin,] %*% alpha + 1)
         }
       }
-      
+      #print(K[(1:l)[SVs],] %*% alpha - y[SVs])
       bias <- -median(K[(1:l)[SVs],] %*% alpha - y[SVs])
+      
   } else {
     stop("No appropriate kernel function from kernlab supplied. See, for instance, the help of vanilladot()")
   }
