@@ -39,10 +39,7 @@ measure_losstrain(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
 \item{y_test}{labels of test objects}
 }
 \description{
-Classification error on test set
-}
-\details{
-Performance measures that can be used in \code{\link{CrossValidationSSL}} and \code{\link{LearningCurveSSL}}
+Classification accuracy on test set and other performance measure that can be used in \code{\link{CrossValidationSSL}} and \code{\link{LearningCurveSSL}}
 }
 \section{Functions}{
 \itemize{
@@ -54,4 +51,13 @@ Performance measures that can be used in \code{\link{CrossValidationSSL}} and \c
 
 \item \code{measure_losstrain}: Average loss on labeled and unlabeled objects
 }}
+\seealso{
+Other RSSL utilities: \code{\link{LearningCurveSSL}},
+  \code{\link{SSLDataFrameToMatrices}},
+  \code{\link{add_missinglabels_mar}},
+  \code{\link{df_to_matrices}},
+  \code{\link{missing_labels}},
+  \code{\link{split_dataset_ssl}},
+  \code{\link{split_random}}, \code{\link{true_labels}}
+}
 

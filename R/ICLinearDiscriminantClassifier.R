@@ -6,10 +6,11 @@ setClass("ICLinearDiscriminantClassifier",
 
 #' Implicitly Constrained Semi-supervised Linear Discriminant Classifier
 #'
-#' Semi-supervised version of Linear Discriminant Analysis using implicit constraints as described in (Krijthe & Loog 2014)
-#' This method finds the soft labeling of the unlabeled objects, whose resulting LDA solution gives the highest log-likelihood when evaluated on the labeled objects only.
+#' Semi-supervised version of Linear Discriminant Analysis using implicit constraints as described in (Krijthe & Loog 2014). This method finds the soft labeling of the unlabeled objects, whose resulting LDA solution gives the highest log-likelihood when evaluated on the labeled objects only. See also \code{\link{ICLeastSquaresClassifier}}.
 #'
 #' @references Krijthe, J.H. & Loog, M., 2014. Implicitly Constrained Semi-Supervised Linear Discriminant Analysis. In International Conference on Pattern Recognition. Stockholm, pp. 3762-3767.
+#'
+#' @family RSSL classifiers
 #'
 #' @param X design matrix of the labeled objects
 #' @param y vector with labels

@@ -6,9 +6,9 @@ setClass("GRFClassifier",
          prototype(name="GRFClassifier",scaling=NULL), 
          contains="Classifier")
 
-#' Gaussian Random Fields and Harmonic functions
+#' Label propagation using Gaussian Random Fields and Harmonic functions
 #' 
-#' Label propagation as proposed in Zhu et al. (2003).
+#' Implements the approach proposed in Zhu et al. (2003) to label propagation over an affinity graph. Note, as in the original paper, we consider the transductive scenario, so the implementation does not generalize to out of sample predictions. The approach minimizes the squared difference in labels assigned to different objects, where the contribution of each difference to the loss is weighted by the affinity between the objects. The default in this implementation is to use a knn adjacency matrix based on euclidean distance to determine this weight. Setting \code{adjacency="heat"} will use an RBF kernel over euclidean distances between objects to determine the weights.
 #' 
 #' @param adjacency character; "nn" for nearest neighbour graph or "heat" for radial basis adjacency matrix
 #' @param adjacency_sigma double; width of the rbf adjacency matrix
@@ -18,6 +18,7 @@ setClass("GRFClassifier",
 #' @references Zhu, X., Ghahramani, Z. & Lafferty, J., 2003. Semi-supervised learning using gaussian fields and harmonic functions. In Proceedings of the 20th International Conference on Machine Learning. pp. 912-919.
 #' @inheritParams BaseClassifier
 #' @example inst/examples/example-GRFClassifier.R
+#' @family RSSL classifiers
 #' @export
 GRFClassifier<-function(X,y,X_u,
                         adjacency="nn", adjacency_distance="euclidean",

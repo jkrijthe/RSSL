@@ -7,9 +7,9 @@
 generateSpirals(n = 100, sigma = 0.1)
 }
 \arguments{
-\item{n}{Number of objects to generate per class}
+\item{n}{integer; Number of objects to generate per class}
 
-\item{sigma}{Noise added}
+\item{sigma}{numeric; Noise added}
 }
 \description{
 Generate Intersecting Spirals
@@ -17,5 +17,14 @@ Generate Intersecting Spirals
 \examples{
 data <- generateSpirals(100,sigma=0.1)
 #plot3D::scatter3D(data$x,data$y,data$z,col="black")
+}
+\seealso{
+Other RSSL datasets: \code{\link{generate2ClassGaussian}},
+  \code{\link{generateABA}},
+  \code{\link{generateCrescentMoon}},
+  \code{\link{generateFourClusters}},
+  \code{\link{generateParallelPlanes}},
+  \code{\link{generateSlicedCookie}},
+  \code{\link{generateTwoCircles}}
 }
 

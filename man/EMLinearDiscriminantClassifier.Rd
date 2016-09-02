@@ -25,6 +25,35 @@ EMLinearDiscriminantClassifier(X, y, X_u, method = "EM", scale = FALSE,
 \item{max_iter}{integer; Maximum number of iterations}
 }
 \description{
-Expectation Maximization
+Expectation Maximization applied to the linear discriminant classifier assuming Gaussian classes with a shared covariance matrix.
+}
+\details{
+Starting from the supervised solution, uses the Expectation Maximization algorithm (see Dempster et al. (1977)) to iteratively update the means and shared covariance of the classes (Maximization step) and updates the responsibilities for the unlabeled objects (Expectation step).
+}
+\references{
+Dempster, A., Laird, N. & Rubin, D., 1977. Maximum likelihood from incomplete data via the EM algorithm. Journal of the Royal Statistical Society. Series B, 39(1), pp.1-38.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

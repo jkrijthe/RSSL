@@ -7,10 +7,16 @@ setClass("LogisticRegression",
          prototype(name="LogisticRegression",opt_result=NULL), 
          contains="Classifier")
 
-#' (Regularized) Logistic Regression implementation used for comparison with semi-supervised implementations
+#' (Regularized) Logistic Regression implementation 
+#' 
+#' Implementation of Logistic Regression that is useful for comparisons with semi-supervised logistic regression implementations, such as \code{\link{EntropyRegularizedLogisticRegression}}.
+#' 
+#' @family RSSL classifiers
+#' 
 #' @param lambda numeric; L2 regularization parameter
 #' @param init numeric; Initialization of parameters for the optimization
 #' @inheritParams BaseClassifier
+#' 
 #' @export
 LogisticRegression <- function(X, y, lambda=0.0, intercept=TRUE, scale=FALSE, init=NA, x_center=FALSE) {
   

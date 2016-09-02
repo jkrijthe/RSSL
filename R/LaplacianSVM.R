@@ -6,15 +6,20 @@ setClass("LaplacianSVM",
 
 #' Laplacian SVM classifier
 #' 
-#' Manifold regularization applied to the least squares classifier as proposed in Belkin et al. (2006). 
-#' 
+#' Manifold regularization applied to the support vector machine as proposed in Belkin et al. (2006). As an adjacency matrix, we use the k nearest neighbour graph based on a chosen distance (default: euclidean). 
+#'
+#' @references Belkin, M., Niyogi, P. & Sindhwani, V., 2006. Manifold regularization: A geometric framework for learning from labeled and unlabeled examples. Journal of Machine Learning Research, 7, pp.2399-2434.
+#'
+#' @family RSSL classifiers
+#'
 #' @param adjacency_k integer; Number of of neighbours used to construct adjacency graph.
 #' @param adjacency_distance character; distance metric used to construct adjacency graph from the dist function. Default: "euclidean"
 #' @param normalized_laplacian logical; If TRUE use the normalized Laplacian, otherwise, the Laplacian is used
 #' @param gamma numeric; Weight of the unlabeled data
+#' 
 #' @inheritParams BaseClassifier
 #' @return S4 object of type LaplacianSVM
-#' @references Belkin, M., Niyogi, P. & Sindhwani, V., 2006. Manifold regularization: A geometric framework for learning from labeled and unlabeled examples. Journal of Machine Learning Research, 7, pp.2399-2434.
+#'
 #' @example inst/examples/example-LaplacianSVM.R
 #' @export
 LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=vanilladot(), adjacency_distance="euclidean", adjacency_k=6,normalized_laplacian=FALSE) {

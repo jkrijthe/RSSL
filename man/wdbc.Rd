@@ -3,7 +3,7 @@
 \docType{data}
 \name{wdbc}
 \alias{wdbc}
-\title{wdbc data to for unit testing}
+\title{wdbc data for unit testing}
 \description{
 Useful for testing the S4VM and WellSVM implementations
 }

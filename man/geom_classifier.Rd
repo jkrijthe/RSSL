@@ -12,6 +12,6 @@ geom_classifier(..., show_guide = TRUE)
 \item{show_guide}{logical (default: TRUE); Show legend}
 }
 \description{
-Deprecated: Use stat_classifier to plot classification boundaries
+Deprecated: Use geom_linearclassifier or stat_classifier to plot classification boundaries
 }
 

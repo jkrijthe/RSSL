@@ -6,11 +6,15 @@ setClass("MCPLDA",
 
 #' Maximum Contrastive Pessimistic Likelihood Estimation for Linear Discriminant Analysis
 #' 
-#'  Maximum Contrastive Pessimistic Likelihood (MCPL), estimation (Loog 2016) attempts to find a semi-supervised solution that has a higher likelihood compared to the supervised solution on the labeled and unlabeled data even for the worst possible labeling of the data. This is done by attempting to find a saddle point of the maximin problem, where the max is over the parameters of the semi-supervised solution and the min is over the labeling, while the objective is the difference in likelihood between the semi-supervised and the supervised solution measured on the labeled and unlabeled data. The implementation is a translation of the Matlab code of Loog (2016).
+#'  Maximum Contrastive Pessimistic Likelihood (MCPL) estimation (Loog 2016) attempts to find a semi-supervised solution that has a higher likelihood compared to the supervised solution on the labeled and unlabeled data even for the worst possible labeling of the data. This is done by attempting to find a saddle point of the maximin problem, where the max is over the parameters of the semi-supervised solution and the min is over the labeling, while the objective is the difference in likelihood between the semi-supervised and the supervised solution measured on the labeled and unlabeled data. The implementation is a translation of the Matlab code of Loog (2016).
+#'  
+#' @references Loog, M., 2016. Contrastive Pessimistic Likelihood Estimation for Semi-Supervised Classification. IEEE Transactions on Pattern Analysis and Machine Intelligence, 38(3), pp.462-475.
+#' 
+#' @family RSSL classifiers
 #' 
 #' @param max_iter integer; Maximum number of iterations
 #' @inheritParams BaseClassifier
-#' @references Loog, M., 2016. Contrastive Pessimistic Likelihood Estimation for Semi-Supervised Classification. IEEE Transactions on Pattern Analysis and Machine Intelligence, 38(3), pp.462-475.
+#' 
 #' @export
 MCPLDA <- function(X, y, X_u, x_center=FALSE, scale=FALSE, max_iter=1000) {
   

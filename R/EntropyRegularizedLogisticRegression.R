@@ -6,7 +6,7 @@ setClass("EntropyRegularizedLogisticRegression",
 
 #' Entropy Regularized Logistic Regression
 #'
-#' R Implementation of entropy regularized logistic regression implementation as proposed by Grandvalet & Bengio 2005. In the model an extra term is added to the objective function that penalizes the entropy of the posterior measured on the unlabeled examples.
+#' R Implementation of entropy regularized logistic regression implementation as proposed by Grandvalet & Bengio (2005). An extra term is added to the objective function of logistic regression that penalizes the entropy of the posterior measured on the unlabeled examples.
 #'
 #' @param lambda l2 Regularization
 #' @param lambda_entropy Weight of the labeled observations compared to the unlabeled observations

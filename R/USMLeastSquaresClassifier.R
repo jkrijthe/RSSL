@@ -7,7 +7,11 @@ setClass("USMLeastSquaresClassifier",
 
 #' Updated Second Moment Least Squares Classifier
 #' 
-#' See for instance \cite{Shaffer1991}. Use all data to estimate E(X'X).
+#' This methods uses the closed form solution of the supervised least squares problem, except that the second moment matrix (X'X) is exchanged with a second moment matrix that is estimated based on all data. See for instance \cite{Shaffer1991}, where in this implementation we use all data to estimate E(X'X), instead of just the labeled data. This method seems to work best when the data is first centered \code{x_center=TRUE} and the outputs are scaled using \code{y_scale=TRUE}.
+#' 
+#' @family RSSL classifiers
+#' 
+#' @references Shaffer, J.P., 1991. The Gauss-Markov Theorem and Random Regressors. The American Statistician, 45(4), pp.269-273.
 #' 
 #' @param lambda numeric; L2 regularization parameter
 #' @inheritParams BaseClassifier
@@ -31,8 +35,6 @@ USMLeastSquaresClassifier<-function(X, y, X_u, lambda=0, intercept=TRUE, x_cente
   }
   
   if (length(classnames)!=2) stop("Dataset does not contain 2 classes")
-
-  # There is a problem using ginv when using PCs as inputs: the problems seem to be rescaled such that the bias term is no longer correct
   
   ## Start Implementation
   n <- nrow(X)

@@ -4,8 +4,12 @@ X_u <- matrix(c(-1,-1,-1,0,0,0,-0.4,-0.5,-0.6,1.2,1.3,1.25),ncol=2)
 y <- factor(c(-1,1))
 
 g_sup <- SVM(X,y,scale=FALSE)
-g_constraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = TRUE)
-g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = FALSE)
+g_constraint <- TSVM(X=X,y=y,X_u=X_u,
+                     C=1,Cstar=0.1,balancing_constraint = TRUE)
+
+g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,
+                       C=1,Cstar=0.1,balancing_constraint = FALSE)
+
 g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1)
 
 w1 <- g_sup@alpha %*% X
@@ -36,9 +40,17 @@ y_e <- unlist(list(problem$y,problem$y_u))
 Xe<-rbind(X,X_u)
 
 g_sup <- SVM(X,y,scale=FALSE)
-g_constraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = TRUE,x_center = FALSE,verbose=TRUE)
-g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,C=10,Cstar=0.001,balancing_constraint = FALSE,x_center = FALSE,verbose=TRUE)
-g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=10,Cstar=0.001,verbose=TRUE,x_center = FALSE)
+g_constraint <- TSVM(X=X,y=y,X_u=X_u,
+                     C=1,Cstar=0.1,balancing_constraint = TRUE,
+                     x_center = FALSE,verbose=TRUE)
+
+g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,
+                       C=10,Cstar=0.001,balancing_constraint = FALSE,
+                       x_center = FALSE,verbose=TRUE)
+
+g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=10,Cstar=0.001,
+                    verbose=TRUE,x_center = FALSE)
+
 g_oracle <- SVM(Xe,y_e,scale=FALSE)
 
 w1 <- g_sup@alpha %*% X
@@ -53,7 +65,15 @@ points(X_u[,1],X_u[,2],col="darkgrey",pch=16,cex=1)
 abline(-g_sup@bias/w1[2],-w1[1]/w1[2],lty=2)
 abline(((1-g_sup@bias)/w1[2]),-w1[1]/w1[2],lty=2) # +1 Margin
 abline(((-1-g_sup@bias)/w1[2]),-w1[1]/w1[2],lty=2) # -1 Margin
-abline(-g_oracle@bias/w5[2],-w5[1]/w5[2],lty=1,col="purple") # Oracle
-abline(-g_constraint@bias/w2[2],-w2[1]/w2[2],lty=1,col="green") # With balancing constraint
-abline(-g_noconstraint@bias/w3[2],-w3[1]/w3[2],lty=1,col="red") # Without balancing constraint
-abline(-w4[1]/w4[3],-w4[2]/w4[3],lty=1,lwd=3,col="blue") # Linear TSVM implementation (no constraint)
+
+# Oracle:
+abline(-g_oracle@bias/w5[2],-w5[1]/w5[2],lty=1,col="purple")
+
+# With balancing constraint:
+abline(-g_constraint@bias/w2[2],-w2[1]/w2[2],lty=1,col="green")
+
+# Without balancing constraint:
+abline(-g_noconstraint@bias/w3[2],-w3[1]/w3[2],lty=1,col="red")
+
+# Linear TSVM implementation (no constraint):
+abline(-w4[1]/w4[3],-w4[2]/w4[3],lty=1,lwd=3,col="blue") 

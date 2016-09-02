@@ -6,18 +6,19 @@ setClass("MCNearestMeanClassifier",
 
 #' Moment Constrained Semi-supervised Nearest Mean Classifier
 #'
-#' To fit a true nearest mean classifier, set prior to equal class priors. Based on (Loog 2010).
+#' Update the means based on the moment constraints as defined in Loog (2010). The means estimated using the labeled data are updated by making sure their weighted mean corresponds to the overall mean on all (labeled and unlabeled) data. Optionally, the estimated variance of the classes can be re-estimated after this update is applied by setting update_sigma to \code{TRUE}. To get the true nearest mean classifier, rather than estimate the class priors, set them to equal priors using, for instance \code{prior=matrix(0.5,2)}.
 #'
 #' @references Loog, M., 2010. Constrained Parameter Estimation for Semi-Supervised Learning: The Case of the Nearest Mean Classifier. In Proceedings of the 2010 European Conference on Machine learning and Knowledge Discovery in Databases. pp. 291-304.
-#'
+#' 
+#' @family RSSL classifiers
+#' 
 #' @param update_sigma logical; Whether the estimate of the variance should be updated after the means have been updated using the unlabeled data
-#' @param prior matrix; class priors for the classes
+#' @param prior matrix; Class priors for the classes
 #' @inheritParams BaseClassifier
 #' @return S4  object; a list consisting of
 #' \item{means}{the approximation of piel}
 #' \item{prior}{the number of trials}
 #' \item{sigma}{the number of hits}
-#' @family RSSL classifiers
 #' 
 #' @export
 MCNearestMeanClassifier <- function(X, y, X_u, update_sigma=FALSE, prior=NULL, x_center=FALSE, scale=FALSE) {

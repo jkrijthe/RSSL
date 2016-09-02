@@ -30,7 +30,7 @@ S4 object of class LeastSquaresClassifier with the following slots:
 \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 }
 \description{
-Use least squares regression as a classification technique using classes as targets (1 for one class, 2 for the other). Implemented using matrix inversions, not the more numerically stable Singular Value Decomposition method. Note this method minimizes quadratic loss, not the truncated quadratic loss.
+Use least squares regression as a classification technique using a numeric encoding of classes as targets. Note this method minimizes quadratic loss, not the truncated quadratic loss.
 }
 \examples{
 library(ggplot2)
@@ -71,7 +71,8 @@ ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
 gridmat <- expand.grid(xgrid,ygrid)
 
 g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,
-                                       kernel=kernlab::rbfdot(0.01),lambda=0.000001,scale = TRUE)
+                                       kernel=kernlab::rbfdot(0.01),
+                                       lambda=0.000001,scale = TRUE)
 plotframe <- cbind(gridmat, decisionvalues(g_kernel,gridmat))
 colnames(plotframe)<- c("x","y","Output")
 ggplot(plotframe, aes(x=x,y=y)) +
@@ -92,11 +93,36 @@ ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
 gridmat <- expand.grid(xgrid,ygrid)
 
 g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,
-                                       kernel=kernlab::rbfdot(0.1),lambda=0.00001,scale = TRUE,x_center=TRUE)
+                      kernel=kernlab::rbfdot(0.1),lambda=0.00001,
+                      scale = TRUE,x_center=TRUE)
+
 plotframe <- cbind(gridmat, 
                    maxind=apply(decisionvalues(g_kernel,gridmat),1,which.max))
 ggplot(plotframe, aes(x=Var1,y=Var2)) +
   geom_tile(aes(fill = factor(maxind,labels=levels(tvec)))) +
   geom_point(aes(x=X1,y=X2,shape=Class),data=testdata,size=4,alpha=0.5)
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

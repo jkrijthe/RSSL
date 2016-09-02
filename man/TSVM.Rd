@@ -6,7 +6,7 @@
 \usage{
 TSVM(X, y, X_u, C, Cstar, kernel = kernlab::vanilladot(),
   balancing_constraint = TRUE, s = 0, x_center = TRUE, scale = FALSE,
-  eps = 1e-09, verbose = FALSE)
+  eps = 1e-09, max_iter = 20, verbose = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -31,10 +31,15 @@ TSVM(X, y, X_u, C, Cstar, kernel = kernlab::vanilladot(),
 
 \item{eps}{numeric; Stopping criterion for the maximinimization}
 
+\item{max_iter}{integer; Maximum number of iterations}
+
 \item{verbose}{logical; print debugging messages, only works for vanilladot() kernel (default: FALSE)}
 }
 \description{
-Transductive SVM using the CCCP algorithm as proposed by Collobert et al. (2006) implemented in R using the quadprog package. The implementation does not handle large datasets very well, but can be useful for visualization purposes.
+Transductive SVM using the CCCP algorithm as proposed by Collobert et al. (2006) implemented in R using the quadprog package. The implementation does not handle large datasets very well, but can be useful for smaller datasets and visualization purposes.
+}
+\details{
+C is the cost associated with labeled objects, while Cstar is the cost for the unlabeled objects. s control the loss function used for the unlabeled objects: it controls the size of the plateau for the symmetric ramp loss function. The balancing constraint makes sure the label assignments of the unlabeled objects are similar to the prior on the classes that was observed on the labeled data.
 }
 \examples{
 # Simple example with a few objects
@@ -43,8 +48,12 @@ X_u <- matrix(c(-1,-1,-1,0,0,0,-0.4,-0.5,-0.6,1.2,1.3,1.25),ncol=2)
 y <- factor(c(-1,1))
 
 g_sup <- SVM(X,y,scale=FALSE)
-g_constraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = TRUE)
-g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = FALSE)
+g_constraint <- TSVM(X=X,y=y,X_u=X_u,
+                     C=1,Cstar=0.1,balancing_constraint = TRUE)
+
+g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,
+                       C=1,Cstar=0.1,balancing_constraint = FALSE)
+
 g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1)
 
 w1 <- g_sup@alpha \%*\% X
@@ -75,9 +84,17 @@ y_e <- unlist(list(problem$y,problem$y_u))
 Xe<-rbind(X,X_u)
 
 g_sup <- SVM(X,y,scale=FALSE)
-g_constraint <- TSVM(X=X,y=y,X_u=X_u,C=1,Cstar=0.1,balancing_constraint = TRUE,x_center = FALSE,verbose=TRUE)
-g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,C=10,Cstar=0.001,balancing_constraint = FALSE,x_center = FALSE,verbose=TRUE)
-g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=10,Cstar=0.001,verbose=TRUE,x_center = FALSE)
+g_constraint <- TSVM(X=X,y=y,X_u=X_u,
+                     C=1,Cstar=0.1,balancing_constraint = TRUE,
+                     x_center = FALSE,verbose=TRUE)
+
+g_noconstraint <- TSVM(X=X,y=y,X_u=X_u,
+                       C=10,Cstar=0.001,balancing_constraint = FALSE,
+                       x_center = FALSE,verbose=TRUE)
+
+g_lin <- LinearTSVM(X=X,y=y,X_u=X_u,C=10,Cstar=0.001,
+                    verbose=TRUE,x_center = FALSE)
+
 g_oracle <- SVM(Xe,y_e,scale=FALSE)
 
 w1 <- g_sup@alpha \%*\% X
@@ -92,12 +109,44 @@ points(X_u[,1],X_u[,2],col="darkgrey",pch=16,cex=1)
 abline(-g_sup@bias/w1[2],-w1[1]/w1[2],lty=2)
 abline(((1-g_sup@bias)/w1[2]),-w1[1]/w1[2],lty=2) # +1 Margin
 abline(((-1-g_sup@bias)/w1[2]),-w1[1]/w1[2],lty=2) # -1 Margin
-abline(-g_oracle@bias/w5[2],-w5[1]/w5[2],lty=1,col="purple") # Oracle
-abline(-g_constraint@bias/w2[2],-w2[1]/w2[2],lty=1,col="green") # With balancing constraint
-abline(-g_noconstraint@bias/w3[2],-w3[1]/w3[2],lty=1,col="red") # Without balancing constraint
-abline(-w4[1]/w4[3],-w4[2]/w4[3],lty=1,lwd=3,col="blue") # Linear TSVM implementation (no constraint)
+
+# Oracle:
+abline(-g_oracle@bias/w5[2],-w5[1]/w5[2],lty=1,col="purple")
+
+# With balancing constraint:
+abline(-g_constraint@bias/w2[2],-w2[1]/w2[2],lty=1,col="green")
+
+# Without balancing constraint:
+abline(-g_noconstraint@bias/w3[2],-w3[1]/w3[2],lty=1,col="red")
+
+# Linear TSVM implementation (no constraint):
+abline(-w4[1]/w4[3],-w4[2]/w4[3],lty=1,lwd=3,col="blue") 
 }
 \references{
 Collobert, R. et al., 2006. Large scale transductive SVMs. Journal of Machine Learning Research, 7, pp.1687-1712.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

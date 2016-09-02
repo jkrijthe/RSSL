@@ -57,12 +57,9 @@ c.CrossValidation <- function(...) {
 #' 
 #' @details
 #' The input to this function can be either: a dataset in the form of a feature matrix and factor containing the labels, a dataset in the form of a formula and data.frame or a named list of these two options.
-#' 
-#'   
 #' There are two main modes in which the cross-validation can be carried out, controlled by the \code{leaveout} parameter. 
 #' When leaveout is "labeled", the folds are formed by non-overlapping labeled training sets of a user specified size. 
-#' Each of these folds is used as a labeled set, while the rest of the objects are split into the an unlabeled and the test set, controlled by \code{prop_unlabeled} parameter.
-#' Note that objects can be used multiple times in for testing, when training on a different fold, while other objects are never used for testing.
+#' Each of these folds is used as a labeled set, while the rest of the objects are split into the an unlabeled and the test set, controlled by \code{prop_unlabeled} parameter. Note that objects can be used multiple times for testing, when training on a different fold, while other objects may never used for testing.
 #' 
 #' The "test" option of \code{leaveout}, on the other hand, uses the folds as the test sets. This means every object will be used as a test object exactly once. The remaining objects in each training iteration are split randomly into a labeled and an unlabeled part, where the number of the labeled objects is controlled by the user through the n_labeled parameter.
 #' @param X design matrix of the labeled objects

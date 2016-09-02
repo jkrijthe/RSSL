@@ -27,6 +27,6 @@ localDescent(instance, label, labelNum, unlabelNum, gamma, C, beta, alpha)
 list(predictLabel=predictLabel,acc=acc,values=values,model=model)
 }
 \description{
-Local descent
+Local descent used in S4VM
 }
 

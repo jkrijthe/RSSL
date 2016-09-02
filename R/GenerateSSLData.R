@@ -2,9 +2,11 @@
 #'
 #' Generate a sliced cookie dataset: a circle with a large margin in the middle.
 #'
-#' @param n number of observations to generate
-#' @param expected TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
-#' @param gap Size of the gap
+#' @family RSSL datasets
+#' 
+#' @param n integer; number of observations to generate
+#' @param expected logical; TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
+#' @param gap numeric; Size of the gap
 #' @examples
 #' data <- generateSlicedCookie(1000,expected=FALSE)
 #' plot(data[,1],data[,2],col=data$Class,asp=1)
@@ -25,6 +27,7 @@ generateSlicedCookie<-function(n=100, expected=FALSE, gap=1) {
 #' Generate data from 2 circles
 #' 
 #' One circle circumscribes the other
+#' @family RSSL datasets
 #' 
 #' @param n integer; Number of examples to generate
 #' @param noise_var numeric; size of the variance parameter
@@ -39,6 +42,10 @@ generateTwoCircles <- function(n=100, noise_var=0.2) {
 }
 
 #' Generate data from 2 alternating classes
+#' 
+#' Two clusters belonging to three classes: the cluster in the middle belongs to one class and the two on the outside to the others.
+#' 
+#' @family RSSL datasets
 #' 
 #' @param n integer; Number of examples to generate
 #' @param d integer; dimensionality of the problem
@@ -59,7 +66,9 @@ generateABA<-function(n=100,d=2,var=1) {
   return(data.frame(X,Class=factor(y)))
 }
 
-#' Generate data from 2 gaussian distributed classes
+#' Generate data from 2 Gaussian distributed classes
+#' 
+#' @family RSSL datasets
 #' 
 #' @param n integer; Number of examples to generate
 #' @param d integer; dimensionality of the problem
@@ -84,10 +93,13 @@ generate2ClassGaussian<-function(n=10000,d=100,var=1,expected=TRUE) {
 #' Generate Four Clusters dataset
 #'
 #' Generate a four clusters dataset
-#'
-#' @param n number of observations to generate
-#' @param distance Distance between clusters (default: 6)
-#' @param expected TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
+#' 
+#' @family RSSL datasets
+#' 
+#' @param n integer; Number of observations to generate
+#' @param distance numeric; Distance between clusters (default: 6)
+#' @param expected logical; TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin
+#' 
 #' @examples
 #' data <- generateFourClusters(1000,distance=6,expected=TRUE)
 #' plot(data[,1],data[,2],col=data$Class,asp=1)
@@ -107,10 +119,15 @@ generateFourClusters<-function(n=100,distance=6,expected=FALSE) {
 }
 
 #' Generate Crescent Moon dataset
-#'
-#' @param n Number of objects to generate 
-#' @param d Dimensionality of the dataset
-#' @param sigma Noise added 
+#' 
+#' Generate a "crescent moon"/"banana" dataset
+#' 
+#' @family RSSL datasets
+#' 
+#' @param n integer; Number of objects to generate 
+#' @param d integer; Dimensionality of the dataset
+#' @param sigma numeric; Noise added 
+#' 
 #' @examples
 #' data<-generateCrescentMoon(150,2,1)
 #' plot(data$X1,data$X2,col=data$Class,asp=1)
@@ -128,9 +145,11 @@ generateCrescentMoon<-function(n=100,d=2,sigma=1) {
 }
 
 #' Generate Intersecting Spirals
-#'
-#' @param n Number of objects to generate per class
-#' @param sigma Noise added 
+#' 
+#' @family RSSL datasets
+#' 
+#' @param n integer; Number of objects to generate per class
+#' @param sigma numeric; Noise added 
 #' @examples
 #' data <- generateSpirals(100,sigma=0.1)
 #' #plot3D::scatter3D(data$x,data$y,data$z,col="black")
@@ -147,15 +166,19 @@ generateSpirals <- function(n=100,sigma=0.1) {
 }
 
 #' Generate Parallel planes
-#'
-#' @param n Number of objects to generate 
-#' @param classes Number of classes
-#' @param sigma Noise added 
+#' 
+#' @family RSSL datasets
+#' 
+#' @param n integer; Number of objects to generate 
+#' @param classes integer; Number of classes
+#' @param sigma double; Noise added
+#'  
 #' @examples
 #' library(ggplot2)
 #' df <- generateParallelPlanes(100,3)
 #' ggplot(df, aes(x=x,y=y,color=Class,shape=Class)) +
 #'  geom_point()
+#'
 #' @export
 generateParallelPlanes <- function(n=100,classes=3,sigma=0.1) {
   x <- c()

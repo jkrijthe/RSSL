@@ -23,8 +23,10 @@ MCLinearDiscriminantClassifier(X, y, X_u, method = "invariant",
 \item{scale}{logical; Should the features be normalized? (default: FALSE)}
 }
 \description{
-Using an update of the estimated means and covariance proposed in (Loog 2014). 
-Using the method="invariant" option, uses the scale invariant parameter update proposed in (Loog 2014), while method="closedform" using the non-scale invariant version from (Loog 2012).
+A linear discriminant classifier that updates the estimates of the means and covariance matrix based on unlabeled examples.
+}
+\details{
+This method uses the parameter updates of the estimated means and covariance proposed in (Loog 2014). Using the method="invariant" option, uses the scale invariant parameter update proposed in (Loog 2014), while method="closedform" using the non-scale invariant version from (Loog 2012).
 }
 \references{
 Loog, M., 2012. Semi-supervised linear discriminant analysis using moment constraints. Partially Supervised Learning, LNCS, 7081, pp.32-41.
@@ -32,6 +34,26 @@ Loog, M., 2012. Semi-supervised linear discriminant analysis using moment constr
 Loog, M., 2014. Semi-supervised linear discriminant analysis through moment-constraint parameter estimation. Pattern Recognition Letters, 37, pp.24-31.
 }
 \seealso{
-Other RSSL.classifiers: \code{\link{MCNearestMeanClassifier}}
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

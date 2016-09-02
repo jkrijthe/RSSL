@@ -7,11 +7,11 @@
 generateFourClusters(n = 100, distance = 6, expected = FALSE)
 }
 \arguments{
-\item{n}{number of observations to generate}
+\item{n}{integer; Number of observations to generate}
 
-\item{distance}{Distance between clusters (default: 6)}
+\item{distance}{numeric; Distance between clusters (default: 6)}
 
-\item{expected}{TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin}
+\item{expected}{logical; TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin}
 }
 \description{
 Generate a four clusters dataset
@@ -19,5 +19,14 @@ Generate a four clusters dataset
 \examples{
 data <- generateFourClusters(1000,distance=6,expected=TRUE)
 plot(data[,1],data[,2],col=data$Class,asp=1)
+}
+\seealso{
+Other RSSL datasets: \code{\link{generate2ClassGaussian}},
+  \code{\link{generateABA}},
+  \code{\link{generateCrescentMoon}},
+  \code{\link{generateParallelPlanes}},
+  \code{\link{generateSlicedCookie}},
+  \code{\link{generateSpirals}},
+  \code{\link{generateTwoCircles}}
 }
 

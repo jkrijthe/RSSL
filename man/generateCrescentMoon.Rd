@@ -7,17 +7,26 @@
 generateCrescentMoon(n = 100, d = 2, sigma = 1)
 }
 \arguments{
-\item{n}{Number of objects to generate}
+\item{n}{integer; Number of objects to generate}
 
-\item{d}{Dimensionality of the dataset}
+\item{d}{integer; Dimensionality of the dataset}
 
-\item{sigma}{Noise added}
+\item{sigma}{numeric; Noise added}
 }
 \description{
-Generate Crescent Moon dataset
+Generate a "crescent moon"/"banana" dataset
 }
 \examples{
 data<-generateCrescentMoon(150,2,1)
 plot(data$X1,data$X2,col=data$Class,asp=1)
+}
+\seealso{
+Other RSSL datasets: \code{\link{generate2ClassGaussian}},
+  \code{\link{generateABA}},
+  \code{\link{generateFourClusters}},
+  \code{\link{generateParallelPlanes}},
+  \code{\link{generateSlicedCookie}},
+  \code{\link{generateSpirals}},
+  \code{\link{generateTwoCircles}}
 }
 

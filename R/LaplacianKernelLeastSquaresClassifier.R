@@ -1,5 +1,11 @@
 #' Laplacian Regularized Least Squares Classifier
 #' 
+#' Implements manifold regularization through the graph Laplacian as proposed by Belkin et al. 2006. As an adjacency matrix, we use the k nearest neighbour graph based on a chosen distance (default: euclidean).
+#' 
+#' @references Belkin, M., Niyogi, P. & Sindhwani, V., 2006. Manifold regularization: A geometric framework for learning from labeled and unlabeled examples. Journal of Machine Learning Research, 7, pp.2399-2434.
+#' 
+#' @family RSSL classifiers
+#' 
 #' @param gamma numeric; Weight of the unlabeled data
 #' @inheritParams LaplacianSVM
 #' @inheritParams BaseClassifier

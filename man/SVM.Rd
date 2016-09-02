@@ -22,12 +22,39 @@ SVM(X, y, C = 1, kernel = NULL, scale = TRUE, intercept = FALSE,
 
 \item{x_center}{logical;  Should the features be centered?}
 
-\item{eps}{Small value to ensure positive definiteness of the matrix in the QP formulation}
+\item{eps}{numeric; Small value to ensure positive definiteness of the matrix in the QP formulation}
 }
 \value{
 S4 object of type SVM
 }
 \description{
-SVM Classifier
+Support Vector Machine implementation using the \code{quadprog} solver.
+}
+\details{
+This implementation will typically be slower and use more memory than the svmlib implementation in the e1071 package. It is, however, useful for comparisons with the \code{\link{TSVM}} implementation.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SelfLearning}},
+  \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

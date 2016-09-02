@@ -7,11 +7,11 @@
 generateSlicedCookie(n = 100, expected = FALSE, gap = 1)
 }
 \arguments{
-\item{n}{number of observations to generate}
+\item{n}{integer; number of observations to generate}
 
-\item{expected}{TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin}
+\item{expected}{logical; TRUE if the large margin equals the class boundary, FALSE if the class boundary is perpendicular to the large margin}
 
-\item{gap}{Size of the gap}
+\item{gap}{numeric; Size of the gap}
 }
 \value{
 A data.frame with n objects from the sliced cookie example
@@ -22,5 +22,14 @@ Generate a sliced cookie dataset: a circle with a large margin in the middle.
 \examples{
 data <- generateSlicedCookie(1000,expected=FALSE)
 plot(data[,1],data[,2],col=data$Class,asp=1)
+}
+\seealso{
+Other RSSL datasets: \code{\link{generate2ClassGaussian}},
+  \code{\link{generateABA}},
+  \code{\link{generateCrescentMoon}},
+  \code{\link{generateFourClusters}},
+  \code{\link{generateParallelPlanes}},
+  \code{\link{generateSpirals}},
+  \code{\link{generateTwoCircles}}
 }
 

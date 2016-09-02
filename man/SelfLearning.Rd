@@ -8,24 +8,24 @@ SelfLearning(X, y, X_u = NULL, method, prob = FALSE, cautious = FALSE,
   max_iter = 100, ...)
 }
 \arguments{
-\item{X}{Design matrix, intercept term is added within the function}
+\item{X}{matrix; Design matrix for labeled data}
 
-\item{y}{Vector or factor with class assignments}
+\item{y}{factor or integer vector; Label vector}
 
-\item{X_u}{Design matrix unlabeled data}
+\item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{method}{Supervised classifier to use. Any function that accepts as its first argument a design matrix X and as its second argument a vector of labels y.}
+\item{method}{Supervised classifier to use. Any function that accepts as its first argument a design matrix X and as its second argument a vector of labels y and that has a predict method.}
 
-\item{prob}{If TRUE, run algorithm with soft labels, instead of hard labels}
+\item{prob}{Not used}
 
-\item{cautious}{logical; not implemented}
+\item{cautious}{Not used}
 
 \item{max_iter}{integer; Maximum number of iterations}
 
 \item{...}{additional arguments to be passed to method}
 }
 \description{
-Use self-learning (also known as Yarowsky's algorithm or pseudo-labeling) to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and adding these predictions to the set of labeled objects.
+Use self-learning (also known as Yarowsky's algorithm or pseudo-labeling) to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and adding these predictions to the set of labeled objects until the classifier converges.
 }
 \examples{
 data(testdata)
@@ -35,5 +35,34 @@ t_sup <- NearestMeanClassifier(testdata$X,testdata$y)
 1-mean(predict(t_self, testdata$X_test)==testdata$y_test) 
 1-mean(predict(t_sup, testdata$X_test)==testdata$y_test) 
 loss(t_self, testdata$X_test, testdata$y_test)
+}
+\references{
+McLachlan, G.J., 1975. Iterative Reclassification Procedure for Constructing an Asymptotically Optimal Rule of Allocation in Discriminant Analysis. Journal of the American Statistical Association, 70(350), pp.365-369.
+
+Yarowsky, D., 1995. Unsupervised word sense disambiguation rivaling supervised methods. Proceedings of the 33rd annual meeting on Association for Computational Linguistics, pp.189-196.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

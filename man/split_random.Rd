@@ -19,7 +19,7 @@ split_random(df, formula = NULL, splits = c(0.5, 0.5), min_class = 0)
 list of data.frames
 }
 \description{
-The data.frame should start with a vector containing labels
+The data.frame should start with a vector containing labels, or formula should be defined.
 }
 \examples{
 library(dplyr)
@@ -29,5 +29,15 @@ dfs <- df \%>\% split_random(Class~.,split=c(0.5,0.3,0.2),min_class=1)
 names(dfs) <- c("Train","Validation","Test")
 lapply(dfs,summary)
 
+}
+\seealso{
+Other RSSL utilities: \code{\link{LearningCurveSSL}},
+  \code{\link{SSLDataFrameToMatrices}},
+  \code{\link{add_missinglabels_mar}},
+  \code{\link{df_to_matrices}},
+  \code{\link{measure_accuracy}},
+  \code{\link{missing_labels}},
+  \code{\link{split_dataset_ssl}},
+  \code{\link{true_labels}}
 }
 

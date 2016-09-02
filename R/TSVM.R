@@ -1,12 +1,14 @@
 #' @include Classifier.R
 setClass("TSVM", 
-         slots=c(alpha="ANY",beta="ANY",labeled="integer",balancing_constraint="logical"),
+         slots=c(alpha="ANY",beta="ANY",labeled="integer",balancing_constraint="logical",iterations="numeric"),
          prototype=list(name="Transductive Support Vector Machine"), 
          contains="SVM")
 
 #' Transductive SVM classifier using the convex concave procedure
 #'
-#' Transductive SVM using the CCCP algorithm as proposed by Collobert et al. (2006) implemented in R using the quadprog package. The implementation does not handle large datasets very well, but can be useful for visualization purposes.
+#' Transductive SVM using the CCCP algorithm as proposed by Collobert et al. (2006) implemented in R using the quadprog package. The implementation does not handle large datasets very well, but can be useful for smaller datasets and visualization purposes.
+#' 
+#' C is the cost associated with labeled objects, while Cstar is the cost for the unlabeled objects. s control the loss function used for the unlabeled objects: it controls the size of the plateau for the symmetric ramp loss function. The balancing constraint makes sure the label assignments of the unlabeled objects are similar to the prior on the classes that was observed on the labeled data.
 #'
 #' @param C numeric; Cost parameter of the SVM
 #' @param Cstar numeric; Cost parameter of the unlabeled objects
@@ -14,12 +16,14 @@ setClass("TSVM",
 #' @param scale If TRUE, apply a z-transform to all observations in X and X_u before running the regression
 #' @param verbose logical; print debugging messages, only works for vanilladot() kernel (default: FALSE)
 #' @param balancing_constraint logical; Whether a balancing constraint should be enfored that causes the fraction of objects assigned to each label in the unlabeled data to be similar to the label fraction in the labeled data.
+#' @param max_iter integer; Maximum number of iterations
 #' @inheritParams BaseClassifier
+#' @family RSSL classifiers
 #' @example inst/examples/example-TSVM.R
 #' @references Collobert, R. et al., 2006. Large scale transductive SVMs. Journal of Machine Learning Research, 7, pp.1687-1712.
 #' 
 #' @export
-TSVM <- function(X, y, X_u, C, Cstar, kernel=kernlab::vanilladot(), balancing_constraint=TRUE, s=0.0, x_center=TRUE, scale=FALSE, eps=1e-9,verbose=FALSE) {
+TSVM <- function(X, y, X_u, C, Cstar, kernel=kernlab::vanilladot(), balancing_constraint=TRUE, s=0.0, x_center=TRUE, scale=FALSE, eps=1e-9,max_iter=20, verbose=FALSE) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
@@ -77,8 +81,8 @@ TSVM <- function(X, y, X_u, C, Cstar, kernel=kernlab::vanilladot(), balancing_co
   y <- y_used
   
   beta_prev<-rep(Inf,length(beta))
-  iterations <- 1 
-  while (norm(matrix(beta-beta_prev))>eps) {
+  iterations <- 0 
+  while (norm(matrix(beta-beta_prev))>eps & iterations<(max_iter+1)) {
     
     
     #Define the constraints
@@ -191,6 +195,7 @@ TSVM <- function(X, y, X_u, C, Cstar, kernel=kernlab::vanilladot(), balancing_co
              beta=beta,
              labeled=L,
              intercept=FALSE,
+             iterations=iterations,
              scaling=ModelVariables$scaling,
              modelform=ModelVariables$modelform,
              classnames=ModelVariables$classnames,
@@ -251,7 +256,7 @@ solve_svm <- function(K, y, C=1) {
 
 #' @title Linear CCCP Transductive SVM classifier
 #'
-#' @description This method is mostly for debugging purposes, since its updates are done using numerical gradient calculations.
+#' @description Implementation for the Linear TSVM. This method is mostly for debugging purposes and does not allow for the balancing constraint or kernels, like the TSVM function.
 #'
 #' @param X matrix; Design matrix, intercept term is added within the function
 #' @param y vector; Vector or factor with class assignments
@@ -263,7 +268,9 @@ solve_svm <- function(K, y, C=1) {
 #' @param verbose logical; print debugging messages (default: FALSE)
 #' @param eps numeric; Convergence criterion
 #' @param init numeric; Initial classifier parameters to start the convex concave procedure
+#' @references Collobert, R. et al., 2006. Large scale transductive SVMs. Journal of Machine Learning Research, 7, pp.1687-1712.
 #' @inheritParams BaseClassifier
+#' @family RSSL classifiers
 #' 
 #' @export
 LinearTSVM <- function(X, y, X_u, C, Cstar, s=0.0, x_center=FALSE, scale=FALSE, 

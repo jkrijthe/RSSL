@@ -56,8 +56,8 @@ test_that("Linear and Kernel implementation give the same answer.", {
   expect_equal(s1, sum(loss(g_4,X_test,y_test)))
   g_5<-LeastSquaresClassifier(X,y,intercept=FALSE,scale=TRUE,x_center=TRUE,y_scale=TRUE)
   expect_equal(s1, sum(loss(g_5,X_test,y_test)))
-  g_6<-KernelLeastSquaresClassifier(X,y,lambda=0.000000001,scale=TRUE,x_center=TRUE,y_scale=TRUE)
-  expect_equal(s1, sum(loss(g_6,X_test,y_test)))
+  g_6<-KernelLeastSquaresClassifier(X,y,lambda=0.00001,scale=TRUE,x_center=TRUE,y_scale=TRUE)
+  expect_equal(s1, sum(loss(g_6,X_test,y_test)),tolerance=10e-3)
   
   # No y scaling, no intercept should give the same bad answer
   g_1<-LeastSquaresClassifier(X,y,intercept=FALSE,scale=TRUE,x_center=TRUE,y_scale=FALSE)

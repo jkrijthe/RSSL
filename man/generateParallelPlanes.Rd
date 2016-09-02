@@ -7,11 +7,11 @@
 generateParallelPlanes(n = 100, classes = 3, sigma = 0.1)
 }
 \arguments{
-\item{n}{Number of objects to generate}
+\item{n}{integer; Number of objects to generate}
 
-\item{classes}{Number of classes}
+\item{classes}{integer; Number of classes}
 
-\item{sigma}{Noise added}
+\item{sigma}{double; Noise added}
 }
 \description{
 Generate Parallel planes
@@ -21,5 +21,15 @@ library(ggplot2)
 df <- generateParallelPlanes(100,3)
 ggplot(df, aes(x=x,y=y,color=Class,shape=Class)) +
  geom_point()
+
+}
+\seealso{
+Other RSSL datasets: \code{\link{generate2ClassGaussian}},
+  \code{\link{generateABA}},
+  \code{\link{generateCrescentMoon}},
+  \code{\link{generateFourClusters}},
+  \code{\link{generateSlicedCookie}},
+  \code{\link{generateSpirals}},
+  \code{\link{generateTwoCircles}}
 }
 

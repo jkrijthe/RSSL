@@ -1,3 +1,5 @@
+# This code is a slightly adapted version of the libsvm interface of the Bioconductor Kebabs package.
+
 svmd <-
 function (x, ...)
     UseMethod ("svmd")

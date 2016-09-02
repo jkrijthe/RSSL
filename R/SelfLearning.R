@@ -6,16 +6,20 @@ setClass("SelfLearning",
 
 #' Self-Learning approach to Semi-supervised Learning
 #'
-#' Use self-learning (also known as Yarowsky's algorithm or pseudo-labeling) to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and adding these predictions to the set of labeled objects.
-#'
-#' @param X Design matrix, intercept term is added within the function
-#' @param y Vector or factor with class assignments
-#' @param X_u Design matrix unlabeled data
-#' @param method Supervised classifier to use. Any function that accepts as its first argument a design matrix X and as its second argument a vector of labels y.
-#' @param prob If TRUE, run algorithm with soft labels, instead of hard labels
-#' @param cautious logical; not implemented
+#' Use self-learning (also known as Yarowsky's algorithm or pseudo-labeling) to turn any supervised classifier into a semi-supervised method by iteratively labeling the unlabeled objects and adding these predictions to the set of labeled objects until the classifier converges.
+#' 
+#' @references McLachlan, G.J., 1975. Iterative Reclassification Procedure for Constructing an Asymptotically Optimal Rule of Allocation in Discriminant Analysis. Journal of the American Statistical Association, 70(350), pp.365-369.
+#' @references Yarowsky, D., 1995. Unsupervised word sense disambiguation rivaling supervised methods. Proceedings of the 33rd annual meeting on Association for Computational Linguistics, pp.189-196.
+#' 
+#' @family RSSL classifiers
+#' 
+#' @param method Supervised classifier to use. Any function that accepts as its first argument a design matrix X and as its second argument a vector of labels y and that has a predict method.
+#' @param prob Not used
+#' @param cautious Not used
 #' @param max_iter integer; Maximum number of iterations
 #' @param ... additional arguments to be passed to method
+#' @inheritParams BaseClassifier
+#' 
 #' @examples
 #' data(testdata)
 #' t_self <- SelfLearning(testdata$X,testdata$y,testdata$X_u,method=NearestMeanClassifier)

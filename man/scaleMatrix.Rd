@@ -2,7 +2,7 @@
 % Please edit documentation in R/scaleMatrix.R
 \name{scaleMatrix}
 \alias{scaleMatrix}
-\title{matrix scaling inspired by stdize from the PLS package}
+\title{Matrix centering and scaling}
 \usage{
 scaleMatrix(x, center = TRUE, scale = TRUE)
 }
@@ -14,6 +14,6 @@ scaleMatrix(x, center = TRUE, scale = TRUE)
 \item{scale}{logical; TRUE of x should be scaled by the standard deviation}
 }
 \description{
-matrix scaling inspired by stdize from the PLS package
+This function returns an object with a predict method to center and scale new data. Inspired by stdize from the PLS package
 }
 

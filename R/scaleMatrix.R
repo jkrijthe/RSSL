@@ -1,7 +1,9 @@
 setClass("scaleMatrix",
          representation(mean="ANY",scale="ANY"))
 
-#' matrix scaling inspired by stdize from the PLS package
+#' Matrix centering and scaling 
+#' 
+#' This function returns an object with a predict method to center and scale new data. Inspired by stdize from the PLS package
 #' 
 #' @param x matrix to be standardized
 #' @param center TRUE if x should be centered

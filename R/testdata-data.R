@@ -11,13 +11,13 @@ NULL
 NULL
 
 #' @name wdbc
-#' @title wdbc data to for unit testing
+#' @title wdbc data for unit testing
 #' @description Useful for testing the S4VM and WellSVM implementations
 #' @docType data
 NULL
 
 #' @name diabetes
-#' @title diabetes data to for unit testing
+#' @title diabetes data for unit testing
 #' @description Useful for testing the WellSVM implementation
 #' @docType data
 NULL

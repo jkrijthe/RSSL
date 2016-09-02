@@ -2,7 +2,7 @@
 % Please edit documentation in R/GRFClassifier.R
 \name{GRFClassifier}
 \alias{GRFClassifier}
-\title{Gaussian Random Fields and Harmonic functions}
+\title{Label propagation using Gaussian Random Fields and Harmonic functions}
 \usage{
 GRFClassifier(X, y, X_u, adjacency = "nn", adjacency_distance = "euclidean",
   adjacency_k = 6, adjacency_sigma = 0.1, class_mass_normalization = TRUE,
@@ -30,7 +30,7 @@ GRFClassifier(X, y, X_u, adjacency = "nn", adjacency_distance = "euclidean",
 \item{x_center}{logical;  Should the features be centered?}
 }
 \description{
-Label propagation as proposed in Zhu et al. (2003).
+Implements the approach proposed in Zhu et al. (2003) to label propagation over an affinity graph. Note, as in the original paper, we consider the transductive scenario, so the implementation does not generalize to out of sample predictions. The approach minimizes the squared difference in labels assigned to different objects, where the contribution of each difference to the loss is weighted by the affinity between the objects. The default in this implementation is to use a knn adjacency matrix based on euclidean distance to determine this weight. Setting \code{adjacency="heat"} will use an RBF kernel over euclidean distances between objects to determine the weights.
 }
 \examples{
 library(ggplot2)
@@ -82,5 +82,28 @@ df_para \%>\%
 }
 \references{
 Zhu, X., Ghahramani, Z. & Lafferty, J., 2003. Semi-supervised learning using gaussian fields and harmonic functions. In Proceedings of the 20th International Conference on Machine Learning. pp. 912-919.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

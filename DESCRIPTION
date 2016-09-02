@@ -1,5 +1,5 @@
 Package: RSSL
-Version: 0.5
+Version: 0.6
 Title: Implementations of Semi-Supervised Learning Approaches for Classification
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
@@ -17,7 +17,7 @@ Imports:
     ggplot2,
     reshape2,
     scales,
-    flexclust
+    cluster
 LinkingTo: Rcpp, RcppArmadillo
 Suggests:
     testthat,

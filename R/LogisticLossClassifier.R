@@ -7,8 +7,10 @@ setClass("LogisticLossClassifier",
 
 #' Logistic Loss Classifier
 #'
-#' Find the linear classifier which minimizing the logistic loss on the training set
+#' Find the linear classifier which minimizing the logistic loss on the training set, optionally using L2 regularization.
 #'
+#' @family RSSL classifiers
+#' 
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector with class assignments
 #' @param lambda Regularization parameter used for l2 regularization
@@ -17,9 +19,10 @@ setClass("LogisticLossClassifier",
 #' @param init Starting parameter vector for gradient descent
 #' @param x_center logical; Whether the feature vectors should be centered
 #' @param ... additional arguments
-#' @return S4  object with the following slots
-#' \item{w}{the weight vector of the linear classification rule}
+#' @return S4 object with the following slots
+#' \item{w}{the weight vector of the linear classifier}
 #' \item{classnames}{vector with names of the classes}
+#' 
 #' @export
 LogisticLossClassifier <- function(X, y, lambda=0, intercept=TRUE, scale=FALSE, init=NA, x_center=FALSE, ...) {
   

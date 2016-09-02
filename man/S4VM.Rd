@@ -2,7 +2,7 @@
 % Please edit documentation in R/S4VM.R
 \name{S4VM}
 \alias{S4VM}
-\title{Safe Semi-supervised Support Vector Machine Classifier (S4VM)}
+\title{Safe Semi-supervised Support Vector Machine (S4VM)}
 \usage{
 S4VM(X, y, X_u = NULL, C1 = 100, C2 = 0.1, sample_time = 100,
   gamma = 0, x_center = FALSE, scale = FALSE, lambda_tradeoff = 3)
@@ -14,30 +14,30 @@ S4VM(X, y, X_u = NULL, C1 = 100, C2 = 0.1, sample_time = 100,
 
 \item{X_u}{matrix; Design matrix for unlabeled data}
 
-\item{C1}{numeric; regularization parameter for labeled data}
+\item{C1}{double; Regularization parameter for labeled data}
 
-\item{C2}{numeric; regularization parameter for unlabeled data}
+\item{C2}{double; Regularization parameter for unlabeled data}
 
-\item{sample_time}{numeric; Number of low-density separators that are generated}
+\item{sample_time}{integer; Number of low-density separators that are generated}
 
-\item{gamma}{numeric; width of RBF kernel}
+\item{gamma}{double; Width of RBF kernel}
 
 \item{x_center}{logical;  Should the features be centered?}
 
 \item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
-\item{lambda_tradeoff}{numeric; Parameter that determines the amount of "risk" in obtaining a worse solution than the supervised solution}
+\item{lambda_tradeoff}{numeric; Parameter that determines the amount of "risk" in obtaining a worse solution than the supervised solution, see Li & Zhou (2011)}
 }
 \value{
-S4 S4VM object with slots:
+S4VM object with slots:
 \item{predictions}{Predictions on the unlabeled objects}
 \item{labelings}{Labelings for the different clusters}
 }
 \description{
-R port of the MATLAB implementation of the original authors of the Safe Semi-supervised Support Vector Machine Classifier by Li & Zhou (2011).
+R port of the MATLAB implementation of Li & Zhou (2011) of the Safe Semi-supervised Support Vector Machine.
 }
 \details{
-The method randomly generates multiple low-density separators (controlled by the sample_time parameter) and merges their predictions by solving a linear programming problem meant to penalize the cost of decreasing the performance of the classifier. S4VM is a bit of a misnomer, since it is a transductive method that only returns predicted labels for the unlabeled objects. The main difference in this implementation compared to the original implementation is the clustering of the low-density separators: in our implementation empty clusters are not dropped during the k-means procedure. In the paper by Li (2011) the features are first normalized to [0,1], which is not automatically done by this function. Note that the solution may not correspond to a linear classifier even if the linear kernel is used.
+The method randomly generates multiple low-density separators (controlled by the sample_time parameter) and merges their predictions by solving a linear programming problem meant to penalize the cost of decreasing the performance of the classifier, compared to the supervised SVM. S4VM is a bit of a misnomer, since it is a transductive method that only returns predicted labels for the unlabeled objects. The main difference in this implementation compared to the original implementation is the clustering of the low-density separators: in our implementation empty clusters are not dropped during the k-means procedure. In the paper by Li (2011) the features are first normalized to [0,1], which is not automatically done by this function. Note that the solution may not correspond to a linear classifier even if the linear kernel is used.
 }
 \examples{
 library(dplyr)
@@ -77,5 +77,29 @@ df \%>\%
 }
 \references{
 Yu-Feng Li and Zhi-Hua Zhou. Towards Making Unlabeled Data Never Hurt. In: Proceedings of the 28th International Conference on Machine Learning (ICML'11), Bellevue, Washington, 2011.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{SVM}}, \code{\link{SelfLearning}},
+  \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

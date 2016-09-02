@@ -3,7 +3,7 @@
 \docType{data}
 \name{diabetes}
 \alias{diabetes}
-\title{diabetes data to for unit testing}
+\title{diabetes data for unit testing}
 \description{
 Useful for testing the WellSVM implementation
 }

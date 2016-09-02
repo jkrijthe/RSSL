@@ -8,7 +8,11 @@ setClass("LinearSVM",
          contains="Classifier")
 
 #' Linear SVM Classifier
-#'
+#' 
+#' Implementation of the Linear Support Vector Classifier. Can be solved in the Dual formulation, which is equivalent to \code{\link{SVM}} or the Primal formulation.
+#' 
+#' @family RSSL classifiers
+#' 
 #' @param C Cost variable
 #' @param method Estimation procedure c("Dual","Primal","BGD")
 #' @param scale Whether a z-transform should be applied (default: TRUE)
@@ -16,7 +20,9 @@ setClass("LinearSVM",
 #' @param reltol relative tolerance using during BFGS optimization
 #' @param maxit Maximum number of iterations for BFGS optimization
 #' @inheritParams BaseClassifier
+#' 
 #' @return S4 object of type LinearSVM
+#' 
 #' @export
 LinearSVM<-function(X, y, C=1, method="Dual", scale=TRUE, eps=1e-9, reltol=10e-14, maxit=100) {
   

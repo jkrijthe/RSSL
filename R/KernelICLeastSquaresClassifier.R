@@ -6,7 +6,8 @@ setClass("KernelICLeastSquaresClassifier",
 
 #' Kernelized Implicitly Constrained Least Squares Classification
 #' 
-#' A kernel version of the implicitly constrained least squares classifier.
+#' A kernel version of the implicitly constrained least squares classifier, see \code{\link{ICLeastSquaresClassifier}}.
+#' 
 #' @param lambda_prior numeric; regularization parameter for the posterior deviation from the prior
 #' @param projection character; The projection used. One of c("supervised","semisupervised")
 #' @param method character; Estimation method. One of c("LBFGS")

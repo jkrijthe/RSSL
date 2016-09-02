@@ -6,10 +6,10 @@ setClass("NearestMeanClassifier",
 
 #' Nearest Mean Classifier
 #'
-#' Implementation of the nearest mean classifier modeled as a gaussian for each class. Classes are modeled as gaussians with equal, spherical covariance matrices. The optimal covariance matrix and means for the classes are found using maximum likelihood, which, in this case, has a closed form solution. To get true nearest mean classification, set prior as a matrix with equal probabilty for all classes.
-#'
-#' @param prior A matrix with class prior probabilites. If NULL, this will be estimated from the data
-#' @param method the method to use. Either "closedform" for the fast closed form solution or "ml" for explicit maximum likelihood maximization
+#' Implementation of the nearest mean classifier modeled. Classes are modeled as gaussians with equal, spherical covariance matrices. The optimal covariance matrix and means for the classes are found using maximum likelihood, which, in this case, has a closed form solution. To get true nearest mean classification, set prior as a matrix with equal probabilty for all classes, i.e. \code{matrix(0.5,2)}.
+#' 
+#' @family RSSL classifiers
+#' @param prior matrix; Class prior probabilites. If NULL, this will be estimated from the data
 #' @inheritParams BaseClassifier
 #' 
 #' @return S4 object of class LeastSquaresClassifier with the following slots:
@@ -20,7 +20,7 @@ setClass("NearestMeanClassifier",
 #' \item{classnames}{a vector with the classnames for each of the classes}
 #' \item{scaling}{scaling object used to transform new observations}
 #' @export
-NearestMeanClassifier <- function(X, y, method="closedform", prior=NULL, x_center=FALSE, scale=FALSE) {
+NearestMeanClassifier <- function(X, y, prior=NULL, x_center=FALSE, scale=FALSE) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X,y,X_u=NULL,

@@ -1,6 +1,97 @@
+#' Throw out labels at random
+#' 
+#' Original labels are saved in attribute \code{y_true}
+#' 
+#' @param df data.frame; Data frame of interest
+#' @param formula formula; Formula to indicate the outputs
+#' @param prob numeric; Probability of removing the label
+#' 
+#' @family RSSL utilities
+#' 
+#' @export
+add_missinglabels_mar <- function(df,formula=NULL,prob=0.1) {
+  if (!is.null(formula)) {
+    df <- model.frame(formula,df)
+  }
+  n <- nrow(df)
+  y_true <- df[,1]
+  df[sample(1:n,ceiling(prob*n)),1] <- NA
+  attr(df,"y_true") <- y_true
+  return(df)
+}
+
+#' Access the true labels when they are stored as an attribute in a data frame
+#' @param df data.frame; data.frame with y_true attribute
+#' @family RSSL utilities
+#' @export
+true_labels <- function(df) {
+  stopifnot(is.data.frame(df))
+  if (!is.null(attr(df,"y_true"))) {
+    attr(df,"y_true")
+  } else {
+    stop("data.frame does not contain true labels")
+  }
+}
+
+#' Access the true labels for the objects with missing labels when they are stored as an attribute in a data frame
+#' @family RSSL utilities
+#' @param df data.frame; data.frame with y_true attribute
+#' @export
+missing_labels <- function(df) {
+  stopifnot(is.data.frame(df))
+  
+  if (!is.null(attr(df,"y_true"))) {
+    attr(df,"y_true")[is.na(df[,1])]
+  } else {
+    stop("data.frame does not contain true labels")
+  }
+}
+
+#' Convert data.frame to matrices for semi-supervised learners
+#'
+#' Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations. Note: always removes the intercept
+#'
+#' @param model Formula object with model
+#' @param D data.frame object with objects
+#' @return list object with the following objects:
+#' \item{X}{design matrix of the labeled data}
+#' \item{X_u}{design matrix of the unlabeled data}
+#' \item{y}{integer vector indicating the labels of the labeled data}
+#' \item{classnames}{names of the classes corresponding to the integers in y}
+#' @family RSSL utilities
+#' @export
+SSLDataFrameToMatrices <- function(model,D) {
+  yu <- attr(df,"yu")
+  
+  # Data.Frame to Matrices
+  if (!is.null(model)) {
+    mf <- model.frame(model, data=D, na.action=NULL)
+  } else {
+    mf <- model.frame(paste0(names(D)[[1]],"~."), data=D, na.action=NULL)
+  }
+  y <- model.response(mf)
+  classnames<-levels(y)
+  if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
+  X <- model.matrix(attr(mf, "terms"), data=mf)
+  X <- X[, colnames(X) != "(Intercept)",drop=FALSE] # Remove intercept
+  X_u <- X[is.na(y),,drop=FALSE]
+  X <- X[!is.na(y),,drop=FALSE]
+  y <- y[!is.na(y)]
+  list(X=X, y=y, X_u=X_u, y_u=yu)
+}
+
+#' Convert data.frame with missing labels to matrices
+#' @param df data.frame; Data
+#' @param formula formula; Description of problem
+#' @family RSSL utilities
+#' @export
+df_to_matrices <- function(df,formula=NULL) {
+  SSLDataFrameToMatrices(formula,df)
+}
+
 #' Randomly split dataset in multiple parts
 #' 
-#' The data.frame should start with a vector containing labels
+#' The data.frame should start with a vector containing labels, or formula should be defined.
 #' 
 #' @param df data.frame; Data frame of interest
 #' @param formula formula; Formula to indicate the outputs
@@ -8,6 +99,7 @@
 #' @param min_class integer; minimum number of objects per class in each part
 #' @return list of data.frames
 #' 
+#' @family RSSL utilities
 #' @examples 
 #' library(dplyr)
 #' 
@@ -59,89 +151,8 @@ split_random <- function(df,formula=NULL,splits=c(0.5,0.5),min_class=0) {
   return(lapply(idx_per_group, function(ix) {df[ix,,drop=FALSE] }))
 }
 
-#' Throw out labels at random
-#' 
-#' @param df data.frame; Data frame of interest
-#' @param formula formula; Formula to indicate the outputs
-#' @param prob numeric; Probability of removing the label
-#' @export
-add_missinglabels_mar <- function(df,formula=NULL,prob=0.1) {
-  if (!is.null(formula)) {
-    df <- model.frame(formula,df)
-  }
-  n <- nrow(df)
-  y_true <- df[,1]
-  df[sample(1:n,ceiling(prob*n)),1] <- NA
-  attr(df,"y_true") <- y_true
-  return(df)
-}
-
-#' Access the true labels when they are stored as an attribute in a data frame
-#' @param df data.frame;
-#' @export
-true_labels <- function(df) {
-  stopifnot(is.data.frame(df))
-  if (!is.null(attr(df,"y_true"))) {
-    attr(df,"y_true")
-  } else {
-    stop("data.frame does not contain true labels")
-  }
-}
-
-#' Access the true labels for the objects with missing labels when they are stored as an attribute in a data frame
-#' @param df data.frame;
-#' @export
-missing_labels <- function(df) {
-  stopifnot(is.data.frame(df))
-  
-  if (!is.null(attr(df,"y_true"))) {
-    attr(df,"y_true")[is.na(df[,1])]
-  } else {
-    stop("data.frame does not contain true labels")
-  }
-}
-
-#' Convert data.frame to matrices for semi-supervised learners
-#'
-#' Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations. Note: always removes the intercept
-#'
-#' @param model Formula object with model
-#' @param D data.frame object with objects
-#' @return list object with the following objects:
-#' \item{X}{design matrix of the labeled data}
-#' \item{X_u}{design matrix of the unlabeled data}
-#' \item{y}{integer vector indicating the labels of the labeled data}
-#' \item{classnames}{names of the classes corresponding to the integers in y}
-#' @export
-SSLDataFrameToMatrices <- function(model,D) {
-  yu <- attr(df,"yu")
-  
-  # Data.Frame to Matrices
-  if (!is.null(model)) {
-    mf <- model.frame(model, data=D, na.action=NULL)
-  } else {
-    mf <- model.frame(paste0(names(D)[[1]],"~."), data=D, na.action=NULL)
-  }
-  y <- model.response(mf)
-  classnames<-levels(y)
-  if (!is.factor(y)) stop("This is not a classification problem. Please supply a factor target.")
-  X <- model.matrix(attr(mf, "terms"), data=mf)
-  X <- X[, colnames(X) != "(Intercept)",drop=FALSE] # Remove intercept
-  X_u <- X[is.na(y),,drop=FALSE]
-  X <- X[!is.na(y),,drop=FALSE]
-  y <- y[!is.na(y)]
-  list(X=X, y=y, X_u=X_u, y_u=yu)
-}
-
-#' Convert data.frame with missing labels to matrices
-#' @param df data.frame; Data
-#' @param formula formula; Description of problem
-#' @export
-df_to_matrices <- function(df,formula=NULL) {
-  SSLDataFrameToMatrices(formula,df)
-}
-
 #' Create Train, Test and Unlabeled Set
+#' @family RSSL utilities
 #' @param X matrix; Design matrix
 #' @param y factor; Label vector
 #' @param frac_train numeric; Fraction of all objects to be used as training objects

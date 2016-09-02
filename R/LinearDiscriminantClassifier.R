@@ -6,14 +6,17 @@ setClass("LinearDiscriminantClassifier",
 
 #' Linear Discriminant Classifier
 #'
-#' Implementation of the linear discriminant classifier. Classes are modeled as gaussians with equal covariance matrices. The optimal covariance matrix and means for the classes are found using maximum likelihood, which, in this case, has a closed form solution.
+#' Implementation of the linear discriminant classifier. Classes are modeled as Gaussians with different means but equal covariance matrices. The optimal covariance matrix and means for the classes are found using maximum likelihood, which, in this case, has a closed form solution.
 #'
+#' @family RSSL classifiers
+#' 
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param method the method to use. Either "closedform" for the fast closed form solution or "ml" for explicit maximum likelihood maximization
 #' @param prior A matrix with class prior probabilites. If NULL, this will be estimated from the data
 #' @param scale logical; If TRUE, apply a z-transform to the design matrix X before running the regression
 #' @param x_center logical; Whether the feature vectors should be centered
+#' 
 #' @return S4 object of class LeastSquaresClassifier with the following slots:
 #' \item{modelform}{weight vector}
 #' \item{prior}{the prior probabilities of the classes}
@@ -21,6 +24,7 @@ setClass("LinearDiscriminantClassifier",
 #' \item{sigma}{The estimated covariance matrix}
 #' \item{classnames}{a vector with the classnames for each of the classes}
 #' \item{scaling}{scaling object used to transform new observations}
+#' 
 #' @export
 LinearDiscriminantClassifier<- function(X, y, method="closedform",prior=NULL, scale=FALSE, x_center=FALSE) {
   ## Preprocessing to correct datastructures and scaling  

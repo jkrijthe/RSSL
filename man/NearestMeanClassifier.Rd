@@ -4,17 +4,14 @@
 \alias{NearestMeanClassifier}
 \title{Nearest Mean Classifier}
 \usage{
-NearestMeanClassifier(X, y, method = "closedform", prior = NULL,
-  x_center = FALSE, scale = FALSE)
+NearestMeanClassifier(X, y, prior = NULL, x_center = FALSE, scale = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
 
 \item{y}{factor or integer vector; Label vector}
 
-\item{method}{the method to use. Either "closedform" for the fast closed form solution or "ml" for explicit maximum likelihood maximization}
-
-\item{prior}{A matrix with class prior probabilites. If NULL, this will be estimated from the data}
+\item{prior}{matrix; Class prior probabilites. If NULL, this will be estimated from the data}
 
 \item{x_center}{logical;  Should the features be centered?}
 
@@ -30,6 +27,29 @@ S4 object of class LeastSquaresClassifier with the following slots:
 \item{scaling}{scaling object used to transform new observations}
 }
 \description{
-Implementation of the nearest mean classifier modeled as a gaussian for each class. Classes are modeled as gaussians with equal, spherical covariance matrices. The optimal covariance matrix and means for the classes are found using maximum likelihood, which, in this case, has a closed form solution. To get true nearest mean classification, set prior as a matrix with equal probabilty for all classes.
+Implementation of the nearest mean classifier modeled. Classes are modeled as gaussians with equal, spherical covariance matrices. The optimal covariance matrix and means for the classes are found using maximum likelihood, which, in this case, has a closed form solution. To get true nearest mean classification, set prior as a matrix with equal probabilty for all classes, i.e. \code{matrix(0.5,2)}.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

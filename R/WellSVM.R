@@ -8,14 +8,19 @@ setClass("WellSVM",
 #' WellSVM for Semi-superivsed Learning
 #' 
 #' WellSVM is a minimax relaxation of the mixed integer programming problem of finding the optimal labels for the unlabeled data in the SVM objective function. This implementation is a translation of the Matlab implementation of Li (2013) into R.
+#' 
+#' @references Y.-F. Li, I. W. Tsang, J. T. Kwok, and Z.-H. Zhou. Scalable and Convex Weakly Labeled SVMs. Journal of Machine Learning Research, 2013.
+#' @references R.-E. Fan, P.-H. Chen, and C.-J. Lin. Working set selection using second order information for training SVM. Journal of Machine Learning Research 6, 1889-1918, 2005.
+#' 
+#' @family RSSL classifiers
+
 #' @param C1 double; A regularization parameter for labeled data, default 1;
 #' @param C2 double; A regularization parameter for unlabeled data, default 0.1;
 #' @param gamma double; Gaussian kernel parameter, i.e., k(x,y) = exp(-gamma^2||x-y||^2/avg) where avg is the average distance among instances; when gamma = 0, linear kernel is used. default gamma = 1;
 #' @param max_iter integer; Maximum number of iterations
 #' @inheritParams BaseClassifier
-#' @references Y.-F. Li, I. W. Tsang, J. T. Kwok, and Z.-H. Zhou. Scalable and Convex Weakly Labeled SVMs. Journal of Machine Learning Research, 2013.
+#'
 #' @example inst/examples/example-WellSVM.R
-#' @references R.-E. Fan, P.-H. Chen, and C.-J. Lin. Working set selection using second order information for training SVM. Journal of Machine Learning Research 6, 1889-1918, 2005.
 #' @export
 WellSVM <- function(X,y,X_u,C1=1,C2=0.1,gamma=1,x_center=TRUE,scale=FALSE,use_Xu_for_scaling=FALSE,max_iter=20) {
   

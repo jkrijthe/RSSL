@@ -6,6 +6,12 @@ setClass("EMNearestMeanClassifier",
 
 #' Semi-Supervised Nearest Mean Classifier using Expectation Maximization
 #' 
+#' Expectation Maximization applied to the nearest mean classifier assuming Gaussian classes with a spherical covariance matrix.
+#' 
+#' Starting from the supervised solution, uses the Expectation Maximization algorithm (see Dempster et al. (1977)) to iteratively update the means and shared covariance of the classes (Maximization step) and updates the responsibilities for the unlabeled objects (Expectation step).
+#'
+#' @references Dempster, A., Laird, N. & Rubin, D., 1977. Maximum likelihood from incomplete data via the EM algorithm. Journal of the Royal Statistical Society. Series B, 39(1), pp.1-38.
+#' 
 #' @param method character; Currently only "EM"
 #' @param scale Should the features be normalized? (default: FALSE)
 #' @param eps Stopping criterion for the maximinimization

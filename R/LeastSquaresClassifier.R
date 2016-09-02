@@ -6,8 +6,10 @@ setClass("LeastSquaresClassifier",
 
 #' Least Squares Classifier
 #'
-#' Use least squares regression as a classification technique using class indicators as targets. Note this method minimizes quadratic loss, not the truncated quadratic loss.
+#' Classifier that minimizes the quadratic loss or, equivalently, least squares regression applied to a numeric encoding of the class labels as target. Note this method minimizes quadratic loss, not the truncated quadratic loss. Optionally, L2 regularization can be applied by setting the \code{lambda} parameter.
 #'
+#' @family RSSL classifiers
+#' 
 #' @param lambda Regularization parameter of the l2 penalty
 #' @param intercept TRUE if an intercept should be added to the model
 #' @param x_center TRUE, whether the dependent variables (features) should be centered

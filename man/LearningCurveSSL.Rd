@@ -3,7 +3,7 @@
 \name{LearningCurveSSL}
 \alias{LearningCurveSSL}
 \alias{LearningCurveSSL.matrix}
-\title{Generate Semi-Supervised learning curve.}
+\title{Compute Semi-Supervised Learning Curve}
 \usage{
 LearningCurveSSL(X, y, ...)
 
@@ -62,7 +62,13 @@ LearningCurve object
 Evaluate semi-supervised classifiers for different amounts of unlabeled training examples or different fractions of unlabeled vs. labeled examples.
 }
 \details{
-For n_l, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
+\code{classifiers} is a named list of classifiers, where each classifier should be a function that accepts 4 arguments: a numeric design matrix of the labeled objects, a factor of labels, a numeric design  matrix of unlabeled objects and a factor of labels for the unlabeled objects.
+
+\code{measures} is a named list of performance measures. These are functions that accept seven arguments: a trained classifier, a numeric design matrix of the labeled objects, a factor of labels, a numeric design  matrix of unlabeled objects and a factor of labels for the unlabeled objects, a numeric design matrix of the test objects and a factor of labels of the test objects. See \code{\link{measure_accuracy}} for an example.
+
+This function allows for two different types of learning curves to be generated. If \code{type="unlabeled"}, the number of labeled objects remains fixed at the value of \code{n_l}, where \code{sizes} controls the number of unlabeled objects. \code{n_test} controls the number of objects used for the test set, while all remaining objects are used if \code{with_replacement=FALSE} if which case objects are drawn without replacement from the input dataset. We make sure each class is represented by at least \code{n_min} labeled objects of each class. For \code{n_l}, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
+
+If \code{type="unlabeled"} the total number of objects remains fixed, while the fraction of labeled objects is changed. \code{frac} sets the fractions of labeled objects that should be considered, while \code{test_fraction} determines the amount of objects left out to serve as the test set.
 }
 \examples{
 set.seed(1)
@@ -100,5 +106,14 @@ lc2 <- LearningCurveSSL(X=list("Dataset 1"=as.matrix(df[,1:2]),
 
 plot(lc2)
 
+}
+\seealso{
+Other RSSL utilities: \code{\link{SSLDataFrameToMatrices}},
+  \code{\link{add_missinglabels_mar}},
+  \code{\link{df_to_matrices}},
+  \code{\link{measure_accuracy}},
+  \code{\link{missing_labels}},
+  \code{\link{split_dataset_ssl}},
+  \code{\link{split_random}}, \code{\link{true_labels}}
 }
 

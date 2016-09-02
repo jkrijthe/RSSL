@@ -1,6 +1,7 @@
 #' Biased (maximum likelihood) estimate of the covariance matrix
 #' 
 #' @param X matrix with observations
+#' 
 #' @export
 cov_ml<-function(X) { ((nrow(X)-1)/nrow(X))*cov(X) }
 

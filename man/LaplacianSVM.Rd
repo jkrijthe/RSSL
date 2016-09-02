@@ -33,7 +33,7 @@ LaplacianSVM(X, y, X_u = NULL, lambda = 1, gamma = 1, scale = TRUE,
 S4 object of type LaplacianSVM
 }
 \description{
-Manifold regularization applied to the least squares classifier as proposed in Belkin et al. (2006).
+Manifold regularization applied to the support vector machine as proposed in Belkin et al. (2006). As an adjacency matrix, we use the k nearest neighbour graph based on a chosen distance (default: euclidean).
 }
 \examples{
 library(ggplot2)
@@ -60,7 +60,8 @@ class_sup <- SVM(
 
 class_lap <- LaplacianSVM(
   Class~.,df,
-  kernel=kernlab::rbfdot(rbf_param),                                                lambda=lambda,gamma=gamma,
+  kernel=kernlab::rbfdot(rbf_param),
+  lambda=lambda,gamma=gamma,
   normalized_laplacian = TRUE,
   scale=FALSE)
 
@@ -125,5 +126,28 @@ df \%>\%
 }
 \references{
 Belkin, M., Niyogi, P. & Sindhwani, V., 2006. Manifold regularization: A geometric framework for learning from labeled and unlabeled examples. Journal of Machine Learning Research, 7, pp.2399-2434.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

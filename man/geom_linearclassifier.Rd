@@ -2,7 +2,7 @@
 % Please edit documentation in R/Plotting.R
 \name{geom_linearclassifier}
 \alias{geom_linearclassifier}
-\title{Plot RSSL classifier boundary}
+\title{Plot linear RSSL classifier boundary}
 \usage{
 geom_linearclassifier(..., show_guide = TRUE)
 }
@@ -12,6 +12,19 @@ geom_linearclassifier(..., show_guide = TRUE)
 \item{show_guide}{logical (default: TRUE); Show legend}
 }
 \description{
-Plot RSSL classifier boundary
+Plot linear RSSL classifier boundary
+}
+\examples{
+library(ggplot2)
+library(dplyr)
+
+df <- generate2ClassGaussian(100,d=2,var=0.2) \%>\% 
+ add_missinglabels_mar(Class~., 0.8)
+
+df \%>\% 
+ ggplot(aes(x=X1,y=X2,color=Class)) +
+ geom_point() +
+ geom_linearclassifier("Supervised"=LinearDiscriminantClassifier(Class~.,df),
+                       "EM"=EMLinearDiscriminantClassifier(Class~.,df))
 }
 

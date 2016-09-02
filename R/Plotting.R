@@ -19,9 +19,21 @@ coefficients_after_scaling <- function(w0,w,scaling) {
   }
 }
 
-#' Plot RSSL classifier boundary
+#' Plot linear RSSL classifier boundary
 #' @param ... List of trained classifiers
 #' @param show_guide logical (default: TRUE); Show legend
+#' @examples
+#' library(ggplot2)
+#' library(dplyr)
+#'
+#' df <- generate2ClassGaussian(100,d=2,var=0.2) %>% 
+#'  add_missinglabels_mar(Class~., 0.8)
+#'
+#' df %>% 
+#'  ggplot(aes(x=X1,y=X2,color=Class)) +
+#'  geom_point() +
+#'  geom_linearclassifier("Supervised"=LinearDiscriminantClassifier(Class~.,df),
+#'                        "EM"=EMLinearDiscriminantClassifier(Class~.,df))
 #' @export
 geom_linearclassifier <- function(...,show_guide=TRUE) {
   classifiers <- list(...)
@@ -50,6 +62,7 @@ StatClassifier <-
             if (all(data$group>1)) return(NULL)
             out <- lapply(classifiers, function(x) {
               if (hasMethod(line_coefficients,class(x)) && !brute_force) {
+                
                 coef <- line_coefficients(x)
                 data.frame(x=c(scales$x$get_limits(), 
                                (scales$y$get_limits()-coef$intercept)/coef$slope
@@ -143,7 +156,7 @@ stat_classifier <- function(mapping = NULL, data = NULL, show.legend = NA,
 
 #' Plot RSSL classifier boundary (deprecated)
 #' 
-#' Deprecated: Use stat_classifier to plot classification boundaries
+#' Deprecated: Use geom_linearclassifier or stat_classifier to plot classification boundaries
 #' 
 #' @param ... List of trained classifiers
 #' @param show_guide logical (default: TRUE); Show legend

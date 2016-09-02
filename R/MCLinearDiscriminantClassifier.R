@@ -5,16 +5,16 @@ setClass("MCLinearDiscriminantClassifier",
          contains="LinearDiscriminantClassifier")
 
 #' Moment Constrained Semi-supervised Linear Discriminant Analysis.
-#'
-#' Using an update of the estimated means and covariance proposed in (Loog 2014). 
-#' Using the method="invariant" option, uses the scale invariant parameter update proposed in (Loog 2014), while method="closedform" using the non-scale invariant version from (Loog 2012).
+#' 
+#' A linear discriminant classifier that updates the estimates of the means and covariance matrix based on unlabeled examples.
+#' 
+#' This method uses the parameter updates of the estimated means and covariance proposed in (Loog 2014). Using the method="invariant" option, uses the scale invariant parameter update proposed in (Loog 2014), while method="closedform" using the non-scale invariant version from (Loog 2012).
 #' @references Loog, M., 2012. Semi-supervised linear discriminant analysis using moment constraints. Partially Supervised Learning, LNCS, 7081, pp.32-41.
 #' @references Loog, M., 2014. Semi-supervised linear discriminant analysis through moment-constraint parameter estimation. Pattern Recognition Letters, 37, pp.24-31.
 #'
 #' @param method character; One of c("invariant","closedform")
 #' @param prior Matrix (k by 1); Class prior probabilities. If NULL, estimated from data
 #' @inheritParams BaseClassifier
-#' 
 #' @family RSSL classifiers
 #' @export
 MCLinearDiscriminantClassifier <- function(X, y, X_u, method="invariant", prior=NULL, x_center=TRUE, scale=FALSE) {

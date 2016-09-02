@@ -6,11 +6,11 @@ setClass("MajorityClassClassifier",
 
 #' Majority Class Classifier
 #' 
-#' TODO
+#' Classifier that returns the majority class in the training set as the prediction for new objects.
 #'
-#' @param X Design matrix, intercept term is added within the function
-#' @param y Vector with class assignments
-#' @param ... Unused
+#' @family RSSL classifiers
+#'
+#' @inheritParams BaseClassifier
 #'
 #' @export
 MajorityClassClassifier <- function(X, y, ...) {

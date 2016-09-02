@@ -48,7 +48,10 @@ EMLeastSquaresClassifier(X, y, X_u, x_center = FALSE, scale = FALSE,
 \item{...}{Additional Parameters, Not used}
 }
 \description{
-Minimize the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.
+As studied in Krijthe & Loog (2016), minimizes the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.
+}
+\details{
+By default (method="block") the weights of the classifier are updated, after which the unknown labels are updated. method="simple" uses LBFGS to do this update simultaneously. Objective="responsibility" corresponds to the responsibility based, instead of the label based, objective function in Krijthe & Loog (2016), which is equivalent to hard-label self-learning.
 }
 \examples{
 library(dplyr)
@@ -75,7 +78,7 @@ df \%>\%
                  classifiers=classifiers)
                  
 }
-\seealso{
-Other RSSL.LeastSquares: \code{\link{ICLeastSquaresClassifier}}
+\references{
+Krijthe, J.H. & Loog, M., 2016. Optimistic Semi-supervised Least Squares Classification. In International Conference on Pattern Recognition (To Appear).
 }
 

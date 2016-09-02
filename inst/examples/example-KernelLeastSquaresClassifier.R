@@ -36,7 +36,8 @@ ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
 gridmat <- expand.grid(xgrid,ygrid)
 
 g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,
-                                       kernel=kernlab::rbfdot(0.01),lambda=0.000001,scale = TRUE)
+                                       kernel=kernlab::rbfdot(0.01),
+                                       lambda=0.000001,scale = TRUE)
 plotframe <- cbind(gridmat, decisionvalues(g_kernel,gridmat))
 colnames(plotframe)<- c("x","y","Output")
 ggplot(plotframe, aes(x=x,y=y)) +
@@ -57,7 +58,9 @@ ygrid<-seq(min(dmat[,2]),max(dmat[,2]),length.out=precision)
 gridmat <- expand.grid(xgrid,ygrid)
 
 g_kernel<-KernelLeastSquaresClassifier(dmat[,1:2],tvec,
-                                       kernel=kernlab::rbfdot(0.1),lambda=0.00001,scale = TRUE,x_center=TRUE)
+                      kernel=kernlab::rbfdot(0.1),lambda=0.00001,
+                      scale = TRUE,x_center=TRUE)
+
 plotframe <- cbind(gridmat, 
                    maxind=apply(decisionvalues(g_kernel,gridmat),1,which.max))
 ggplot(plotframe, aes(x=Var1,y=Var2)) +

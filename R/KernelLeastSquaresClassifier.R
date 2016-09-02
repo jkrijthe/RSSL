@@ -6,8 +6,10 @@ setClass("KernelLeastSquaresClassifier",
 
 #' Kernelized Least Squares Classifier
 #'
-#' Use least squares regression as a classification technique using classes as targets (1 for one class, 2 for the other). Implemented using matrix inversions, not the more numerically stable Singular Value Decomposition method. Note this method minimizes quadratic loss, not the truncated quadratic loss.
+#' Use least squares regression as a classification technique using a numeric encoding of classes as targets. Note this method minimizes quadratic loss, not the truncated quadratic loss.
 #'
+#' @family RSSL classifiers
+#' 
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param lambda Regularization parameter of the l2 penalty in regularized least squares
@@ -15,11 +17,13 @@ setClass("KernelLeastSquaresClassifier",
 #' @param y_scale TRUE center the target vector
 #' @param x_center TRUE, whether the dependent variables (features) should be centered
 #' @param scale If TRUE, apply a z-transform to the design matrix X before running the regression
+#' 
 #' @return S4 object of class LeastSquaresClassifier with the following slots:
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}
 #' \item{modelform}{formula object of the model used in regression}
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
+#' 
 #' @example inst/examples/example-KernelLeastSquaresClassifier.R
 #' @export
 KernelLeastSquaresClassifier <- function(X, y, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE) {

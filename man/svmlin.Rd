@@ -2,7 +2,7 @@
 % Please edit documentation in R/svmlin.R
 \name{svmlin}
 \alias{svmlin}
-\title{svmlin implementation by Sindhwani}
+\title{svmlin implementation by Sindhwani & Keerthi (2006)}
 \usage{
 svmlin(X, y, X_u = NULL, algorithm = 1, lambda = 1, lambda_u = 1,
   max_switch = 10000, pos_frac = 0.5, Cp = 1, Cn = 1, verbose = FALSE,
@@ -15,21 +15,21 @@ svmlin(X, y, X_u = NULL, algorithm = 1, lambda = 1, lambda_u = 1,
 
 \item{X_u}{Matrix or sparseMatrix containing the unlabeled feature vectors, without intercept}
 
-\item{algorithm}{Algorithm choice, see details (default:1)}
+\item{algorithm}{integer; Algorithm choice, see details (default:1)}
 
-\item{lambda}{regularization parameter lambda (default 1)}
+\item{lambda}{double; Regularization parameter lambda (default 1)}
 
-\item{lambda_u}{regularization parameter lambda_u (default 1)}
+\item{lambda_u}{double; Regularization parameter lambda_u (default 1)}
 
-\item{max_switch}{-S maximum number of switches in TSVM (default 10000)}
+\item{max_switch}{integer; Maximum number of switches in TSVM (default 10000)}
 
-\item{pos_frac}{positive class fraction of unlabeled data  (default 0.5)}
+\item{pos_frac}{double; Positive class fraction of unlabeled data  (default 0.5)}
 
-\item{Cp}{relative cost for positive examples (only available with algorithm 1)}
+\item{Cp}{double; Relative cost for positive examples (only available with algorithm 1)}
 
-\item{Cn}{relative cost for positive examples (only available with algorithm 1)}
+\item{Cn}{double; Relative cost for positive examples (only available with algorithm 1)}
 
-\item{verbose}{Should output be verbose? (default: FALSE)}
+\item{verbose}{logical; Controls the verbosity of the output}
 
 \item{intercept}{logical; Whether an intercept should be included}
 
@@ -38,19 +38,20 @@ svmlin(X, y, X_u = NULL, algorithm = 1, lambda = 1, lambda_u = 1,
 \item{x_center}{logical;  Should the features be centered?}
 }
 \description{
-R interface to the svmlin software by Vikas Sindhwani for fast linear transductive SVMs.
+R interface to the svmlin code by Vikas Sindhwani and S. Sathiya Keerthi for fast linear transductive SVMs.
 }
 \details{
-Algorithms
-0 -- Regularized Least Squares Classification (RLSC)
-1 -- SVM (L2-SVM-MFN) (default choice)
-2 -- Multi-switch Transductive SVM (using L2-SVM-MFN)
-3 -- Deterministic Annealing Semi-supervised SVM (using L2-SVM-MFN)
+The codes to select the algorithm are the following: 0. Regularized Least Squares Classification 1. SVM (L2-SVM-MFN) 2. Multi-switch Transductive SVM (using L2-SVM-MFN) 3. Deterministic Annealing Semi-supervised SVM (using L2-SVM-MFN).
 }
 \examples{
 data(svmlin_example)
-t_svmlin_1 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,X_u=NULL, lambda = 0.001)
-t_svmlin_2 <- svmlin(svmlin_example$X_train[1:50,],svmlin_example$y_train,X_u=svmlin_example$X_train[-c(1:50),], lambda = 10,lambda_u=100,algorithm = 2)
+t_svmlin_1 <- svmlin(svmlin_example$X_train[1:50,],
+                 svmlin_example$y_train,X_u=NULL, lambda = 0.001)
+t_svmlin_2 <- svmlin(svmlin_example$X_train[1:50,],
+                       svmlin_example$y_train,
+                       X_u=svmlin_example$X_train[-c(1:50),], 
+                       lambda = 10,lambda_u=100,algorithm = 2)
+                       
 # Calculate Accuracy
 mean(predict(t_svmlin_1,svmlin_example$X_test)==svmlin_example$y_test)
 mean(predict(t_svmlin_2,svmlin_example$X_test)==svmlin_example$y_test)
@@ -68,5 +69,29 @@ mean(predict(g_semi,testdata$X_test)==testdata$y_test)
 \references{
 Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs. Proceedings of ACM SIGIR, 2006
  @references V. Sindhwani and S. Sathiya Keerthi. Newton Methods for Fast Solution of Semi-supervised Linear SVMs. Book Chapter in Large Scale Kernel Machines, MIT Press, 2006
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}
 }
 

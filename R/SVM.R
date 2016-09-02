@@ -6,9 +6,14 @@ setClass("SVM",
 
 #' SVM Classifier
 #'
+#' Support Vector Machine implementation using the \code{quadprog} solver. 
+#' 
+#' This implementation will typically be slower and use more memory than the svmlib implementation in the e1071 package. It is, however, useful for comparisons with the \code{\link{TSVM}} implementation.
+#' 
 #' @param C numeric; Cost variable
-#' @param eps Small value to ensure positive definiteness of the matrix in the QP formulation
+#' @param eps numeric; Small value to ensure positive definiteness of the matrix in the QP formulation
 #' @inheritParams BaseClassifier
+#' @family RSSL classifiers
 #' @return S4 object of type SVM
 #' @export
 SVM<-function(X, y, C=1, kernel=NULL, scale=TRUE,intercept=FALSE,x_center=TRUE,eps=1e-9) {

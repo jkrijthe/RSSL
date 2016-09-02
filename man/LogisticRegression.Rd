@@ -2,7 +2,7 @@
 % Please edit documentation in R/LogisticRegression.R
 \name{LogisticRegression}
 \alias{LogisticRegression}
-\title{(Regularized) Logistic Regression implementation used for comparison with semi-supervised implementations}
+\title{(Regularized) Logistic Regression implementation}
 \usage{
 LogisticRegression(X, y, lambda = 0, intercept = TRUE, scale = FALSE,
   init = NA, x_center = FALSE)
@@ -23,6 +23,29 @@ LogisticRegression(X, y, lambda = 0, intercept = TRUE, scale = FALSE,
 \item{x_center}{logical;  Should the features be centered?}
 }
 \description{
-(Regularized) Logistic Regression implementation used for comparison with semi-supervised implementations
+Implementation of Logistic Regression that is useful for comparisons with semi-supervised logistic regression implementations, such as \code{\link{EntropyRegularizedLogisticRegression}}.
+}
+\seealso{
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLeastSquaresClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

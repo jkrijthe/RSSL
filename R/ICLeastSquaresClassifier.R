@@ -4,12 +4,20 @@ setClass("ICLeastSquaresClassifier",
          prototype(name="ICLeastSquaresClassifier"), 
          contains="LeastSquaresClassifier")
 
-#' Implicitly Constained Least Squares Classifier
-#'
-#' Implicitly constrained semisupervised learning with quadratic loss. Least squares regression is used treating classes as targets (1 for one class, 2 for the other). We find an (fractional) labelling of the unlabeled objects, whose least squares regression solution minimizes the least squares loss on the labeled training data only. This is equivalent to finding a weighting of the unlabeled objects belonging to either of the two classes.
+#' Implicitly Constrained Least Squares Classifier
+#' 
+#' Implementation of the Implicitly Constrained Least Squares Classifier (ICLS) of Krijthe & Loog (2015) and the projected estimator of Krijthe & Loog (2016).
+#' 
+#' In Implicitly Constrained semi-supervised Least Squares (ICLS) of Krijthe & Loog (2015), we minimize the quadratic loss on the labeled objects, while enforcing that the solution has to be a solution that minimizes the quadratic loss for all objects for some (fractional) labeling of the data (the implicit constraints). The goal of this classifier is to use the unlabeled data to update the classifier, while making sure it still works well on the labeled data.
+#' 
+#' The Projected estimator of Krijthe & Loog (2016) builds on this by finding a classifier within the space of classifiers that minimize the quadratic loss on all objects for some labeling (the implicit constrained), that minimizes the distance to the supervised solution for some appropriately chosen distance measure. Using the projection="semisupervised", we get certain guarantees that this solution is always better than the supervised solution (see Krijthe & Loog (2016)), while setting projection="supervised" is equivalent to ICLS.
+#' 
+#' Both methods (ICLS and the projection) can be formulated as a quadratic programming problem and solved using either a quadratic programming solver (method="QP") or using a gradient descent approach that takes into account certain bounds on the labelings (method="LBFGS"). The latter is the preferred method.
 #'
 #' @references Krijthe, J.H. & Loog, M., 2015. Implicitly Constrained Semi-Supervised Least Squares Classification. In E. Fromont, T. De Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances in Intelligent Data Analysis XIV (Lecture Notes in Computer Science Volume 9385). Saint Etienne. France, pp. 158-169.
-#'
+#' @references Krijthe, J.H. & Loog, M., 2016. Projected Estimators for Robust Semi-supervised Classification. arXiv preprint arXiv:1602.07865.
+#' @family RSSL classifiers
+#' 
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param X_u Design matrix of the unlabeled data, intercept term is added within the function
@@ -24,6 +32,7 @@ setClass("ICLeastSquaresClassifier",
 #' @param trueprob numeric; true mean y for all data
 #' @param ... additional arguments
 #' @inheritParams BaseClassifier
+#' 
 #' @return S4 object of class ICLeastSquaresClassifier with the following slots:
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}
@@ -31,6 +40,7 @@ setClass("ICLeastSquaresClassifier",
 #' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
 #' \item{optimization}{the object returned by the optim function}
 #' \item{unlabels}{the labels assigned to the unlabeled objects}
+#' 
 #' @examples
 #' data(testdata)
 #' w1 <- LeastSquaresClassifier(testdata$X, testdata$y, 
@@ -44,7 +54,7 @@ setClass("ICLeastSquaresClassifier",
 #'        line_coefficients(w1)$slope,lty=2)
 #' abline(line_coefficients(w2)$intercept,
 #'        line_coefficients(w2)$slope,lty=1)
-#' @family RSSL LeastSquares
+#'
 #' @export
 ICLeastSquaresClassifier<-function(X, y, X_u=NULL, lambda1=0, lambda2=0, intercept=TRUE,x_center=FALSE,scale=FALSE,method="LBFGS",projection="supervised",lambda_prior=0,trueprob=NULL,eps=10e-10,y_scale=FALSE,use_Xu_for_scaling=TRUE) {
   

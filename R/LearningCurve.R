@@ -1,4 +1,10 @@
-print.LearningCurve <- function(x) {
+#' Print LearningCurve object
+#' 
+#' @param x LearningCurve object
+#' @param ... Not used
+#' @method print LearningCurve
+#' @export
+print.LearningCurve <- function(x,...) {
   cat("Learning Curve object\n\n")
   cat(names(x$results)[[2]],": ",paste(unique(x$results[[2]]),collapse=", "), "\n")
   cat("Classifiers:\n", paste("\t",levels(x$results$Classifier),collapse="\n"), "\n")
@@ -7,14 +13,40 @@ print.LearningCurve <- function(x) {
   cat(sum(is.na(x$results)), " missing\n")
 }
 
-#' Generate Semi-Supervised learning curve.
+#' Compute Semi-Supervised Learning Curve
 #' 
 #' Evaluate semi-supervised classifiers for different amounts of unlabeled training examples or different fractions of unlabeled vs. labeled examples.
+#' 
+#' \code{classifiers} is a named list of classifiers, where each classifier should be a function that accepts 4 arguments: a numeric design matrix of the labeled objects, a factor of labels, a numeric design  matrix of unlabeled objects and a factor of labels for the unlabeled objects.
+#' 
+#' \code{measures} is a named list of performance measures. These are functions that accept seven arguments: a trained classifier, a numeric design matrix of the labeled objects, a factor of labels, a numeric design  matrix of unlabeled objects and a factor of labels for the unlabeled objects, a numeric design matrix of the test objects and a factor of labels of the test objects. See \code{\link{measure_accuracy}} for an example.
+#' 
+#' This function allows for two different types of learning curves to be generated. If \code{type="unlabeled"}, the number of labeled objects remains fixed at the value of \code{n_l}, where \code{sizes} controls the number of unlabeled objects. \code{n_test} controls the number of objects used for the test set, while all remaining objects are used if \code{with_replacement=FALSE} if which case objects are drawn without replacement from the input dataset. We make sure each class is represented by at least \code{n_min} labeled objects of each class. For \code{n_l}, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
+#' 
+#'  If \code{type="unlabeled"} the total number of objects remains fixed, while the fraction of labeled objects is changed. \code{frac} sets the fractions of labeled objects that should be considered, while \code{test_fraction} determines the amount of objects left out to serve as the test set.
+#'  
+#' @family RSSL utilities
 #' 
 #' @param X design matrix
 #' @param y vector of labels
 #' @param ... arguments passed to underlying function
-#' 
+#' @param classifiers list; Classifiers to crossvalidate
+#' @param n_l Number of labeled objects to be used in the experiments (see details)
+#' @param with_replacement Indicated whether the subsampling is done with replacement or not (default: FALSE)
+#' @param sizes vector with number of unlabeled objects for which to evaluate performance
+#' @param n_test Number of test points if with_replacement is TRUE
+#' @param repeats Number of learning curves to draw
+#' @param n_min Minimum number of labeled objects per class in
+#' @param verbose Print progressbar during execution (default: FALSE)
+#' @param dataset_name character; Name of the dataset
+#' @param type Type of learning curve, either "unlabeled" or "fraction"
+#' @param fracs list; fractions of labeled data to use
+#' @param test_fraction numeric; If not NULL a fraction of the object will be left out to serve as the test set
+#' @param pre_scale logical; Whether the features should be scaled before the dataset is used
+#' @param pre_pca logical; Whether the features should be preprocessed using a PCA step
+#' @param measures named list of functions giving the measures to be used
+#' @param time logical; Whether execution time should be saved.
+#' @param low_level_cores integer; Number of cores to use compute repeats of the learning curve
 #' @return LearningCurve object
 #' 
 #' @examples
@@ -98,27 +130,6 @@ LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, mc.cores=1) {
 }
 
 #' @rdname LearningCurveSSL
-#' @param classifiers list; Classifiers to crossvalidate
-#' @param n_l Number of labeled objects to be used in the experiments (see details)
-#' @param with_replacement Indicated whether the subsampling is done with replacement or not (default: FALSE)
-#' @param sizes vector with number of unlabeled objects for which to evaluate performance
-#' @param n_test Number of test points if with_replacement is TRUE
-#' @param repeats Number of learning curves to draw
-#' @param n_min Minimum number of labeled objects per class in
-#' @param verbose Print progressbar during execution (default: FALSE)
-#' @param dataset_name character; Name of the dataset
-#' @param type Type of learning curve, either "unlabeled" or "fraction"
-#' @param fracs list; fractions of labeled data to use
-#' @param test_fraction numeric; If not NULL a fraction of the object will be left out to serve as the test set
-#' @param pre_scale logical; Whether the features should be scaled before the dataset is used
-#' @param pre_pca logical; Whether the features should be preprocessed using a PCA step
-#' @param measures named list of functions giving the measures to be used
-#' @param time logical; Whether execution time should be saved.
-#' @param low_level_cores integer; Number of cores to use compute repeats of the learning curve
-#' 
-#' @details 
-#' For n_l, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
-#' 
 #' @export
 LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l=NULL, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE,low_level_cores=1,...) {
   

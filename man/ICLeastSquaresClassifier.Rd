@@ -2,7 +2,7 @@
 % Please edit documentation in R/ICLeastSquaresClassifier.R
 \name{ICLeastSquaresClassifier}
 \alias{ICLeastSquaresClassifier}
-\title{Implicitly Constained Least Squares Classifier}
+\title{Implicitly Constrained Least Squares Classifier}
 \usage{
 ICLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
   intercept = TRUE, x_center = FALSE, scale = FALSE, method = "LBFGS",
@@ -52,7 +52,14 @@ S4 object of class ICLeastSquaresClassifier with the following slots:
 \item{unlabels}{the labels assigned to the unlabeled objects}
 }
 \description{
-Implicitly constrained semisupervised learning with quadratic loss. Least squares regression is used treating classes as targets (1 for one class, 2 for the other). We find an (fractional) labelling of the unlabeled objects, whose least squares regression solution minimizes the least squares loss on the labeled training data only. This is equivalent to finding a weighting of the unlabeled objects belonging to either of the two classes.
+Implementation of the Implicitly Constrained Least Squares Classifier (ICLS) of Krijthe & Loog (2015) and the projected estimator of Krijthe & Loog (2016).
+}
+\details{
+In Implicitly Constrained semi-supervised Least Squares (ICLS) of Krijthe & Loog (2015), we minimize the quadratic loss on the labeled objects, while enforcing that the solution has to be a solution that minimizes the quadratic loss for all objects for some (fractional) labeling of the data (the implicit constraints). The goal of this classifier is to use the unlabeled data to update the classifier, while making sure it still works well on the labeled data.
+
+The Projected estimator of Krijthe & Loog (2016) builds on this by finding a classifier within the space of classifiers that minimize the quadratic loss on all objects for some labeling (the implicit constrained), that minimizes the distance to the supervised solution for some appropriately chosen distance measure. Using the projection="semisupervised", we get certain guarantees that this solution is always better than the supervised solution (see Krijthe & Loog (2016)), while setting projection="supervised" is equivalent to ICLS.
+
+Both methods (ICLS and the projection) can be formulated as a quadratic programming problem and solved using either a quadratic programming solver (method="QP") or using a gradient descent approach that takes into account certain bounds on the labelings (method="LBFGS"). The latter is the preferred method.
 }
 \examples{
 data(testdata)
@@ -67,11 +74,34 @@ abline(line_coefficients(w1)$intercept,
        line_coefficients(w1)$slope,lty=2)
 abline(line_coefficients(w2)$intercept,
        line_coefficients(w2)$slope,lty=1)
+
 }
 \references{
 Krijthe, J.H. & Loog, M., 2015. Implicitly Constrained Semi-Supervised Least Squares Classification. In E. Fromont, T. De Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances in Intelligent Data Analysis XIV (Lecture Notes in Computer Science Volume 9385). Saint Etienne. France, pp. 158-169.
+
+Krijthe, J.H. & Loog, M., 2016. Projected Estimators for Robust Semi-supervised Classification. arXiv preprint arXiv:1602.07865.
 }
 \seealso{
-Other RSSL.LeastSquares: \code{\link{EMLeastSquaresClassifier}}
+Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+  \code{\link{GRFClassifier}},
+  \code{\link{ICLinearDiscriminantClassifier}},
+  \code{\link{KernelLeastSquaresClassifier}},
+  \code{\link{LaplacianKernelLeastSquaresClassifier}},
+  \code{\link{LaplacianSVM}},
+  \code{\link{LeastSquaresClassifier}},
+  \code{\link{LinearDiscriminantClassifier}},
+  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
+  \code{\link{LogisticLossClassifier}},
+  \code{\link{LogisticRegression}},
+  \code{\link{MCLinearDiscriminantClassifier}},
+  \code{\link{MCNearestMeanClassifier}},
+  \code{\link{MCPLDA}},
+  \code{\link{MajorityClassClassifier}},
+  \code{\link{NearestMeanClassifier}},
+  \code{\link{QuadraticDiscriminantClassifier}},
+  \code{\link{S4VM}}, \code{\link{SVM}},
+  \code{\link{SelfLearning}}, \code{\link{TSVM}},
+  \code{\link{USMLeastSquaresClassifier}},
+  \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
 

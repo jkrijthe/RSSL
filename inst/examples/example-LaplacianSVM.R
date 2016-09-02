@@ -22,7 +22,8 @@ class_sup <- SVM(
 
 class_lap <- LaplacianSVM(
   Class~.,df,
-  kernel=kernlab::rbfdot(rbf_param),                                                lambda=lambda,gamma=gamma,
+  kernel=kernlab::rbfdot(rbf_param),
+  lambda=lambda,gamma=gamma,
   normalized_laplacian = TRUE,
   scale=FALSE)
 

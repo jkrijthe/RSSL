@@ -6,7 +6,9 @@ setClass("EMLeastSquaresClassifier",
 
 #' An Expectation Maximization like approach to Semi-Supervised Least Squares Classification
 #' 
-#' Minimize the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.
+#' As studied in Krijthe & Loog (2016), minimizes the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.
+#' 
+#' By default (method="block") the weights of the classifier are updated, after which the unknown labels are updated. method="simple" uses LBFGS to do this update simultaneously. Objective="responsibility" corresponds to the responsibility based, instead of the label based, objective function in Krijthe & Loog (2016), which is equivalent to hard-label self-learning.
 #' 
 #' @param scale Should the features be normalized? (default: FALSE)
 #' @param eps Stopping criterion for the minimization
@@ -18,6 +20,7 @@ setClass("EMLeastSquaresClassifier",
 #' @param max_iter integer; maximum number of iterations
 #' @param beta numeric; value between 0 and 1 that determines how much to move to the new solution from the old solution at each step of the block gradient descent
 #' @param save_all logical; saves all classifiers trained during block gradient descent
+#' @references Krijthe, J.H. & Loog, M., 2016. Optimistic Semi-supervised Least Squares Classification. In International Conference on Pattern Recognition (To Appear).
 #' @inheritParams BaseClassifier
 #' @param ... Additional Parameters, Not used
 #' @family RSSL LeastSquares

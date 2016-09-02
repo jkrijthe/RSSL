@@ -7,21 +7,27 @@ setClass("S4VM",
          prototype(name="Safe Semi-supervised Support Vector Machine"),
          contains="Classifier")
 
-#' Safe Semi-supervised Support Vector Machine Classifier (S4VM)
+#' Safe Semi-supervised Support Vector Machine (S4VM)
 #'
-#' R port of the MATLAB implementation of the original authors of the Safe Semi-supervised Support Vector Machine Classifier by Li & Zhou (2011). 
+#' R port of the MATLAB implementation of Li & Zhou (2011) of the Safe Semi-supervised Support Vector Machine.
 #' 
-#' The method randomly generates multiple low-density separators (controlled by the sample_time parameter) and merges their predictions by solving a linear programming problem meant to penalize the cost of decreasing the performance of the classifier. S4VM is a bit of a misnomer, since it is a transductive method that only returns predicted labels for the unlabeled objects. The main difference in this implementation compared to the original implementation is the clustering of the low-density separators: in our implementation empty clusters are not dropped during the k-means procedure. In the paper by Li (2011) the features are first normalized to [0,1], which is not automatically done by this function. Note that the solution may not correspond to a linear classifier even if the linear kernel is used.
+#' The method randomly generates multiple low-density separators (controlled by the sample_time parameter) and merges their predictions by solving a linear programming problem meant to penalize the cost of decreasing the performance of the classifier, compared to the supervised SVM. S4VM is a bit of a misnomer, since it is a transductive method that only returns predicted labels for the unlabeled objects. The main difference in this implementation compared to the original implementation is the clustering of the low-density separators: in our implementation empty clusters are not dropped during the k-means procedure. In the paper by Li (2011) the features are first normalized to [0,1], which is not automatically done by this function. Note that the solution may not correspond to a linear classifier even if the linear kernel is used.
+#' 
 #' @references Yu-Feng Li and Zhi-Hua Zhou. Towards Making Unlabeled Data Never Hurt. In: Proceedings of the 28th International Conference on Machine Learning (ICML'11), Bellevue, Washington, 2011.
-#' @param C1 numeric; regularization parameter for labeled data
-#' @param C2 numeric; regularization parameter for unlabeled data
-#' @param gamma numeric; width of RBF kernel
-#' @param sample_time numeric; Number of low-density separators that are generated
-#' @param lambda_tradeoff numeric; Parameter that determines the amount of "risk" in obtaining a worse solution than the supervised solution
-#' @return S4 S4VM object with slots:
+#' 
+#' @family RSSL classifiers
+#' 
+#' @param C1 double; Regularization parameter for labeled data
+#' @param C2 double; Regularization parameter for unlabeled data
+#' @param gamma double; Width of RBF kernel
+#' @param sample_time integer; Number of low-density separators that are generated
+#' @param lambda_tradeoff numeric; Parameter that determines the amount of "risk" in obtaining a worse solution than the supervised solution, see Li & Zhou (2011)
+#' @inheritParams BaseClassifier
+#' 
+#' @return S4VM object with slots:
 #' \item{predictions}{Predictions on the unlabeled objects}
 #' \item{labelings}{Labelings for the different clusters}
-#' @inheritParams BaseClassifier
+#' 
 #' @example inst/examples/example-S4VM.R
 #' @export
 S4VM<-function(X,y,X_u=NULL, C1=100, C2=0.1, sample_time=100, gamma=0, x_center=FALSE,scale=FALSE,lambda_tradeoff=3) {
@@ -89,14 +95,25 @@ S4VM<-function(X,y,X_u=NULL, C1=100, C2=0.1, sample_time=100, gamma=0, x_center=
   if (clusterNum==1) {
     warning("Only found one cluster of solutions!")
     IDX <- 1
-    D <- flexclust::dist2(Y,Y[1,,drop=FALSE],method="manhattan")
-    D <- colSums(D) # Total distance from cluster to all objects
+    # Code using flexclust: gives problems on Windows platform
+    # D <- flexclust::dist2(Y,Y[1,,drop=FALSE],method="manhattan")
+    # D <- colSums(D) # Total distance from cluster to all objects
+    D <- dist(Y,method = "manhattan") # Not very efficient...
+    sum(D[seq_len(nrow(Y)-1)])
   }
   else {
-    clustering <- flexclust::kcca(Y, clusterNum, family=flexclust::kccaFamily("kmedians"), control=list(initcent="kmeanspp")) # We do not explicitly drop empty clusters
-    IDX <- clustering@cluster
-    D <- flexclust::dist2(Y,clustering@centers,method="manhattan")
-    D <- colSums(D) # Total distance from cluster to all objects
+    # Code using flexclust: gives problems on Windows platform
+    # 
+    # clustering2 <- flexclust::kcca(Y, clusterNum, family=flexclust::kccaFamily("kmedians"), control=list(initcent="kmeanspp")) # We do not explicitly drop empty clusters
+    # IDX2 <- clustering2@cluster
+    # D2 <- flexclust::dist2(Y,clustering2@centers,method="manhattan")
+    # D2 <- colSums(D2) # Total distance from cluster to all objects
+
+    clustering <- cluster::pam(Y,clusterNum,metric="manhattan",keep.diss=TRUE)
+    
+    IDX <- clustering$clustering
+    D <- as.matrix(clustering$diss)[,clustering$id.med,drop=FALSE]
+    D <- colSums(D)
   }
   
 
@@ -166,6 +183,9 @@ linearProgramming <- function(yp,ysvm,labelNum,lambda) {
 }
 
 #' Local descent
+#' 
+#' Local descent used in S4VM
+#' 
 #' @param instance Design matrix
 #' @param label label vector
 #' @param labelNum Number of labeled objects

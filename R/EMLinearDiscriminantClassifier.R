@@ -6,13 +6,19 @@ setClass("EMLinearDiscriminantClassifier",
 
 #' Semi-Supervised Linear Discriminant Analysis using Expectation Maximization
 #' 
-#' Expectation Maximization 
+#' Expectation Maximization applied to the linear discriminant classifier assuming Gaussian classes with a shared covariance matrix.
+#' 
+#' Starting from the supervised solution, uses the Expectation Maximization algorithm (see Dempster et al. (1977)) to iteratively update the means and shared covariance of the classes (Maximization step) and updates the responsibilities for the unlabeled objects (Expectation step).
+#' 
+#' @references Dempster, A., Laird, N. & Rubin, D., 1977. Maximum likelihood from incomplete data via the EM algorithm. Journal of the Royal Statistical Society. Series B, 39(1), pp.1-38.
 #' 
 #' @param method character; Currently only "EM"
 #' @param eps Stopping criterion for the maximinimization
 #' @param verbose logical; Controls the verbosity of the output
 #' @param max_iter integer; Maximum number of iterations
+
 #' @inheritParams BaseClassifier
+#' @family RSSL classifiers
 #' 
 #' @export
 EMLinearDiscriminantClassifier <- function(X, y, X_u, method="EM",scale=FALSE, eps=1e-8, verbose=FALSE, max_iter=100) {
