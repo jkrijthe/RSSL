@@ -1,5 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![CRAN version](http://www.r-pkg.org/badges/version/RSSL)](http://cran.rstudio.com/web/packages/RSSL/index.html) [![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL) [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master) [![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.rstudio.com/web/packages/RSSL/index.html)
+[![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL) [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master)
 
 R Semi-Supervised Learning package
 ==================================
@@ -7,6 +7,11 @@ R Semi-Supervised Learning package
 This R package provides implementations of several semi-supervised learning methods, in particular, our own work involving constraint based semi-supervised learning.
 
 The package is still under development. Therefore, function names and interfaces are subject to change.
+
+To cite the package, use either of these two references:
+
+-   Krijthe, J.H. & Loog, M. (2015). Implicitly Constrained Semi-Supervised Least Squares Classification. In E. Fromont, T. de Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances in Intelligent Data Analysis XIV (Lecture Notes in Computer Science Volume 9385). Saint Etienne. France, pp. 158-169.
+-   Jesse H. Krijthe (2016). RSSL: Implementations of Semi-Supervised Learning Approaches for Classification, URL: <https://github.com/jkrijthe/RSSL>
 
 Installation Instructions
 =========================
@@ -51,7 +56,7 @@ df %>%
   geom_point() +
   coord_equal() +
   scale_size_manual(values=c("-1"=3,"1"=3), na.value=1) +
-  geom_classifier("Supervised"=g_nm,
+  geom_linearclassifier("Supervised"=g_nm,
                   "Semi-supervised"=g_self)
 ```
 
