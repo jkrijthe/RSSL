@@ -10,9 +10,6 @@ matrix:
       dist: trusty
       sudo: required
       env: R_CODECOV=true
-    - os: osx
-      osx_image: xcode8
-      latex: false
 
 addons:
   apt:
