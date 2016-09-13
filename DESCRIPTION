@@ -76,5 +76,4 @@ Collate:
     'svmd.R'
     'svmlin.R'
     'testdata-data.R'
-VignetteBuilder: rmarkdown
 RoxygenNote: 5.0.1
