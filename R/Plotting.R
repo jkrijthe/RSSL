@@ -64,14 +64,16 @@ StatClassifier <-
               if (hasMethod(line_coefficients,class(x)) && !brute_force) {
                 
                 coef <- line_coefficients(x)
-                data.frame(x=c(scales$x$get_limits(), 
-                               (scales$y$get_limits()-coef$intercept)/coef$slope
-                           ),
-                           y=c(coef$intercept + 
-                                 coef$slope * scales$x$get_limits(),
-                               scales$y$get_limits()
-                           )
-                               ,piece=1,group="1",stringsAsFactors = FALSE)
+                y_at_limits <- coef$intercept + coef$slope * scales$x$get_limits()
+                x_at_limits <- (scales$y$get_limits()-coef$intercept)/coef$slope
+                
+                select_y <- (y_at_limits>=scales$y$get_limits()[1] & y_at_limits<=scales$y$get_limits()[2])
+                select_x <- (x_at_limits>=scales$x$get_limits()[1] & x_at_limits<=scales$x$get_limits()[2])
+                x_vals <- c(scales$x$get_limits()[select_y],x_at_limits[select_x])
+                y_vals <- c(y_at_limits[select_y], scales$y$get_limits()[select_x])
+                data.frame(x = x_vals,
+                           y = y_vals,
+                           piece=rep(1,length(x_vals)), group=rep("1",length(x_vals)), stringsAsFactors = FALSE)
               } else {
                 
                 df_contour <- expand.grid(x=seq(scales$x$get_limits()[1],
