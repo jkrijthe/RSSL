@@ -75,7 +75,8 @@ classifiers <- list("Lap"=class_lap,"Sup"=class_sup)
 #   scale=FALSE,balancing_constraint=TRUE)
 # classifiers <- list("Lap"=class_lap,"Sup"=class_sup,"TSVM"=class_tsvm)
 
-# Plot classifiers
+# Plot classifiers (Can take a couple of seconds)
+\dontrun{
 df \%>\% 
   ggplot(aes(x=X1,y=X2,color=Class)) +
   geom_point() +
@@ -83,7 +84,8 @@ df \%>\%
   stat_classifier(aes(linetype=..classifier..),
                   classifiers = classifiers ,
                   color="black")
-
+}
+  
 # Calculate the loss
 lapply(classifiers,function(c) mean(loss(c,df_orig)))
 
@@ -98,7 +100,8 @@ C <- 1/(lambda*2*sum(!is.na(df$Class)))
 gamma <- 100
 rbf_param <- 0.1
 
-# Train classifiers
+# Train classifiers (Takes a couple of seconds)
+\dontrun{
 class_sup <- SVM(
   Class~.,df,
   kernel=kernlab::rbfdot(rbf_param),
@@ -113,8 +116,10 @@ class_lap <- LaplacianSVM(
 
 
 classifiers <- list("Lap"=class_lap,"Sup"=class_sup)
+}
 
-# Plot classifiers
+# Plot classifiers (Can take a couple of seconds)
+\dontrun{
 df \%>\% 
   ggplot(aes(x=X1,y=X2,color=Class,size=Class)) +
   scale_size_manual(values=c("1"=3,"2"=3),na.value=1) +
@@ -123,6 +128,7 @@ df \%>\%
   stat_classifier(aes(linetype=..classifier..),
                   classifiers = classifiers ,
                   color="black",size=1)
+}
 }
 \references{
 Belkin, M., Niyogi, P. & Sindhwani, V., 2006. Manifold regularization: A geometric framework for learning from labeled and unlabeled examples. Journal of Machine Learning Research, 7, pp.2399-2434.

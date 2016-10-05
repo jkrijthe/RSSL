@@ -12,6 +12,8 @@ y <- testdata$y
 X_test <- testdata$X_test
 y_test <- testdata$y_test
 
+set.seed(1)
+
 test_that("Formula and matrix formulation give same results",{
   g_matrix <- EMLeastSquaresClassifier(X,factor(y),X_u)
   g_model <- EMLeastSquaresClassifier(modelform, D)

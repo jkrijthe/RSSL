@@ -12,6 +12,8 @@ y <- testdata$y
 X_test <- testdata$X_test
 y_test <- testdata$y_test
 
+set.seed(1)
+
 test_that("Same result for different input modalities",{
   g_mat <- EntropyRegularizedLogisticRegression(X,y,X_u)
   g_df <- EntropyRegularizedLogisticRegression(modelform,D)

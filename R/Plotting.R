@@ -52,7 +52,7 @@ geom_linearclassifier <- function(...,show_guide=TRUE) {
 
 StatClassifier <- 
   ggproto("StatClassifier", Stat, 
-          required_aes = c("x","y","z"),
+          required_aes = c("x","y"),
           
           setup_params = function(data, params) {
             params
@@ -118,9 +118,12 @@ StatClassifier <-
 #' 
 #' df <- generateCrescentMoon(200)
 #' 
+#' # This takes a couple of seconds to run
+#' \dontrun{
 #' g_svm <- SVM(Class~.,df,kernel = kernlab::rbfdot(sigma = 1))
 #' g_ls <- LeastSquaresClassifier(Class~.,df)
 #' g_nm <- NearestMeanClassifier(Class~.,df)
+#' 
 #' 
 #' df %>% 
 #'   ggplot(aes(x=X1,y=X2,color=Class,shape=Class)) +
@@ -132,6 +135,7 @@ StatClassifier <-
 #'                   color="black", precision=50,
 #'                   classifiers=list("SVM"=g_svm,"NM"=g_nm,"LS"=g_ls)
 #'   )
+#' }   
 #' @param mapping aes; aesthetic mapping
 #' @param data data.frame; data to be diplayed
 #' @param inherit.aes logical; If FALSE, overrides the default aesthetics

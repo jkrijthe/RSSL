@@ -37,9 +37,12 @@ library(dplyr)
 
 df <- generateCrescentMoon(200)
 
+# This takes a couple of seconds to run
+\dontrun{
 g_svm <- SVM(Class~.,df,kernel = kernlab::rbfdot(sigma = 1))
 g_ls <- LeastSquaresClassifier(Class~.,df)
 g_nm <- NearestMeanClassifier(Class~.,df)
+
 
 df \%>\% 
   ggplot(aes(x=X1,y=X2,color=Class,shape=Class)) +
@@ -51,5 +54,6 @@ df \%>\%
                   color="black", precision=50,
                   classifiers=list("SVM"=g_svm,"NM"=g_nm,"LS"=g_ls)
   )
+}   
 }
 

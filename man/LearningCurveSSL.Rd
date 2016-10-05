@@ -86,11 +86,13 @@ measures <- list("Accuracy" =  measure_accuracy,
                  "Loss Lab+Unlab" = measure_losstrain
 )
 
+# These take a couple of seconds to run
+\dontrun{
 # Increase the number of unlabeled objects
 lc1 <- LearningCurveSSL(as.matrix(df[,1:2]),df$Class,
                         classifiers=classifiers,
                         measures=measures, n_test=1800,
-                        n_l=10,repeats=10)
+                        n_l=10,repeats=3)
 
 plot(lc1)
 
@@ -101,11 +103,11 @@ lc2 <- LearningCurveSSL(X=list("Dataset 1"=as.matrix(df[,1:2]),
                                "Dataset 2"=df$Class),
                         classifiers=classifiers,
                         measures=measures,
-                        type = "fraction",repeats=10,
+                        type = "fraction",repeats=3,
                         test_fraction=0.9)
 
 plot(lc2)
-
+}
 }
 \seealso{
 Other RSSL utilities: \code{\link{SSLDataFrameToMatrices}},

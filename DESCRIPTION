@@ -25,8 +25,7 @@ Suggests:
     SparseM,
     numDeriv,
     LiblineaR
-Description: Implementations of semi-supervised learning approaches for
-    classification.
+Description: A collection of implementations of semi-supervised classifiers and methods to evaluate their performance. The package includes implementations of, among others, Implicitly Constrained Learning, Moment Constrained Learning, the Transductive SVM, Manifold regularization, Maximum Contrastive Pessimistic Likelihood estimation, S4VM and WellSVM.
 License: GPL (>= 2)
 URL: http://www.github.com/jkrijthe/RSSL
 BugReports: http://www.github.com/jkrijthe/RSSL
