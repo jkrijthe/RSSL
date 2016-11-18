@@ -42,6 +42,8 @@ Transductive SVM using the CCCP algorithm as proposed by Collobert et al. (2006)
 C is the cost associated with labeled objects, while Cstar is the cost for the unlabeled objects. s control the loss function used for the unlabeled objects: it controls the size of the plateau for the symmetric ramp loss function. The balancing constraint makes sure the label assignments of the unlabeled objects are similar to the prior on the classes that was observed on the labeled data.
 }
 \examples{
+library(RSSL)
+
 # Simple example with a few objects
 X <- matrix(c(0,0.001,1,-1),nrow=2)
 X_u <- matrix(c(-1,-1,-1,0,0,0,-0.4,-0.5,-0.6,1.2,1.3,1.25),ncol=2)

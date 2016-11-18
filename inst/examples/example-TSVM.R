@@ -1,3 +1,5 @@
+library(RSSL)
+
 # Simple example with a few objects
 X <- matrix(c(0,0.001,1,-1),nrow=2)
 X_u <- matrix(c(-1,-1,-1,0,0,0,-0.4,-0.5,-0.6,1.2,1.3,1.25),ncol=2)

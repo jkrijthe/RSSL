@@ -33,6 +33,7 @@ S4 object of class LeastSquaresClassifier with the following slots:
 Use least squares regression as a classification technique using a numeric encoding of classes as targets. Note this method minimizes quadratic loss, not the truncated quadratic loss.
 }
 \examples{
+library(RSSL)
 library(ggplot2)
 library(dplyr)
 

@@ -32,6 +32,7 @@ WellSVM(X, y, X_u, C1 = 1, C2 = 0.1, gamma = 1, x_center = TRUE,
 WellSVM is a minimax relaxation of the mixed integer programming problem of finding the optimal labels for the unlabeled data in the SVM objective function. This implementation is a translation of the Matlab implementation of Li (2013) into R.
 }
 \examples{
+library(RSSL)
 library(ggplot2)
 library(dplyr)
 

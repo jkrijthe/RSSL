@@ -38,6 +38,7 @@ LaplacianKernelLeastSquaresClassifier(X, y, X_u, lambda = 0, gamma = 0,
 Implements manifold regularization through the graph Laplacian as proposed by Belkin et al. 2006. As an adjacency matrix, we use the k nearest neighbour graph based on a chosen distance (default: euclidean).
 }
 \examples{
+library(RSSL)
 library(ggplot2)
 library(dplyr)
 

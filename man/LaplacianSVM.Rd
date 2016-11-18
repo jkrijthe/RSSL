@@ -36,6 +36,7 @@ S4 object of type LaplacianSVM
 Manifold regularization applied to the support vector machine as proposed in Belkin et al. (2006). As an adjacency matrix, we use the k nearest neighbour graph based on a chosen distance (default: euclidean).
 }
 \examples{
+library(RSSL)
 library(ggplot2)
 library(dplyr)
 

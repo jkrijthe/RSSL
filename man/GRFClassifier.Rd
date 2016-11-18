@@ -33,6 +33,7 @@ GRFClassifier(X, y, X_u, adjacency = "nn", adjacency_distance = "euclidean",
 Implements the approach proposed in Zhu et al. (2003) to label propagation over an affinity graph. Note, as in the original paper, we consider the transductive scenario, so the implementation does not generalize to out of sample predictions. The approach minimizes the squared difference in labels assigned to different objects, where the contribution of each difference to the loss is weighted by the affinity between the objects. The default in this implementation is to use a knn adjacency matrix based on euclidean distance to determine this weight. Setting \code{adjacency="heat"} will use an RBF kernel over euclidean distances between objects to determine the weights.
 }
 \examples{
+library(RSSL)
 library(ggplot2)
 library(dplyr)
 
