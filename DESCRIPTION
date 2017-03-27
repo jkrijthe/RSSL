@@ -1,5 +1,5 @@
 Package: RSSL
-Version: 0.6.1
+Version: 0.6.2
 Title: Implementations of Semi-Supervised Learning Approaches for Classification
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
@@ -25,7 +25,11 @@ Suggests:
     SparseM,
     numDeriv,
     LiblineaR
-Description: A collection of implementations of semi-supervised classifiers and methods to evaluate their performance. The package includes implementations of, among others, Implicitly Constrained Learning, Moment Constrained Learning, the Transductive SVM, Manifold regularization, Maximum Contrastive Pessimistic Likelihood estimation, S4VM and WellSVM.
+Description: A collection of implementations of semi-supervised classifiers
+    and methods to evaluate their performance. The package includes implementations
+    of, among others, Implicitly Constrained Learning, Moment Constrained Learning,
+    the Transductive SVM, Manifold regularization, Maximum Contrastive Pessimistic
+    Likelihood estimation, S4VM and WellSVM.
 License: GPL (>= 2)
 URL: http://www.github.com/jkrijthe/RSSL
 BugReports: http://www.github.com/jkrijthe/RSSL

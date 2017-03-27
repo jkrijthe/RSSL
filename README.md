@@ -60,7 +60,7 @@ df %>%
                   "Semi-supervised"=g_self)
 ```
 
-![](README-example-1.png)
+![](tools/example-1.png)
 
 ``` r
 

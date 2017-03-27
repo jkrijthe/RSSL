@@ -40,7 +40,7 @@ After installation, load the package as usual:
 library(RSSL)
 ```
 The following code generates a simple dataset, trains a supervised and two semi-supervised classifiers and evaluates their performance:
-```{r example,results='hide'}
+```{r example,results='hide',fig.path="tools/"}
 library(dplyr,warn.conflicts = FALSE)
 library(ggplot2,warn.conflicts = FALSE)
 
