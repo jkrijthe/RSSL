@@ -19,4 +19,3 @@ Symmetric binary adjacency matrix
 \description{
 Calculates symmetric adjacency: objects are neighbours is either one of them is in the set of nearest neighbours of the other.
 }
-

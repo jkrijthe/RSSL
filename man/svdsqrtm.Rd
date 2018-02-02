@@ -15,4 +15,3 @@ Y matrix; square root of the input matrix
 \description{
 Taking the square root of a matrix using the singular value decomposition
 }
-

@@ -29,4 +29,3 @@ Other RSSL datasets: \code{\link{generate2ClassGaussian}},
   \code{\link{generateSpirals}},
   \code{\link{generateTwoCircles}}
 }
-

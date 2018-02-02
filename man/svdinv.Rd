@@ -15,4 +15,3 @@ Y matrix; inverse of the input matrix
 \description{
 Inverse of a matrix using the singular value decomposition
 }
-

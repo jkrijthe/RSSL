@@ -23,4 +23,3 @@ Other RSSL datasets: \code{\link{generate2ClassGaussian}},
   \code{\link{generateSlicedCookie}},
   \code{\link{generateSpirals}}
 }
-

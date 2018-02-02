@@ -16,4 +16,3 @@
 \description{
 Plot CrossValidation object
 }
-

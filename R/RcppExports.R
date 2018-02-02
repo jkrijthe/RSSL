@@ -2,30 +2,30 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 harmonic_function_cpp <- function(W, Y) {
-    .Call('RSSL_harmonic_function_cpp', PACKAGE = 'RSSL', W, Y)
+    .Call(`_RSSL_harmonic_function_cpp`, W, Y)
 }
 
 svmlin_rcpp <- function(X, y, l, algorithm, lambda, lambda_u, max_switch, pos_frac, Cp, Cn, costs, verbose) {
-    .Call('RSSL_svmlin_rcpp', PACKAGE = 'RSSL', X, y, l, algorithm, lambda, lambda_u, max_switch, pos_frac, Cp, Cn, costs, verbose)
+    .Call(`_RSSL_svmlin_rcpp`, X, y, l, algorithm, lambda, lambda_u, max_switch, pos_frac, Cp, Cn, costs, verbose)
 }
 
 rowMax <- function(X) {
-    .Call('RSSL_rowMax', PACKAGE = 'RSSL', X)
+    .Call(`_RSSL_rowMax`, X)
 }
 
 which_rowMax <- function(X) {
-    .Call('RSSL_which_rowMax', PACKAGE = 'RSSL', X)
+    .Call(`_RSSL_which_rowMax`, X)
 }
 
 sort_matrix <- function(X) {
-    .Call('RSSL_sort_matrix', PACKAGE = 'RSSL', X)
+    .Call(`_RSSL_sort_matrix`, X)
 }
 
 rowwise_addition <- function(A, x) {
-    .Call('RSSL_rowwise_addition', PACKAGE = 'RSSL', A, x)
+    .Call(`_RSSL_rowwise_addition`, A, x)
 }
 
 factor_to_dummy_cpp <- function(y, c) {
-    .Call('RSSL_factor_to_dummy_cpp', PACKAGE = 'RSSL', y, c)
+    .Call(`_RSSL_factor_to_dummy_cpp`, y, c)
 }
 

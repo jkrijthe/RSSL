@@ -25,4 +25,3 @@ LogisticRegressionFast(X, y, lambda = 0, intercept = TRUE, scale = FALSE,
 \description{
 Logistic Regression implementation that uses R's glm
 }
-

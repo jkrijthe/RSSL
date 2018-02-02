@@ -29,4 +29,3 @@ list(predictLabel=predictLabel,acc=acc,values=values,model=model)
 \description{
 Local descent used in S4VM
 }
-

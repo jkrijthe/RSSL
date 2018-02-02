@@ -104,4 +104,3 @@ Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
-

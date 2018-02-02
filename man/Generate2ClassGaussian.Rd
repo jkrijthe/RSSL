@@ -31,4 +31,3 @@ Other RSSL datasets: \code{\link{generateABA}},
   \code{\link{generateSpirals}},
   \code{\link{generateTwoCircles}}
 }
-

@@ -24,4 +24,3 @@ Measures the expected error of the LDA model defined by m, p,
 and iW on the data set a, where weights w are potentially taken into
 account
 }
-

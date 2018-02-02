@@ -21,4 +21,3 @@ m contains the means, p contains the class priors, iW contains the INVERTED with
 \description{
 Implements weighted likelihood estimation for LDA
 }
-

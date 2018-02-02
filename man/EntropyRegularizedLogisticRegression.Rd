@@ -70,4 +70,3 @@ mean(predict(class_erlr,df_test)==df_test$Class)
 \references{
 Grandvalet, Y. & Bengio, Y., 2005. Semi-supervised learning by entropy minimization. In L. K. Saul, Y. Weiss, & L. Bottou, eds. Advances in Neural Information Processing Systems 17. Cambridge, MA: MIT Press, pp. 529-536.
 }
-

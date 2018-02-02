@@ -15,4 +15,3 @@ alpha, b, obj
 \description{
 Train SVM
 }
-

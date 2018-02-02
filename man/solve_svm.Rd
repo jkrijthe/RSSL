@@ -16,4 +16,3 @@ solve_svm(K, y, C = 1)
 \description{
 SVM solve.QP implementation
 }
-

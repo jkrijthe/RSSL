@@ -18,4 +18,3 @@ WellSVM_supervised(K0, y, opt, ind_y)
 \description{
 A degenerated version of WellSVM where the labels are complete, that is, supervised learning
 }
-

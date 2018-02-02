@@ -27,4 +27,3 @@ df \%>\%
  geom_linearclassifier("Supervised"=LinearDiscriminantClassifier(Class~.,df),
                        "EM"=EMLinearDiscriminantClassifier(Class~.,df))
 }
-

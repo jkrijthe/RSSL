@@ -17,4 +17,3 @@ The harmonic solution, i.e. eq (5) in the ICML paper, with or without class mass
 \description{
 Direct R Translation of Xiaojin Zhu's Matlab code to determine harmonic solution
 }
-

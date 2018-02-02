@@ -20,4 +20,3 @@ The algorithm works row-wise
 \references{
 Algorithm is explained as in http://arxiv.org/abs/1101.6081
 }
-

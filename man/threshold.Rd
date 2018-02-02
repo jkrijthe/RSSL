@@ -17,4 +17,3 @@ y2
 \description{
 Refine the prediction to satisfy the balance constraint
 }
-

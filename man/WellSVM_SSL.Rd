@@ -18,4 +18,3 @@ WellSVM_SSL(K0, y, opt, yinit = NULL)
 \description{
 Convex relaxation of S3VM by label generation
 }
-

@@ -13,4 +13,3 @@ Most functions take a \code{formula} and \code{data.frame} or a \code{matrix} an
 
 For a complete list of functions, use library(help = "RSSL").
 }
-

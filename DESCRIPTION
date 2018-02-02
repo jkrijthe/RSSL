@@ -1,5 +1,5 @@
 Package: RSSL
-Version: 0.6.2
+Version: 0.7
 Title: Implementations of Semi-Supervised Learning Approaches for Classification
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
@@ -79,4 +79,4 @@ Collate:
     'svmd.R'
     'svmlin.R'
     'testdata-data.R'
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

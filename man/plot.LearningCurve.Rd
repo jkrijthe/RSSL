@@ -16,4 +16,3 @@
 \description{
 Plot LearningCurve object
 }
-

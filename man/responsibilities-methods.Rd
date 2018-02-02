@@ -18,4 +18,3 @@ numeric; responsibilities on the unlabeled objects
 \description{
 Responsilibities assigned to the unlabeled objects
 }
-

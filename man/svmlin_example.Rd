@@ -7,4 +7,3 @@
 \description{
 Useful for testing the svmlin interface and to serve as an example
 }
-

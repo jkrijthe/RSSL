@@ -17,4 +17,3 @@ vector with indices for sample
 \description{
 Sample k indices per levels from a factor
 }
-

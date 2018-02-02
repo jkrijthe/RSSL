@@ -16,4 +16,3 @@ scaleMatrix(x, center = TRUE, scale = TRUE)
 \description{
 This function returns an object with a predict method to center and scale new data. Inspired by stdize from the PLS package
 }
-

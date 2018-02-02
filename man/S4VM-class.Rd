@@ -7,4 +7,3 @@
 \description{
 LinearSVM Class
 }
-

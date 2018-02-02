@@ -12,4 +12,3 @@
 \description{
 Merge result of cross-validation runs on single datasets into a the same object
 }
-

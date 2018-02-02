@@ -19,4 +19,3 @@ k - A n x m kernel matrix and dis_mat - A n x m distance matrix
 \description{
 calculated the guassian kernel matrix
 }
-

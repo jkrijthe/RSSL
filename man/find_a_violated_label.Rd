@@ -22,4 +22,3 @@ find_a_violated_label(alpha, K, y, ind_y, lr, y_init)
 \description{
 Find a violated label
 }
-

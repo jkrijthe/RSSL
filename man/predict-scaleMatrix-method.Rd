@@ -17,4 +17,3 @@
 \description{
 Predict for matrix scaling inspired by stdize from the PLS package
 }
-

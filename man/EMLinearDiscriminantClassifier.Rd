@@ -56,4 +56,3 @@ Other RSSL classifiers: \code{\link{GRFClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
-

@@ -37,4 +37,3 @@ BaseClassifier(X, y, X_u, verbose, scale, eps, x_center, intercept, lambda,
 \description{
 Classifier used for enabling shared documenting of parameters
 }
-

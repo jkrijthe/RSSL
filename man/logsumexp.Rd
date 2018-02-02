@@ -15,4 +15,3 @@ matrix; m by 1 matrix
 \description{
 Numerically more stable way to calculate log sum exp
 }
-

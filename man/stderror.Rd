@@ -12,4 +12,3 @@ stderror(x)
 \description{
 Calculate the standard error of the mean from a vector of numbers
 }
-

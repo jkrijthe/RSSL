@@ -7,4 +7,3 @@
 \description{
 A list containing a sample from the \code{GenerateSlicedCookie} dataset for unit testing and examples.
 }
-

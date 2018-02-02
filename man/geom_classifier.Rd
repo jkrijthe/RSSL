@@ -14,4 +14,3 @@ geom_classifier(..., show_guide = TRUE)
 \description{
 Deprecated: Use geom_linearclassifier or stat_classifier to plot classification boundaries
 }
-

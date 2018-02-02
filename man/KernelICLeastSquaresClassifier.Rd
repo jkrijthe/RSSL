@@ -36,4 +36,3 @@ KernelICLeastSquaresClassifier(X, y, X_u, lambda = 0, kernel = vanilladot(),
 \description{
 A kernel version of the implicitly constrained least squares classifier, see \code{\link{ICLeastSquaresClassifier}}.
 }
-

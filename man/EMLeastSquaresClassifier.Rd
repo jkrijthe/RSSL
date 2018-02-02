@@ -81,4 +81,3 @@ df \%>\%
 \references{
 Krijthe, J.H. & Loog, M., 2016. Optimistic Semi-supervised Least Squares Classification. In International Conference on Pattern Recognition (To Appear).
 }
-

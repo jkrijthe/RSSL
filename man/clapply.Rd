@@ -18,4 +18,3 @@ clapply(X, FUN, ..., mc.cores = getOption("mc.cores", 2L))
 \description{
 Use mclapply conditional on not being in RStudio
 }
-

@@ -15,4 +15,3 @@ Y matrix; inverse of the square root of the input matrix
 \description{
 Taking the inverse of the square root of the matrix using the singular value decompisition
 }
-

@@ -17,7 +17,7 @@
 #' @importFrom utils setTxtProgressBar txtProgressBar
 #' @importFrom MASS mvrnorm ginv
 #' @importFrom cluster pam
-#' @useDynLib RSSL
+#' @useDynLib RSSL, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #' @docType package
 #' @name RSSL

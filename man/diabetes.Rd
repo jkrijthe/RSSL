@@ -7,4 +7,3 @@
 \description{
 Useful for testing the WellSVM implementation
 }
-

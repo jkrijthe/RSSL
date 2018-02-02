@@ -58,4 +58,3 @@ Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
   \code{\link{SelfLearning}}, \code{\link{TSVM}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
-

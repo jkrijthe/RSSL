@@ -12,4 +12,3 @@ cov_ml(X)
 \description{
 Biased (maximum likelihood) estimate of the covariance matrix
 }
-

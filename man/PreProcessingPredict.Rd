@@ -28,4 +28,3 @@ list object with the following objects:
 \description{
 The following actions are carried out: 1. data.frames are converted to matrix form and labels converted to integers 2. An intercept column is added if requested 3. centering and scaling is applied if requested.
 }
-

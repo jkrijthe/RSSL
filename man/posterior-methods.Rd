@@ -20,4 +20,3 @@ posterior(object, ...)
 \description{
 Class Posteriors of a classifier
 }
-

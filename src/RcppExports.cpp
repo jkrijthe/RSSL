@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // harmonic_function_cpp
 arma::mat harmonic_function_cpp(const arma::mat& W, const arma::mat& Y);
-RcppExport SEXP RSSL_harmonic_function_cpp(SEXP WSEXP, SEXP YSEXP) {
+RcppExport SEXP _RSSL_harmonic_function_cpp(SEXP WSEXP, SEXP YSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -20,7 +20,7 @@ END_RCPP
 }
 // svmlin_rcpp
 List svmlin_rcpp(S4 X, NumericVector y, int l, int algorithm, double lambda, double lambda_u, int max_switch, double pos_frac, double Cp, double Cn, NumericVector costs, bool verbose);
-RcppExport SEXP RSSL_svmlin_rcpp(SEXP XSEXP, SEXP ySEXP, SEXP lSEXP, SEXP algorithmSEXP, SEXP lambdaSEXP, SEXP lambda_uSEXP, SEXP max_switchSEXP, SEXP pos_fracSEXP, SEXP CpSEXP, SEXP CnSEXP, SEXP costsSEXP, SEXP verboseSEXP) {
+RcppExport SEXP _RSSL_svmlin_rcpp(SEXP XSEXP, SEXP ySEXP, SEXP lSEXP, SEXP algorithmSEXP, SEXP lambdaSEXP, SEXP lambda_uSEXP, SEXP max_switchSEXP, SEXP pos_fracSEXP, SEXP CpSEXP, SEXP CnSEXP, SEXP costsSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,7 +42,7 @@ END_RCPP
 }
 // rowMax
 arma::mat rowMax(const arma::mat& X);
-RcppExport SEXP RSSL_rowMax(SEXP XSEXP) {
+RcppExport SEXP _RSSL_rowMax(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -53,7 +53,7 @@ END_RCPP
 }
 // which_rowMax
 arma::mat which_rowMax(const arma::mat& X);
-RcppExport SEXP RSSL_which_rowMax(SEXP XSEXP) {
+RcppExport SEXP _RSSL_which_rowMax(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -64,7 +64,7 @@ END_RCPP
 }
 // sort_matrix
 arma::mat sort_matrix(const arma::mat& X);
-RcppExport SEXP RSSL_sort_matrix(SEXP XSEXP) {
+RcppExport SEXP _RSSL_sort_matrix(SEXP XSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -75,7 +75,7 @@ END_RCPP
 }
 // rowwise_addition
 arma::mat rowwise_addition(arma::mat A, arma::rowvec x);
-RcppExport SEXP RSSL_rowwise_addition(SEXP ASEXP, SEXP xSEXP) {
+RcppExport SEXP _RSSL_rowwise_addition(SEXP ASEXP, SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -87,7 +87,7 @@ END_RCPP
 }
 // factor_to_dummy_cpp
 arma::mat factor_to_dummy_cpp(Rcpp::IntegerVector y, int c);
-RcppExport SEXP RSSL_factor_to_dummy_cpp(SEXP ySEXP, SEXP cSEXP) {
+RcppExport SEXP _RSSL_factor_to_dummy_cpp(SEXP ySEXP, SEXP cSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -96,4 +96,25 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(factor_to_dummy_cpp(y, c));
     return rcpp_result_gen;
 END_RCPP
+}
+
+RcppExport void svmpredictd(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+RcppExport void svmtraind(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_RSSL_harmonic_function_cpp", (DL_FUNC) &_RSSL_harmonic_function_cpp, 2},
+    {"_RSSL_svmlin_rcpp", (DL_FUNC) &_RSSL_svmlin_rcpp, 12},
+    {"_RSSL_rowMax", (DL_FUNC) &_RSSL_rowMax, 1},
+    {"_RSSL_which_rowMax", (DL_FUNC) &_RSSL_which_rowMax, 1},
+    {"_RSSL_sort_matrix", (DL_FUNC) &_RSSL_sort_matrix, 1},
+    {"_RSSL_rowwise_addition", (DL_FUNC) &_RSSL_rowwise_addition, 2},
+    {"_RSSL_factor_to_dummy_cpp", (DL_FUNC) &_RSSL_factor_to_dummy_cpp, 2},
+    {"svmpredictd", (DL_FUNC) &svmpredictd, 30},
+    {"svmtraind",   (DL_FUNC) &svmtraind,   40},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_RSSL(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

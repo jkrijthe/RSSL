@@ -22,4 +22,3 @@ losspart(object, ...)
 \description{
 Loss of a classifier or regression function evaluated on partial labels
 }
-

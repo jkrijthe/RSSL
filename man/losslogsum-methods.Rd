@@ -26,4 +26,3 @@ losslogsum(object, ...)
 \description{
 LogsumLoss of a classifier or regression function
 }
-

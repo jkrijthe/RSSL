@@ -7,4 +7,3 @@
 \description{
 Useful for testing the S4VM and WellSVM implementations
 }
-

@@ -3,8 +3,8 @@
 \name{measure_accuracy}
 \alias{measure_accuracy}
 \alias{measure_error}
-\alias{measure_losslab}
 \alias{measure_losstest}
+\alias{measure_losslab}
 \alias{measure_losstrain}
 \title{Performance measures used in classifier evaluation}
 \usage{
@@ -51,6 +51,7 @@ Classification accuracy on test set and other performance measure that can be us
 
 \item \code{measure_losstrain}: Average loss on labeled and unlabeled objects
 }}
+
 \seealso{
 Other RSSL utilities: \code{\link{LearningCurveSSL}},
   \code{\link{SSLDataFrameToMatrices}},
@@ -60,4 +61,3 @@ Other RSSL utilities: \code{\link{LearningCurveSSL}},
   \code{\link{split_dataset_ssl}},
   \code{\link{split_random}}, \code{\link{true_labels}}
 }
-
