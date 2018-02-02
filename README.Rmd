@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 ```
 [![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL)
 [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master)
+[![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.r-project.org/package=RSSL)
 
 #R Semi-Supervised Learning package
 This R package provides implementations of several semi-supervised learning methods, in particular, our own work involving constraint based semi-supervised learning. 
@@ -28,7 +29,11 @@ To cite the package, use either of these two references:
 
 
 #Installation Instructions
-This package is not yet available on CRAN. To install the latest version of the package using the devtools package:
+This package available on CRAN. The easiest way to install the package is to use:
+```{r, eval=FALSE}
+install.packages("RSSL")
+```
+To install the latest version of the package using the devtools package:
 ```{r, eval=FALSE}
 library(devtools)
 install_github("jkrijthe/RSSL")
