@@ -16,13 +16,13 @@ setClass("LaplacianSVM",
 #' @param adjacency_distance character; distance metric used to construct adjacency graph from the dist function. Default: "euclidean"
 #' @param normalized_laplacian logical; If TRUE use the normalized Laplacian, otherwise, the Laplacian is used
 #' @param gamma numeric; Weight of the unlabeled data
-#' 
+#' @param eps numeric; Small value to ensure positive definiteness of the matrix in the QP formulation
 #' @inheritParams BaseClassifier
 #' @return S4 object of type LaplacianSVM
 #'
 #' @example inst/examples/example-LaplacianSVM.R
 #' @export
-LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=vanilladot(), adjacency_distance="euclidean", adjacency_k=6,normalized_laplacian=FALSE) {
+LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=vanilladot(), adjacency_distance="euclidean", adjacency_k=6,normalized_laplacian=FALSE,eps=10e-10) {
   
   ## Preprocessing to correct datastructures and scaling  
   ModelVariables<-PreProcessing(X=X, y=y, X_u=X_u, scale=scale, intercept=FALSE, x_center=TRUE)
@@ -42,7 +42,6 @@ LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=van
   m <- ncol(X)
   u <- nrow(X_u)
   n <- l+u
-  eps <- 0.0000000001
   
   if (inherits(kernel,"kernel")) {
       Xtrain <- rbind(X,X_u)
@@ -68,7 +67,7 @@ LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=van
       Amat <- t(rbind(y,Amat,-Amat))
       bvec <- c(rep(0,nrow(X)+1),rep(-1/l,nrow(X)))
       
-      beta <- solve.QP(Q, rep(1,l), Amat, bvec, meq=1)$solution
+      beta <- solve.QP(Q+diag(l)*eps, rep(1,l), Amat, bvec, meq=1)$solution
       
       alpha <- (Qprime %*% beta)
       

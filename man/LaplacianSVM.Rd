@@ -6,7 +6,7 @@
 \usage{
 LaplacianSVM(X, y, X_u = NULL, lambda = 1, gamma = 1, scale = TRUE,
   kernel = vanilladot(), adjacency_distance = "euclidean",
-  adjacency_k = 6, normalized_laplacian = FALSE)
+  adjacency_k = 6, normalized_laplacian = FALSE, eps = 1e-09)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -28,6 +28,8 @@ LaplacianSVM(X, y, X_u = NULL, lambda = 1, gamma = 1, scale = TRUE,
 \item{adjacency_k}{integer; Number of of neighbours used to construct adjacency graph.}
 
 \item{normalized_laplacian}{logical; If TRUE use the normalized Laplacian, otherwise, the Laplacian is used}
+
+\item{eps}{numeric; Small value to ensure positive definiteness of the matrix in the QP formulation}
 }
 \value{
 S4 object of type LaplacianSVM
