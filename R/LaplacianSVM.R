@@ -68,6 +68,7 @@ LaplacianSVM<-function(X, y, X_u=NULL, lambda=1, gamma=1, scale=TRUE, kernel=van
       bvec <- c(rep(0,nrow(X)+1),rep(-1/l,nrow(X)))
       
       beta <- solve.QP(Q+diag(l)*eps, rep(1,l), Amat, bvec, meq=1)$solution
+      if (any(is.nan(beta))) stop("Quadratic Programming problem returned: NaN. Try different hyperparameters?")
       
       alpha <- (Qprime %*% beta)
       

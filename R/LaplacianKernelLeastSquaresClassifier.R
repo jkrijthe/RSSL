@@ -90,7 +90,8 @@ adjacency_knn <- function(X,distance="euclidean",k=6) {
   neighbours <- apply(Ds,1,function(x) sort(x,index.return=TRUE)$ix[2:(k+1)])  %>% as.integer
   adj <- as.matrix(Matrix::sparseMatrix(i=rep(1:nrow(X),each=k),
                                         j=neighbours,
-                                        x=1))
+                                        x=1,
+                                        dims=c(nrow(X),nrow(X))))
   adj <- (adj | t(adj)) * 1
   
 }
