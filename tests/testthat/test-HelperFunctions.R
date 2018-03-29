@@ -23,9 +23,9 @@ test_that("rowMax gives correct result",{
   X <- matrix(runif(10000)*200,100,100)
   expect_equal(as.numeric(rowMax(X)),apply(X,1,max))
   expect_equal(as.numeric(which_rowMax(X)),apply(X,1,which.max))
-  
+  expect_equal(as.numeric(which_rowMax2(X)),apply(X,1,which.max))
   # # Some benchmarking
   # library(microbenchmark)
-  # microbenchmark(rowMax(X), apply(X,1,max),
-  #                which_rowMax(X), apply(X,1,which.max))
+  # microbenchmark(rowMax(X),rowMax2(X), apply(X,1,max),
+  #                which_rowMax(X), apply(X,1,which.max),which_rowMax2(X))
 })

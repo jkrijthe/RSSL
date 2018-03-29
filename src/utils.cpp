@@ -15,6 +15,12 @@ arma::mat rowMax(const arma::mat& X) {
 }
 
 // [[Rcpp::export]]
+arma::colvec rowMax2(const arma::mat& X) {
+  arma::colvec A = max(X,1);
+  return(A);
+}
+
+// [[Rcpp::export]]
 arma::mat which_rowMax(const arma::mat& X) {
   arma::mat A = arma::zeros<arma::mat>(X.n_rows,1);
   
@@ -22,8 +28,19 @@ arma::mat which_rowMax(const arma::mat& X) {
   arma::uword  col;
   
   for (int i=0; i<X.n_rows; i++) {
-    double m = X.row(i).max(row,col);
+    X.row(i).max(row,col);
     A(i) = col+1;
+  }
+  return(A);
+}
+
+// [[Rcpp::export]]
+arma::mat which_rowMax2(const arma::mat& X) {
+  arma::ucolvec I = index_max(X,1);
+  
+  arma::mat A = arma::zeros<arma::mat>(X.n_rows,1);
+  for (int i=0; i<X.n_rows; i++) {
+    A(i) = I(i)+1;
   }
   return(A);
 }
