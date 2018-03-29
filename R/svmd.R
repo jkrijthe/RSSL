@@ -285,7 +285,7 @@ function (x,
     if (is.null(sparse)) stop("sparse argument must not be NULL!")
     if (is.null(probability)) stop("probability argument must not be NULL!")
 
-    cret <- .C ("svmtraind",
+    cret <- .C("svmtraind",
                 ## data
                 as.double  (if (sparse) x@ra else t(x)),
                 as.integer (nr), as.integer(ncol(x)),
@@ -331,8 +331,7 @@ function (x,
                 ctotal1  = double   (1),
                 ctotal2  = double   (1),
                 error    = err,
-                obj      = double   (1),
-                PACKAGE = "RSSL")
+                obj      = double   (1))
 
     if (cret$error != empty_string)
         stop(paste(cret$error, "!", sep=""))
@@ -504,7 +503,7 @@ function (object, newdata,
                   scale  = object$x.scale$"scaled:scale"
                   )
     
-    ret <- .C ("svmpredictd",
+    ret <- .C("svmpredictd",
                as.integer (decision.values),
                as.integer (probability),
 
@@ -551,10 +550,7 @@ function (object, newdata,
                ret = double(nrow(newdata)),
                dec = double(nrow(newdata) * object$nclasses *
                             (object$nclasses - 1) / 2),
-               prob = double(nrow(newdata) * object$nclasses),
-
-               PACKAGE = "RSSL"
-               )
+               prob = double(nrow(newdata) * object$nclasses))
   
     ret2 <- if (is.character(object$levels)) # classification: return factors
         factor (object$levels[ret$ret], levels = object$levels)

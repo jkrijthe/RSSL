@@ -51,6 +51,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rowMax2
+arma::colvec rowMax2(const arma::mat& X);
+RcppExport SEXP _RSSL_rowMax2(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(rowMax2(X));
+    return rcpp_result_gen;
+END_RCPP
+}
 // which_rowMax
 arma::mat which_rowMax(const arma::mat& X);
 RcppExport SEXP _RSSL_which_rowMax(SEXP XSEXP) {
@@ -59,6 +70,17 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
     rcpp_result_gen = Rcpp::wrap(which_rowMax(X));
+    return rcpp_result_gen;
+END_RCPP
+}
+// which_rowMax2
+arma::mat which_rowMax2(const arma::mat& X);
+RcppExport SEXP _RSSL_which_rowMax2(SEXP XSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type X(XSEXP);
+    rcpp_result_gen = Rcpp::wrap(which_rowMax2(X));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -96,25 +118,4 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(factor_to_dummy_cpp(y, c));
     return rcpp_result_gen;
 END_RCPP
-}
-
-RcppExport void svmpredictd(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
-RcppExport void svmtraind(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
-
-static const R_CallMethodDef CallEntries[] = {
-    {"_RSSL_harmonic_function_cpp", (DL_FUNC) &_RSSL_harmonic_function_cpp, 2},
-    {"_RSSL_svmlin_rcpp", (DL_FUNC) &_RSSL_svmlin_rcpp, 12},
-    {"_RSSL_rowMax", (DL_FUNC) &_RSSL_rowMax, 1},
-    {"_RSSL_which_rowMax", (DL_FUNC) &_RSSL_which_rowMax, 1},
-    {"_RSSL_sort_matrix", (DL_FUNC) &_RSSL_sort_matrix, 1},
-    {"_RSSL_rowwise_addition", (DL_FUNC) &_RSSL_rowwise_addition, 2},
-    {"_RSSL_factor_to_dummy_cpp", (DL_FUNC) &_RSSL_factor_to_dummy_cpp, 2},
-    {"svmpredictd", (DL_FUNC) &svmpredictd, 30},
-    {"svmtraind",   (DL_FUNC) &svmtraind,   40},
-    {NULL, NULL, 0}
-};
-
-RcppExport void R_init_RSSL(DllInfo *dll) {
-    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
-    R_useDynamicSymbols(dll, FALSE);
 }

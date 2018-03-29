@@ -13,8 +13,16 @@ rowMax <- function(X) {
     .Call(`_RSSL_rowMax`, X)
 }
 
+rowMax2 <- function(X) {
+    .Call(`_RSSL_rowMax2`, X)
+}
+
 which_rowMax <- function(X) {
     .Call(`_RSSL_which_rowMax`, X)
+}
+
+which_rowMax2 <- function(X) {
+    .Call(`_RSSL_which_rowMax2`, X)
 }
 
 sort_matrix <- function(X) {
