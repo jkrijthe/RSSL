@@ -36,7 +36,7 @@ setMethod("predict", signature(object="NormalBasedClassifier"), function(object,
   for (c in 1:length(object@sigma)) {
     S <- object@sigma[[c]]
     C <- -ncol(X) * log(2 * pi) * 0.5 - 0.5 * log(det(S))
-    G[,c] <- C + log(object@prior[c,,drop=FALSE]) - rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]))/2
+    G[,c] <- C + c(log(object@prior[c,,drop=FALSE])) - rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]))/2
   }
   
   factor(as.numeric(which_rowMax(G)), labels=object@classnames,levels=1:length(object@classnames))
@@ -63,7 +63,7 @@ setMethod("loss", signature(object="NormalBasedClassifier"), function(object, ne
     ll <- ll + nrow(Xc) * ( log(object@prior[c,])-(k/2)*log(2*pi)-(1/2)*log(det(sigma)) ) #Add the constant part for each row in Xc
     ll <- ll + -(1/2)*sum((Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma) * (Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])) #Add the dynamic contribution
     # Note: much faster than: sum(-(1/2)*diag((Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma)%*%t(Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))) 
-    losses[as.logical(Y[,c])] <- ( log(object@prior[c,])-(k/2)*log(2*pi)-(1/2)*log(det(sigma)) ) + -(1/2)*rowSums((Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma) * (Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))
+    losses[as.logical(Y[,c])] <- c( log(object@prior[c,])-(k/2)*log(2*pi)-(1/2)*log(det(sigma)) ) + -(1/2)*rowSums((Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE])%*%solve(sigma) * (Xc-matrix(1,nrow(Xc),1) %*% m[c, ,drop=FALSE]))
     
   }
   return(-losses)
@@ -144,7 +144,7 @@ setMethod("posterior", signature(object="NormalBasedClassifier"), function(objec
   for (c in 1:length(object@sigma)) {
     S <- object@sigma[[c]] # Covariance matrix
     k <- ncol(S) # Dimensionality
-    G[,c] <- log(object@prior[c,,drop=FALSE]) - (k/2) * log(2*pi) - 0.5*log(det(S)) - (1/2)*rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE])) 
+    G[,c] <- c(log(object@prior[c,,drop=FALSE]) - (k/2) * log(2*pi) - 0.5*log(det(S))) - (1/2)*rowSums( ((X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE]) %*% solve(S)) * (X-matrix(1,nrow(X),1) %*% M[c,,drop=FALSE])) 
   }
   
   posteriors <- G - (log(rowSums(exp(G-apply(G,1,max))))+apply(G,1,max)) # More stable way of doing logsumexp
