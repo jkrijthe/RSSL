@@ -7,7 +7,7 @@ test_that("Projection to simplex gives correct results",{
 
 test_that("wlda model does not crash",{
   data(wdbc)
-  RSSL:::wlda(wdbc$X,model.matrix(~as.factor(wdbc$y)-1,data.frame(y=wdbc$y)))
+  expect_silent(RSSL:::wlda(wdbc$X,model.matrix(~as.factor(wdbc$y)-1,data.frame(y=wdbc$y))))
 })
 
 test_that("Interface gives same result as direct calling of code",{

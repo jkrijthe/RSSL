@@ -17,7 +17,7 @@ test_that("svmd does not throw an error",{
   library(kernlab)
   K <- kernelMatrix(rbfdot(),as.matrix(iris[1:100,1:2]))
   RSSL:::svmd(iris[1:100,1:2],y=iris$Species[1:100],fitted=FALSE)
-  RSSL:::svmd(K,y=iris$Species[1:100],type="one-classification")
+  expect_silent(RSSL:::svmd(K,y=iris$Species[1:100],type="one-classification"))
 })
 
 test_that("WellSVM interface result equal to direct result",{

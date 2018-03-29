@@ -51,6 +51,5 @@ test_that("PCA does not change the decision values",{
   Xpc <- princomp(testdata$X)$scores
   g_pc <- LeastSquaresClassifier(Xpc,testdata$y)
   
-  decisionvalues(g_norm,testdata$X)
-  decisionvalues(g_pc,Xpc)
+  expect_equal(decisionvalues(g_norm,testdata$X), decisionvalues(g_pc,Xpc))
 })

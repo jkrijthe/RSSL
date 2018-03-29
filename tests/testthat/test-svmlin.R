@@ -15,10 +15,10 @@ test_that("svmlin and LiblineaR give the same results", {
 })
 
 test_that("svmlin does not throw errors", {
-  t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),X_u=NULL, lambda = 1,algorithm=0)
-  t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),X_u=A, lambda = 1,algorithm=1)
-  t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),X_u=A, lambda = 1,algorithm=2)
-  t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),X_u=A, lambda = 1,algorithm=3)
+  expect_silent(t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),X_u=NULL, lambda = 1,algorithm=0))
+  expect_silent(t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),X_u=A, lambda = 1,algorithm=1))
+  expect_silent(t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),X_u=A, lambda = 1,algorithm=2))
+  expect_silent(t_svmlin <- svmlin(A,factor(rep(c(1,-1),4)),X_u=A, lambda = 1,algorithm=3))
 })
 
 # Simple dataset used in the tests
