@@ -1,5 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL) [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL) [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master) [![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.r-project.org/package=RSSL)
 
 R Semi-Supervised Learning package
 ==================================
@@ -16,7 +16,13 @@ To cite the package, use either of these two references:
 Installation Instructions
 =========================
 
-This package is not yet available on CRAN. To install the latest version of the package using the devtools package:
+This package available on CRAN. The easiest way to install the package is to use:
+
+``` r
+install.packages("RSSL")
+```
+
+To install the latest version of the package using the devtools package:
 
 ``` r
 library(devtools)
