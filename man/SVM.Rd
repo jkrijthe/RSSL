@@ -34,7 +34,8 @@ Support Vector Machine implementation using the \code{quadprog} solver.
 This implementation will typically be slower and use more memory than the svmlib implementation in the e1071 package. It is, however, useful for comparisons with the \code{\link{TSVM}} implementation.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
+  \code{\link{EMLinearDiscriminantClassifier}},
   \code{\link{GRFClassifier}},
   \code{\link{ICLeastSquaresClassifier}},
   \code{\link{ICLinearDiscriminantClassifier}},

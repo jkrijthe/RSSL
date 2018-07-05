@@ -23,7 +23,7 @@ setClass("EMLeastSquaresClassifier",
 #' @references Krijthe, J.H. & Loog, M., 2016. Optimistic Semi-supervised Least Squares Classification. In International Conference on Pattern Recognition (To Appear).
 #' @inheritParams BaseClassifier
 #' @param ... Additional Parameters, Not used
-#' @family RSSL LeastSquares
+#' @family RSSL classifiers
 #' @examples
 #' library(dplyr)
 #' library(ggplot2)

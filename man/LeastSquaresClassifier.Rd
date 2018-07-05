@@ -35,7 +35,8 @@ S4 object of class LeastSquaresClassifier with the following slots:
 Classifier that minimizes the quadratic loss or, equivalently, least squares regression applied to a numeric encoding of the class labels as target. Note this method minimizes quadratic loss, not the truncated quadratic loss. Optionally, L2 regularization can be applied by setting the \code{lambda} parameter.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
+  \code{\link{EMLinearDiscriminantClassifier}},
   \code{\link{GRFClassifier}},
   \code{\link{ICLeastSquaresClassifier}},
   \code{\link{ICLinearDiscriminantClassifier}},

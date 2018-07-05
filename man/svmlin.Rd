@@ -71,7 +71,8 @@ Vikas Sindhwani and S. Sathiya Keerthi. Large Scale Semi-supervised Linear SVMs.
  @references V. Sindhwani and S. Sathiya Keerthi. Newton Methods for Fast Solution of Semi-supervised Linear SVMs. Book Chapter in Large Scale Kernel Machines, MIT Press, 2006
 }
 \seealso{
-Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
+  \code{\link{EMLinearDiscriminantClassifier}},
   \code{\link{GRFClassifier}},
   \code{\link{ICLeastSquaresClassifier}},
   \code{\link{ICLinearDiscriminantClassifier}},

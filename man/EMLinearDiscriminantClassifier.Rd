@@ -34,7 +34,8 @@ Starting from the supervised solution, uses the Expectation Maximization algorit
 Dempster, A., Laird, N. & Rubin, D., 1977. Maximum likelihood from incomplete data via the EM algorithm. Journal of the Royal Statistical Society. Series B, 39(1), pp.1-38.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{GRFClassifier}},
+Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
+  \code{\link{GRFClassifier}},
   \code{\link{ICLeastSquaresClassifier}},
   \code{\link{ICLinearDiscriminantClassifier}},
   \code{\link{KernelLeastSquaresClassifier}},

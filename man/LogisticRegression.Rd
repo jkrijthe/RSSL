@@ -26,7 +26,8 @@ LogisticRegression(X, y, lambda = 0, intercept = TRUE, scale = FALSE,
 Implementation of Logistic Regression that is useful for comparisons with semi-supervised logistic regression implementations, such as \code{\link{EntropyRegularizedLogisticRegression}}.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
+  \code{\link{EMLinearDiscriminantClassifier}},
   \code{\link{GRFClassifier}},
   \code{\link{ICLeastSquaresClassifier}},
   \code{\link{ICLinearDiscriminantClassifier}},

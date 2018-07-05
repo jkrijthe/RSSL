@@ -31,7 +31,8 @@ S4 object of type LinearSVM
 Implementation of the Linear Support Vector Classifier. Can be solved in the Dual formulation, which is equivalent to \code{\link{SVM}} or the Primal formulation.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{EMLinearDiscriminantClassifier}},
+Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
+  \code{\link{EMLinearDiscriminantClassifier}},
   \code{\link{GRFClassifier}},
   \code{\link{ICLeastSquaresClassifier}},
   \code{\link{ICLinearDiscriminantClassifier}},
