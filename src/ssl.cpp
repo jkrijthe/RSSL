@@ -982,7 +982,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
   for(int i=0;i<u;i++)
     {
       s=exp((g[i]-nu)/T);
-      if(!(isinf(s)))
+      if(!(std::isinf(s)))
 	{
 	  tmp=1.0/(1.0+s);
 	  Bnu+=tmp;
@@ -1007,7 +1007,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
       for(int i=0;i<u;i++)
 	{
 	  s=exp((g[i]-nu)/T);
-	  if(!(isinf(s)))
+	  if(!(std::isinf(s)))
 	    {
 	      tmp=1.0/(1.0+s);
 	      Bnu+=tmp;
@@ -1030,7 +1030,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
   for(int i=0;i<u;i++)
     {
       s=exp((g[i]-nu)/T);
-      if(isinf(s)) p[i]=0.0;
+      if(std::isinf(s)) p[i]=0.0;
       else p[i]=1.0/(1.0+s);
     }
   //Rcpp::Rcout << " root (nu) = " << nu << " B(nu) = " << Bnu << endl;
@@ -1080,7 +1080,7 @@ double KL(const double *p, const double *q, int u)
       if(q1>1-1e-8) q1-=1e-8;
       if(q1<1-1e-8) q1+=1e-8;
       g= (p1*LOG2(p1/q1) + (1-p1)*LOG2((1-p1)/(1-q1)));
-      if(fabs(g)<1e-12 || isnan(g)) g=0.0;
+      if(fabs(g)<1e-12 || std::isnan(g)) g=0.0;
       h+=g;
     }
     return h/u;
