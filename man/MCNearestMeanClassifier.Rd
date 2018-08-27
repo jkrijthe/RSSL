@@ -58,3 +58,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

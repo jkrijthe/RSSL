@@ -4,8 +4,8 @@
 \alias{LinearTSVM}
 \title{Linear CCCP Transductive SVM classifier}
 \usage{
-LinearTSVM(X, y, X_u, C, Cstar, s = 0, x_center = FALSE, scale = FALSE,
-  eps = 1e-06, verbose = FALSE, init = NULL)
+LinearTSVM(X, y, X_u, C, Cstar, s = 0, x_center = FALSE,
+  scale = FALSE, eps = 1e-06, verbose = FALSE, init = NULL)
 }
 \arguments{
 \item{X}{matrix; Design matrix, intercept term is added within the function}
@@ -61,3 +61,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

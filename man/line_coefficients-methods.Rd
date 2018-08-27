@@ -8,7 +8,6 @@
 \alias{line_coefficients}
 \alias{line_coefficients,LeastSquaresClassifier-method}
 \alias{line_coefficients,NormalBasedClassifier-method}
-\alias{line_coefficients,LeastSquaresClassifier-method}
 \alias{line_coefficients,LogisticRegression-method}
 \alias{line_coefficients,LinearSVM-method}
 \alias{line_coefficients,LogisticLossClassifier-method}

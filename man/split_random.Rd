@@ -40,3 +40,4 @@ Other RSSL utilities: \code{\link{LearningCurveSSL}},
   \code{\link{split_dataset_ssl}},
   \code{\link{true_labels}}
 }
+\concept{RSSL utilities}

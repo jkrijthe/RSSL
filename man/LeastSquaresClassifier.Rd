@@ -5,7 +5,8 @@
 \title{Least Squares Classifier}
 \usage{
 LeastSquaresClassifier(X, y, lambda = 0, intercept = TRUE,
-  x_center = FALSE, scale = FALSE, method = "inverse", y_scale = FALSE)
+  x_center = FALSE, scale = FALSE, method = "inverse",
+  y_scale = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -58,3 +59,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

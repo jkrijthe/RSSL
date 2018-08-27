@@ -4,8 +4,8 @@
 \alias{LogisticLossClassifier}
 \title{Logistic Loss Classifier}
 \usage{
-LogisticLossClassifier(X, y, lambda = 0, intercept = TRUE, scale = FALSE,
-  init = NA, x_center = FALSE, ...)
+LogisticLossClassifier(X, y, lambda = 0, intercept = TRUE,
+  scale = FALSE, init = NA, x_center = FALSE, ...)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -56,3 +56,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

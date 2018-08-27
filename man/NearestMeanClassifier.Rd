@@ -4,7 +4,8 @@
 \alias{NearestMeanClassifier}
 \title{Nearest Mean Classifier}
 \usage{
-NearestMeanClassifier(X, y, prior = NULL, x_center = FALSE, scale = FALSE)
+NearestMeanClassifier(X, y, prior = NULL, x_center = FALSE,
+  scale = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -53,3 +54,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

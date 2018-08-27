@@ -8,13 +8,14 @@
 \usage{
 CrossValidationSSL(X, y, ...)
 
-\method{CrossValidationSSL}{list}(X, y, ..., verbose = FALSE, mc.cores = 1)
+\method{CrossValidationSSL}{list}(X, y, ..., verbose = FALSE,
+  mc.cores = 1)
 
-\method{CrossValidationSSL}{matrix}(X, y, classifiers, measures = list(Error =
-  measure_error), k = 10, repeats = 1, verbose = FALSE,
-  leaveout = "test", n_labeled = 10, prop_unlabeled = 0.5, time = TRUE,
-  pre_scale = FALSE, pre_pca = FALSE, n_min = 1, low_level_cores = 1,
-  ...)
+\method{CrossValidationSSL}{matrix}(X, y, classifiers,
+  measures = list(Error = measure_error), k = 10, repeats = 1,
+  verbose = FALSE, leaveout = "test", n_labeled = 10,
+  prop_unlabeled = 0.5, time = TRUE, pre_scale = FALSE,
+  pre_pca = FALSE, n_min = 1, low_level_cores = 1, ...)
 }
 \arguments{
 \item{X}{design matrix of the labeled objects}

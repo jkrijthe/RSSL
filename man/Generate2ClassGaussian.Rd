@@ -4,7 +4,8 @@
 \alias{generate2ClassGaussian}
 \title{Generate data from 2 Gaussian distributed classes}
 \usage{
-generate2ClassGaussian(n = 10000, d = 100, var = 1, expected = TRUE)
+generate2ClassGaussian(n = 10000, d = 100, var = 1,
+  expected = TRUE)
 }
 \arguments{
 \item{n}{integer; Number of examples to generate}
@@ -31,3 +32,4 @@ Other RSSL datasets: \code{\link{generateABA}},
   \code{\link{generateSpirals}},
   \code{\link{generateTwoCircles}}
 }
+\concept{RSSL datasets}

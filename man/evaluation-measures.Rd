@@ -8,20 +8,20 @@
 \alias{measure_losstrain}
 \title{Performance measures used in classifier evaluation}
 \usage{
-measure_accuracy(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
-  y_u = NULL, X_test = NULL, y_test = NULL)
+measure_accuracy(trained_classifier, X_l = NULL, y_l = NULL,
+  X_u = NULL, y_u = NULL, X_test = NULL, y_test = NULL)
 
 measure_error(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
   y_u = NULL, X_test = NULL, y_test = NULL)
 
-measure_losstest(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
-  y_u = NULL, X_test = NULL, y_test = NULL)
+measure_losstest(trained_classifier, X_l = NULL, y_l = NULL,
+  X_u = NULL, y_u = NULL, X_test = NULL, y_test = NULL)
 
-measure_losslab(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
-  y_u = NULL, X_test = NULL, y_test = NULL)
+measure_losslab(trained_classifier, X_l = NULL, y_l = NULL,
+  X_u = NULL, y_u = NULL, X_test = NULL, y_test = NULL)
 
-measure_losstrain(trained_classifier, X_l = NULL, y_l = NULL, X_u = NULL,
-  y_u = NULL, X_test = NULL, y_test = NULL)
+measure_losstrain(trained_classifier, X_l = NULL, y_l = NULL,
+  X_u = NULL, y_u = NULL, X_test = NULL, y_test = NULL)
 }
 \arguments{
 \item{trained_classifier}{the trained classifier object}
@@ -61,3 +61,4 @@ Other RSSL utilities: \code{\link{LearningCurveSSL}},
   \code{\link{split_dataset_ssl}},
   \code{\link{split_random}}, \code{\link{true_labels}}
 }
+\concept{RSSL utilities}

@@ -4,8 +4,9 @@
 \alias{GRFClassifier}
 \title{Label propagation using Gaussian Random Fields and Harmonic functions}
 \usage{
-GRFClassifier(X, y, X_u, adjacency = "nn", adjacency_distance = "euclidean",
-  adjacency_k = 6, adjacency_sigma = 0.1, class_mass_normalization = TRUE,
+GRFClassifier(X, y, X_u, adjacency = "nn",
+  adjacency_distance = "euclidean", adjacency_k = 6,
+  adjacency_sigma = 0.1, class_mass_normalization = TRUE,
   scale = FALSE, x_center = FALSE)
 }
 \arguments{
@@ -108,3 +109,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

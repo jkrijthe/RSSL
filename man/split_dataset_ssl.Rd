@@ -27,3 +27,4 @@ Other RSSL utilities: \code{\link{LearningCurveSSL}},
   \code{\link{missing_labels}}, \code{\link{split_random}},
   \code{\link{true_labels}}
 }
+\concept{RSSL utilities}

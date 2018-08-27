@@ -22,3 +22,4 @@ Other RSSL utilities: \code{\link{LearningCurveSSL}},
   \code{\link{split_dataset_ssl}},
   \code{\link{split_random}}
 }
+\concept{RSSL utilities}

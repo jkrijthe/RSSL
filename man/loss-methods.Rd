@@ -15,7 +15,6 @@
 \alias{loss,LogisticLossClassifier-method}
 \alias{loss,MajorityClassClassifier-method}
 \alias{loss,SVM-method}
-\alias{loss,LinearSVM-method}
 \alias{loss,SelfLearning-method}
 \alias{loss,USMLeastSquaresClassifier-method}
 \alias{loss,svmlinClassifier-method}
@@ -29,7 +28,8 @@ loss(object, ...)
 
 \S4method{loss}{LogisticRegression}(object, newdata, y = NULL)
 
-\S4method{loss}{KernelLeastSquaresClassifier}(object, newdata, y = NULL, ...)
+\S4method{loss}{KernelLeastSquaresClassifier}(object, newdata, y = NULL,
+  ...)
 
 \S4method{loss}{LinearSVM}(object, newdata, y = NULL)
 
@@ -41,7 +41,8 @@ loss(object, ...)
 
 \S4method{loss}{SelfLearning}(object, newdata, y = NULL, ...)
 
-\S4method{loss}{USMLeastSquaresClassifier}(object, newdata, y = NULL, ...)
+\S4method{loss}{USMLeastSquaresClassifier}(object, newdata, y = NULL,
+  ...)
 
 \S4method{loss}{svmlinClassifier}(object, newdata, y = NULL)
 }
@@ -58,14 +59,7 @@ loss(object, ...)
 numeric; the total loss on the test data
 }
 \description{
-Loss of a classifier or regression function
-
-Return the negative log likelihood on the given dataset
-
 Hinge loss on new objects of a trained LinearSVM
 
 Hinge loss on new objects of a trained SVM
-
-Loss method for SelfLearning Classifier
-The loss method delegates prediction to the specific model object
 }

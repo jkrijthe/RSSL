@@ -4,8 +4,8 @@
 \alias{SelfLearning}
 \title{Self-Learning approach to Semi-supervised Learning}
 \usage{
-SelfLearning(X, y, X_u = NULL, method, prob = FALSE, cautious = FALSE,
-  max_iter = 100, ...)
+SelfLearning(X, y, X_u = NULL, method, prob = FALSE,
+  cautious = FALSE, max_iter = 100, ...)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -66,3 +66,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

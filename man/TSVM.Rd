@@ -5,8 +5,8 @@
 \title{Transductive SVM classifier using the convex concave procedure}
 \usage{
 TSVM(X, y, X_u, C, Cstar, kernel = kernlab::vanilladot(),
-  balancing_constraint = TRUE, s = 0, x_center = TRUE, scale = FALSE,
-  eps = 1e-09, max_iter = 20, verbose = FALSE)
+  balancing_constraint = TRUE, s = 0, x_center = TRUE,
+  scale = FALSE, eps = 1e-09, max_iter = 20, verbose = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -152,3 +152,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

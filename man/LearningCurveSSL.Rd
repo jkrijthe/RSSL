@@ -7,12 +7,13 @@
 \usage{
 LearningCurveSSL(X, y, ...)
 
-\method{LearningCurveSSL}{matrix}(X, y, classifiers, measures = list(Accuracy
-  = measure_accuracy), type = "unlabeled", n_l = NULL,
-  with_replacement = FALSE, sizes = 2^(1:8), n_test = 1000,
-  repeats = 100, verbose = FALSE, n_min = 1, dataset_name = NULL,
-  test_fraction = NULL, fracs = seq(0.1, 0.9, 0.1), time = TRUE,
-  pre_scale = FALSE, pre_pca = FALSE, low_level_cores = 1, ...)
+\method{LearningCurveSSL}{matrix}(X, y, classifiers,
+  measures = list(Accuracy = measure_accuracy), type = "unlabeled",
+  n_l = NULL, with_replacement = FALSE, sizes = 2^(1:8),
+  n_test = 1000, repeats = 100, verbose = FALSE, n_min = 1,
+  dataset_name = NULL, test_fraction = NULL, fracs = seq(0.1, 0.9,
+  0.1), time = TRUE, pre_scale = FALSE, pre_pca = FALSE,
+  low_level_cores = 1, ...)
 }
 \arguments{
 \item{X}{design matrix}
@@ -66,9 +67,9 @@ Evaluate semi-supervised classifiers for different amounts of unlabeled training
 
 \code{measures} is a named list of performance measures. These are functions that accept seven arguments: a trained classifier, a numeric design matrix of the labeled objects, a factor of labels, a numeric design  matrix of unlabeled objects and a factor of labels for the unlabeled objects, a numeric design matrix of the test objects and a factor of labels of the test objects. See \code{\link{measure_accuracy}} for an example.
 
-This function allows for two different types of learning curves to be generated. If \code{type="unlabeled"}, the number of labeled objects remains fixed at the value of \code{n_l}, where \code{sizes} controls the number of unlabeled objects. \code{n_test} controls the number of objects used for the test set, while all remaining objects are used if \code{with_replacement=FALSE} if which case objects are drawn without replacement from the input dataset. We make sure each class is represented by at least \code{n_min} labeled objects of each class. For \code{n_l}, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
+This function allows for two different types of learning curves to be generated. If \code{type="unlabeled"}, the number of labeled objects remains fixed at the value of \code{n_l}, where \code{sizes} controls the number of unlabeled objects. \code{n_test} controls the number of objects used for the test set, while all remaining objects are used if \code{with_replacement=FALSE} in which case objects are drawn without replacement from the input dataset. We make sure each class is represented by at least \code{n_min} labeled objects of each class. For \code{n_l}, additional options include: "enough" which takes the max of the number of features and 20, max(ncol(X)+5,20), "d" which takes the number of features or "2d" which takes 2 times the number of features.
 
-If \code{type="unlabeled"} the total number of objects remains fixed, while the fraction of labeled objects is changed. \code{frac} sets the fractions of labeled objects that should be considered, while \code{test_fraction} determines the amount of objects left out to serve as the test set.
+If \code{type="fraction"} the total number of objects remains fixed, while the fraction of labeled objects is changed. \code{frac} sets the fractions of labeled objects that should be considered, while \code{test_fraction} determines the fraction of the total number of objects left out to serve as the test set.
 }
 \examples{
 set.seed(1)
@@ -118,3 +119,4 @@ Other RSSL utilities: \code{\link{SSLDataFrameToMatrices}},
   \code{\link{split_dataset_ssl}},
   \code{\link{split_random}}, \code{\link{true_labels}}
 }
+\concept{RSSL utilities}

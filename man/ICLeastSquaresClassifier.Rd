@@ -5,9 +5,10 @@
 \title{Implicitly Constrained Least Squares Classifier}
 \usage{
 ICLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
-  intercept = TRUE, x_center = FALSE, scale = FALSE, method = "LBFGS",
-  projection = "supervised", lambda_prior = 0, trueprob = NULL,
-  eps = 1e-09, y_scale = FALSE, use_Xu_for_scaling = TRUE)
+  intercept = TRUE, x_center = FALSE, scale = FALSE,
+  method = "LBFGS", projection = "supervised", lambda_prior = 0,
+  trueprob = NULL, eps = 1e-09, y_scale = FALSE,
+  use_Xu_for_scaling = TRUE)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -105,3 +106,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}, \code{\link{svmlin}}
 }
+\concept{RSSL classifiers}

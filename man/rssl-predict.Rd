@@ -13,7 +13,6 @@
 \alias{responsibilities,GRFClassifier-method}
 \alias{predict,GRFClassifier-method}
 \alias{predict,KernelLeastSquaresClassifier-method}
-\alias{predict,LeastSquaresClassifier-method}
 \alias{predict,LinearSVM-method}
 \alias{predict,LogisticLossClassifier-method}
 \alias{predict,MajorityClassClassifier-method}
@@ -25,8 +24,8 @@
 \alias{predict,svmlinClassifier-method}
 \title{Predict using RSSL classifier}
 \usage{
-\S4method{predict}{LeastSquaresClassifier}(object, newdata, probs = FALSE,
-  ...)
+\S4method{predict}{LeastSquaresClassifier}(object, newdata,
+  probs = FALSE, ...)
 
 \S4method{predict}{NormalBasedClassifier}(object, newdata, probs = FALSE)
 
@@ -41,16 +40,18 @@
 
 \S4method{predict}{LinearSVM}(object, newdata, probs = FALSE)
 
-\S4method{predict}{LogisticLossClassifier}(object, newdata, probs = FALSE)
+\S4method{predict}{LogisticLossClassifier}(object, newdata,
+  probs = FALSE)
 
-\S4method{predict}{MajorityClassClassifier}(object, newdata, probs = FALSE)
+\S4method{predict}{MajorityClassClassifier}(object, newdata,
+  probs = FALSE)
 
 \S4method{predict}{SVM}(object, newdata)
 
 \S4method{predict}{SelfLearning}(object, newdata, ...)
 
-\S4method{predict}{USMLeastSquaresClassifier}(object, newdata, probs = FALSE,
-  ...)
+\S4method{predict}{USMLeastSquaresClassifier}(object, newdata,
+  probs = FALSE, ...)
 
 \S4method{predict}{WellSVM}(object, newdata, probs = FALSE, ...)
 

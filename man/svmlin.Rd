@@ -5,8 +5,9 @@
 \title{svmlin implementation by Sindhwani & Keerthi (2006)}
 \usage{
 svmlin(X, y, X_u = NULL, algorithm = 1, lambda = 1, lambda_u = 1,
-  max_switch = 10000, pos_frac = 0.5, Cp = 1, Cn = 1, verbose = FALSE,
-  intercept = TRUE, scale = FALSE, x_center = FALSE)
+  max_switch = 10000, pos_frac = 0.5, Cp = 1, Cn = 1,
+  verbose = FALSE, intercept = TRUE, scale = FALSE,
+  x_center = FALSE)
 }
 \arguments{
 \item{X}{Matrix or sparseMatrix containing the labeled feature vectors, without intercept}
@@ -95,3 +96,4 @@ Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
   \code{\link{USMLeastSquaresClassifier}},
   \code{\link{WellSVM}}
 }
+\concept{RSSL classifiers}
