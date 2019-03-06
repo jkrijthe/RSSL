@@ -4,12 +4,12 @@ library(ggplot2)
 library(tidyr)
 
 set.seed(1)
-df_orig <- generateSlicedCookie(200,expected=TRUE)
+df_orig <- generateSlicedCookie(100,expected=TRUE)
 df <- df_orig %>% add_missinglabels_mar(Class~.,0.95)
 g_s <- SVM(Class~.,df,C=1,scale=TRUE,x_center=TRUE)
 g_s4 <- S4VM(Class~.,df,C1=1,C2=0.1,lambda_tradeoff = 3,scale=TRUE,x_center=TRUE)
 
-labs <- g_s4@labelings[-c(1:10),]
+labs <- g_s4@labelings[-c(1:5),]
 colnames(labs) <- paste("Class",seq_len(ncol(g_s4@labelings)),sep="-")
 
 # Show the labelings that the algorithm is considering
