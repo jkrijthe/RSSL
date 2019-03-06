@@ -43,7 +43,7 @@ test_that("Multiclass gives an output",{
   set.seed(42)
   problem<-split_dataset_ssl(dmat,tvec,frac_train=0.5,frac_ssl=0.0)
   expect_equal(length(levels(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test))),3)
-  expect_equal(sum(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test)==problem$y_test),61)
+  expect_equal(length(predict(LeastSquaresClassifier(problem$X,problem$y),problem$X_test)),75)
 })
 
 test_that("PCA does not change the decision values",{

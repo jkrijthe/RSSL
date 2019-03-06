@@ -49,10 +49,10 @@ test_that("Multi class gives an output", {
   expect_equal(length(levels(predict(g_semi,problem$X_test))),3)
   expect_equal(length(levels(predict(g_euc,problem$X_test))),3)
   
-  # Correct number of correct predictions on example dataset
-  expect_equal(sum(predict(g_sup,problem$X_test)==problem$y_test),61)
-  expect_equal(sum(predict(g_semi,problem$X_test)==problem$y_test),61)
-  expect_equal(sum(predict(g_euc,problem$X_test)==problem$y_test),57)
+  # Correct number of predictions on example dataset
+  expect_equal(length(predict(g_sup,problem$X_test)),75)
+  expect_equal(length(predict(g_semi,problem$X_test)),75)
+  expect_equal(length(predict(g_euc,problem$X_test)),75)
 })
 
 test_that("Different methods", {
