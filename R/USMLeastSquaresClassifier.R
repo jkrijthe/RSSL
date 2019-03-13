@@ -79,7 +79,7 @@ setMethod("loss", signature(object="USMLeastSquaresClassifier"), function(object
 
 #' @rdname rssl-predict
 #' @aliases predict,USMLeastSquaresClassifier-method
-setMethod("predict", signature(object="USMLeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
+setMethod("predict", signature(object="USMLeastSquaresClassifier"), function(object, newdata,...) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
   X <- ModelVariables$X
   
@@ -92,10 +92,6 @@ setMethod("predict", signature(object="USMLeastSquaresClassifier"), function(obj
   } else {
     classes <- factor(as.integer(expscore[,1]<0.5)+1,levels=1:length(object@classnames), labels=object@classnames)
   }
+  return(classes)
   
-  if (probs){
-    return(expscore)
-  } else {
-    return(classes)
-  }
 })

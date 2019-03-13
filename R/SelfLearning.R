@@ -45,7 +45,7 @@ SelfLearning <- function(X, y, X_u=NULL, method, prob=FALSE, cautious=FALSE, max
   # Intial step: label unlabeled objects using supervised classifier
   model<-method(X, y, ...)
    
-  y_unlabelled <- predict(model, X_u, prob)
+  y_unlabelled <- predict(model, X_u)
   y_unlabelled_old <- rep(NA,length(y_unlabelled))
   
   # Retrain until convergence

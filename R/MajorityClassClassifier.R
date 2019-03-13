@@ -41,7 +41,7 @@ setMethod("loss", signature(object="MajorityClassClassifier"), function(object, 
 })
 
 #' @rdname rssl-predict
-setMethod("predict", signature(object="MajorityClassClassifier"), function(object, newdata, probs=FALSE) {
+setMethod("predict", signature(object="MajorityClassClassifier"), function(object, newdata) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=NULL,intercept=FALSE)
   
   X<-ModelVariables$X

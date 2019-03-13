@@ -108,7 +108,7 @@ svmlin <- function(X, y, X_u=NULL, algorithm=1, lambda=1, lambda_u=1, max_switch
 
 #' @rdname rssl-predict
 #' @aliases predict,svmlinClassifier-method
-setMethod("predict", signature(object="svmlinClassifier"), function(object, newdata, probs=FALSE,...) {
+setMethod("predict", signature(object="svmlinClassifier"), function(object, newdata, ...) {
   
     ModelVariables <- PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
     X <- ModelVariables$X

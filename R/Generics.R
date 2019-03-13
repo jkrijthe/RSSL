@@ -87,5 +87,4 @@ NULL
 #' @param object classifier
 #' @param newdata objects to generate predictions for
 #' @param ... Other arguments
-#' @param probs Whether probabilities should be returned
 NULL

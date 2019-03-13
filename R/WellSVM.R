@@ -162,7 +162,7 @@ WellSVM <- function(X,y,X_u,C1=1,C2=0.1,gamma=1,x_center=TRUE,scale=FALSE,use_Xu
 
 #' @rdname rssl-predict
 #' @aliases predict,WellSVM-method
-setMethod("predict", signature(object="WellSVM"), function(object, newdata, probs=FALSE,...) {
+setMethod("predict", signature(object="WellSVM"), function(object, newdata,...) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE,classnames=object@classnames)
   X <- ModelVariables$X
   

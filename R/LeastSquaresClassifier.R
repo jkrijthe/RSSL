@@ -128,7 +128,7 @@ setMethod("loss", signature(object="LeastSquaresClassifier"), function(object, n
 
 #' @rdname rssl-predict
 #' @aliases predict,LeastSquaresClassifier-method
-setMethod("predict", signature(object="LeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
+setMethod("predict", signature(object="LeastSquaresClassifier"), function(object, newdata, ...) {
   ModelVariables <- PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept,classnames=object@classnames)
   X <- ModelVariables$X
   
@@ -142,11 +142,7 @@ setMethod("predict", signature(object="LeastSquaresClassifier"), function(object
     classes <- factor(as.integer(expscore[,1]<0.5)+1,levels=1:length(object@classnames), labels=object@classnames)
   }
   
-  if (probs){
-    return(expscore)
-  } else {
-    return(classes)
-  }
+  return(classes)
 })
 
 #' @rdname decisionvalues-methods

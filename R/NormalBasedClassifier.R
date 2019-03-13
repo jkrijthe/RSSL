@@ -20,7 +20,7 @@ setMethod("show", signature(object="NormalBasedClassifier"), function(object) {
 
 #' @rdname rssl-predict
 #' @aliases predict,NormalBasedClassifier-method
-setMethod("predict", signature(object="NormalBasedClassifier"), function(object,newdata,probs=FALSE) {
+setMethod("predict", signature(object="NormalBasedClassifier"), function(object,newdata) {
   
   ModelVariables<-PreProcessingPredict(modelform=object@modelform,
                                        newdata=newdata,

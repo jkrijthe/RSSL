@@ -120,7 +120,7 @@ setMethod("decisionvalues", signature(object="LinearSVM"), function(object, newd
 
 #' @rdname rssl-predict
 #' @aliases predict,LinearSVM-method
-setMethod("predict", signature(object="LinearSVM"), function(object, newdata,probs=FALSE) {
+setMethod("predict", signature(object="LinearSVM"), function(object, newdata) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,y=NULL,scaling=object@scaling,intercept=TRUE)
   X<-ModelVariables$X
   

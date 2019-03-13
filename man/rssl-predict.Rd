@@ -24,47 +24,40 @@
 \alias{predict,svmlinClassifier-method}
 \title{Predict using RSSL classifier}
 \usage{
-\S4method{predict}{LeastSquaresClassifier}(object, newdata,
-  probs = FALSE, ...)
+\S4method{predict}{LeastSquaresClassifier}(object, newdata, ...)
 
-\S4method{predict}{NormalBasedClassifier}(object, newdata, probs = FALSE)
+\S4method{predict}{NormalBasedClassifier}(object, newdata)
 
-\S4method{predict}{LogisticRegression}(object, newdata, probs = FALSE)
+\S4method{predict}{LogisticRegression}(object, newdata)
 
 \S4method{responsibilities}{GRFClassifier}(object, newdata, ...)
 
 \S4method{predict}{GRFClassifier}(object, newdata = NULL, ...)
 
-\S4method{predict}{KernelLeastSquaresClassifier}(object, newdata,
-  probs = FALSE, ...)
+\S4method{predict}{KernelLeastSquaresClassifier}(object, newdata, ...)
 
-\S4method{predict}{LinearSVM}(object, newdata, probs = FALSE)
+\S4method{predict}{LinearSVM}(object, newdata)
 
-\S4method{predict}{LogisticLossClassifier}(object, newdata,
-  probs = FALSE)
+\S4method{predict}{LogisticLossClassifier}(object, newdata)
 
-\S4method{predict}{MajorityClassClassifier}(object, newdata,
-  probs = FALSE)
+\S4method{predict}{MajorityClassClassifier}(object, newdata)
 
 \S4method{predict}{SVM}(object, newdata)
 
 \S4method{predict}{SelfLearning}(object, newdata, ...)
 
-\S4method{predict}{USMLeastSquaresClassifier}(object, newdata,
-  probs = FALSE, ...)
+\S4method{predict}{USMLeastSquaresClassifier}(object, newdata, ...)
 
-\S4method{predict}{WellSVM}(object, newdata, probs = FALSE, ...)
+\S4method{predict}{WellSVM}(object, newdata, ...)
 
 \S4method{decisionvalues}{WellSVM}(object, newdata)
 
-\S4method{predict}{svmlinClassifier}(object, newdata, probs = FALSE, ...)
+\S4method{predict}{svmlinClassifier}(object, newdata, ...)
 }
 \arguments{
 \item{object}{classifier}
 
 \item{newdata}{objects to generate predictions for}
-
-\item{probs}{Whether probabilities should be returned}
 
 \item{...}{Other arguments}
 }

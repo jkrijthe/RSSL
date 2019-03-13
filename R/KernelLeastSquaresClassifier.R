@@ -96,7 +96,7 @@ setMethod("loss", signature(object="KernelLeastSquaresClassifier"), function(obj
 
 #' @rdname rssl-predict
 #' @aliases predict,LeastSquaresClassifier-method
-setMethod("predict", signature(object="KernelLeastSquaresClassifier"), function(object, newdata, probs=FALSE,...) {
+setMethod("predict", signature(object="KernelLeastSquaresClassifier"), function(object, newdata,...) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=FALSE)
   
   X<-ModelVariables$X

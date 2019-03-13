@@ -82,7 +82,7 @@ setMethod("loss", signature(object="LogisticLossClassifier"), function(object, n
 
 #' @rdname rssl-predict
 #' @aliases predict,LogisticLossClassifier-method  
-setMethod("predict", signature(object="LogisticLossClassifier"), function(object, newdata,probs=FALSE) {
+setMethod("predict", signature(object="LogisticLossClassifier"), function(object, newdata) {
   ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=TRUE)
   
   X<-ModelVariables$X

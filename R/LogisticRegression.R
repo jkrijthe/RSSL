@@ -128,7 +128,7 @@ setMethod("loss", signature(object="LogisticRegression"), function(object, newda
 
 #' @rdname rssl-predict
 #' @aliases predict,LogisticRegression-method  
-setMethod("predict", signature(object="LogisticRegression"), function(object, newdata,probs=FALSE) {
+setMethod("predict", signature(object="LogisticRegression"), function(object, newdata) {
 ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@scaling,intercept=object@intercept)
   X<-ModelVariables$X
 
@@ -138,10 +138,28 @@ ModelVariables<-PreProcessingPredict(object@modelform,newdata,scaling=object@sca
   
   # If we need to return classes
   classes <- factor(apply(probabilities,1,which.max),levels=1:length(object@classnames), labels=object@classnames)
-  if (probs)
- {
-    return(probabilities)
-  } else return(classes)
+  return(classes)
+})
+
+#' @rdname posterior-methods
+#' @aliases posterior,LogisticRegression-method
+setMethod("posterior", signature(object="LogisticRegression"), function(object,newdata) {
+  
+  ModelVariables<-PreProcessingPredict(modelform=object@modelform,
+                                       newdata=newdata,
+                                       y=NULL,
+                                       scaling=object@scaling,
+                                       intercept=object@intercept)
+  
+  X<-ModelVariables$X
+  
+  w <- matrix(object@w, nrow=ncol(X))
+  expscore <- exp(cbind(rep(0,nrow(X)), X %*% w))
+  posteriors <- expscore/rowSums(expscore)
+  
+  posteriors <- exp(posteriors)
+  colnames(posteriors) <- object@classnames
+  return(posteriors)
 })
 
 #' @rdname line_coefficients-methods
