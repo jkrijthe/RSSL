@@ -1,17 +1,13 @@
-This minor release fixes a bug that surfaces with the new version of ggplot2 and (hopefully) fixes a failing unit test on solaris.
+Fixes tests and examples that depended on the sampling algorithm used by sample() in R <3.6.
 
 ## Test environments
-* local OS X install, R 3.3.1
-* ubuntu 12.04 (on travis-ci), R 3.3.1
-* win-builder (devel and release)
+* local OS X install, R 3.5
+* ubuntu 14.04 (on travis-ci), R-oldrel, R-devel, R-release
+* win-builder (devel)
 
-## R CMD check results
+## Local R CMD check results
+0 errors | 0 warnings | 0 notes
 
-0 errors | 0 warnings | 1 note
-
-Possibly mis-spelled words in DESCRIPTION:
-These are all spelled the way they are supposed to be.
 
 ## Reverse dependencies
-
 There are no reverse dependencies.
