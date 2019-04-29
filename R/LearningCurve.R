@@ -418,6 +418,6 @@ sample_k_positive <- function(y,k,positive_case) {
   stopifnot(positive_case %in% levels(y))
   
   all_idx <- 1:length(y)
-  sample_idx <-sample(all_idx[y==positive_case,k)
+  sample_idx <-sample(all_idx[y==positive_case],k)
   return(sample_idx)
 }
