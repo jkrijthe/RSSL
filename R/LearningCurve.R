@@ -47,6 +47,8 @@ print.LearningCurve <- function(x,...) {
 #' @param measures named list of functions giving the measures to be used
 #' @param time logical; Whether execution time should be saved.
 #' @param low_level_cores integer; Number of cores to use compute repeats of the learning curve
+#' @param PU logical; Wether is a possitive unlabeled problem or not
+#' @param positive_case Character that says which is the positive case
 #' @return LearningCurve object
 #' 
 #' @examples
@@ -93,7 +95,7 @@ LearningCurveSSL<-function(X, y, ...) {
 }
 
 #' @export
-LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, mc.cores=1) {
+LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, PU=FALSE, positive_case=NULL, mc.cores=1) {
 
   if (is.matrix(X[[1]]) & is.factor(y[[1]])) {
     curves <- clapply(names(X),function(dname){
@@ -103,8 +105,9 @@ LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, mc.cores=1) {
       Xd <- Xd[,colnames(Xd)!="(Intercept)"]
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- y[[dname]]
+      if (PU & positive_case!=NULL) positive_case_d <- positive_case[[dname]]
       
-      LearningCurveSSL(Xd,yd,...,verbose=verbose)
+      LearningCurveSSL(Xd,yd,...,positive_case=positive_case_d,verbose=verbose)
     },mc.cores=mc.cores)
   } else if (is(X[[1]],"formula") & is.data.frame(y[[1]])) { 
     curves <- clapply(names(X),function(dname){
@@ -116,8 +119,9 @@ LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, mc.cores=1) {
       Xd <- Xd[,colnames(Xd)!="(Intercept)"]
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- data[,classname]
+      if (PU & positive_case!=NULL) positive_case_d <- positive_case[[dname]]
       
-      LearningCurveSSL(Xd,yd,...,verbose=verbose)
+      LearningCurveSSL(Xd,yd,...,positive_case=positive_case_d,verbose=verbose)
     },mc.cores=mc.cores)
   } else {
     stop("Unknown input. Should be either a list of matrices and label vectors or formulae and data frames.")
@@ -133,7 +137,7 @@ LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, mc.cores=1) {
 
 #' @rdname LearningCurveSSL
 #' @export
-LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l=NULL, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE,low_level_cores=1,...) {
+LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=measure_accuracy), type="unlabeled", n_l=NULL, with_replacement=FALSE, sizes=2^(1:8), n_test=1000,repeats=100, verbose=FALSE,n_min=1,dataset_name=NULL,test_fraction=NULL,fracs=seq(0.1,0.9,0.1),time=TRUE,pre_scale=FALSE, pre_pca=FALSE, low_level_cores=1, PU=FALSE, positive_case=NULL,...) {
   
   if (!is.factor(y)) { stop("Labels are not a factor.") }
   if (nrow(X)!=length(y)) { stop("Number of objects in X and y do not match.") }
@@ -199,8 +203,12 @@ LearningCurveSSL.matrix<-function(X, y, classifiers, measures=list("Accuracy"=me
       
       if (verbose) setTxtProgressBar(pb, i) # Print the current repeat
       
-      sample.labeled <- sample_k_per_level(y,n_min)
-      sample.labeled <- c(sample.labeled, sample((1:nrow(X))[-sample.labeled],n_l-(K*n_min),replace=FALSE))
+      if (!PU) {
+      	sample.labeled <- sample_k_per_level(y,n_min)
+      	sample.labeled <- c(sample.labeled, sample((1:nrow(X))[-sample.labeled],n_l-(K*n_min),replace=FALSE))
+      }	else{
+      	sample.labeled <- sample_k_positive(y,n_l,positive_case)
+      }
     
       X_l <- X[sample.labeled,,drop=FALSE]
       y_l <- y[sample.labeled]
@@ -395,5 +403,21 @@ sample_k_per_level <- function(y,k) {
   for (i in levels(y)) {
     sample_idx <- c(sample_idx,sample(all_idx[y==i],k))
   }
+  return(sample_idx)
+}
+
+#' Sample k indices of positive level from a factor 
+#' @param y factor; factor with levels
+#' @param k integer; number of indices to sample from positive level
+#' @param positive_case character that specifies which is the positive case
+#' @return vector with indices for sample
+#' @export
+sample_k_positive <- function(y,k,positive_case) {
+  stopifnot(is.factor(y))
+  stopifnot(k>0)
+  stopifnot(positive_case %in% levels(y))
+  
+  all_idx <- 1:length(y)
+  sample_idx <-sample(all_idx[y==positive_case,k)
   return(sample_idx)
 }
