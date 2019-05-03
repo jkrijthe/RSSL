@@ -120,8 +120,7 @@ LearningCurveSSL.list<-function(X, y, ..., verbose=FALSE, PU=FALSE, positive_cas
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- data[,classname]
       if (PU & positive_case!=NULL) positive_case_d <- positive_case[[dname]]
-      
-      LearningCurveSSL(Xd,yd,...,positive_case=positive_case_d,verbose=verbose)
+      LearningCurveSSL(Xd,yd,...,verbose=verbose,positive_case=positive_case_d)
     },mc.cores=mc.cores)
   } else {
     stop("Unknown input. Should be either a list of matrices and label vectors or formulae and data frames.")
