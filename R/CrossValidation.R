@@ -64,6 +64,8 @@ c.CrossValidation <- function(...) {
 #' The "test" option of \code{leaveout}, on the other hand, uses the folds as the test sets. This means every object will be used as a test object exactly once. The remaining objects in each training iteration are split randomly into a labeled and an unlabeled part, where the number of the labeled objects is controlled by the user through the n_labeled parameter.
 #' @param X design matrix of the labeled objects
 #' @param y vector with labels
+#' @param PU logical; Wether is a possitive unlabeled problem or not
+#' @param positive_case Character that says which is the positive case
 #' @param mc.cores integer; Number of cores to be used
 #' @param ... arguments passed to underlying functions
 #' 
@@ -110,7 +112,7 @@ CrossValidationSSL <- function(X, y,...) {
 
 #' @rdname CrossValidationSSL
 #' @export
-CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
+CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, PU=FALSE, positive_case=NULL, mc.cores=1) {
   if (is.matrix(X[[1]]) & is.factor(y[[1]])) {
     curves <- clapply(names(X),function(dname){
       if (verbose) cat(dname,"\n");
@@ -119,6 +121,7 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
       Xd <- Xd[,colnames(Xd)!="(Intercept)"]
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- y[[dname]]
+      if (PU & positive_case!=NULL) positive_case_d <- positive_case[[dname]]
       
       CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose)
     }, mc.cores=mc.cores)
@@ -132,8 +135,9 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
       Xd <- Xd[,colnames(Xd)!="(Intercept)"]
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- data[,classname]
+      if (PU & positive_case!=NULL) positive_case_d <- positive_case[[dname]]
       
-      CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose)
+      CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose,positive_case=positive_case_d)
     },mc.cores=mc.cores)
   } else {
     stop("Unknown input. Should be either a named list of matrices and label vectors or a named list of formulae and data frames.")
@@ -157,7 +161,7 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
 #' @param time logical; Whether execution time should be saved.
 #' @param low_level_cores integer; Number of cores to use compute repeats of the learning curve
 #' @export
-CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=measure_error), k=10, repeats=1, verbose=FALSE, leaveout="test", n_labeled=10, prop_unlabeled=0.5,time=TRUE,pre_scale=FALSE,pre_pca=FALSE,n_min=1,low_level_cores=1,...) {
+CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=measure_error), k=10, repeats=1, verbose=FALSE, leaveout="test", n_labeled=10, prop_unlabeled=0.5,time=TRUE,pre_scale=FALSE,pre_pca=FALSE,n_min=1,low_level_cores=1,PU=FALSE, positive_case=NULL,...) {
   N<-nrow(X)
   
   if (!is.factor(y)) { stop("Labels are not a factor.") }
@@ -210,7 +214,12 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
   results <- clapply(1:repeats,function(i) {
     results <- results[1,,,,drop=FALSE]
     
-    sample.classguarantee <- sample_k_per_level(y,k)
+    if (!PU) {
+        sample.classguarantee <- sample_k_per_level(y,k)
+      } else{
+        sample.classguarantee <- sample_k_positive(y,k,positive_case)
+      }
+
     sample.random <- sample((1:N)[-sample.classguarantee])    
     
     ##Folds
