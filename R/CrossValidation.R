@@ -121,7 +121,7 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, PU=FALSE, positive_c
       Xd <- Xd[,colnames(Xd)!="(Intercept)"]
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- y[[dname]]
-      if (PU & positive_case!=NULL) positive_case_d <- positive_case[[dname]]
+      if (PU & is.null(positive_case)) positive_case_d <- positive_case[[dname]]
       
       CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose)
     }, mc.cores=mc.cores)
@@ -135,7 +135,7 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, PU=FALSE, positive_c
       Xd <- Xd[,colnames(Xd)!="(Intercept)"]
       Xd <- Xd[,apply(Xd, 2, var, na.rm=TRUE) != 0] # Remove constant columns
       yd <- data[,classname]
-      if (PU & positive_case!=NULL) positive_case_d <- positive_case[[dname]]
+      if (PU & is.null(positive_case)) positive_case_d <- positive_case[[dname]]
       
       CrossValidationSSL(X=Xd,y=yd,...,verbose=verbose,positive_case=positive_case_d)
     },mc.cores=mc.cores)
@@ -160,6 +160,8 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, PU=FALSE, positive_c
 #' @param prop_unlabeled numeric; proportion of unlabeled objects
 #' @param time logical; Whether execution time should be saved.
 #' @param low_level_cores integer; Number of cores to use compute repeats of the learning curve
+#' @param PU logical; Wether is a possitive unlabeled problem or not
+#' @param positive_case Character that says which is the positive case
 #' @export
 CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=measure_error), k=10, repeats=1, verbose=FALSE, leaveout="test", n_labeled=10, prop_unlabeled=0.5,time=TRUE,pre_scale=FALSE,pre_pca=FALSE,n_min=1,low_level_cores=1,PU=FALSE, positive_case=NULL,...) {
   N<-nrow(X)
@@ -217,10 +219,11 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
     if (!PU) {
         sample.classguarantee <- sample_k_per_level(y,k)
       } else{
-        sample.classguarantee <- sample_k_positive(y,k,positive_case)
+        sample.classguarantee <- sample_k_positive(y,K*k,positive_case)
       }
 
     sample.random <- sample((1:N)[-sample.classguarantee])    
+    
     
     ##Folds
     N_fold <- floor(N/k)
@@ -254,7 +257,6 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
             idx_test<-c(sample.classguarantee[c((st+1):(st+n_min),((st+n_min*k)+1):((st+n_min*k)+n_min))], 
                         sample.random)
           }
-          
           idx_train<-(1:N)[-idx_test]
           
           X_train<-X[idx_train,,drop=FALSE]
