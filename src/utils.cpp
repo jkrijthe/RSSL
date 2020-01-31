@@ -7,7 +7,7 @@ using namespace Rcpp;
 arma::mat rowMax(const arma::mat& X) {
   arma::mat A = arma::zeros<arma::mat>(X.n_rows,1);
   
-  for (int i=0; i<X.n_rows; i++) {
+  for (unsigned int i=0; i<X.n_rows; i++) {
     // Rcout << X.row(i).max() << std::endl;
     A(i) = X.row(i).max();
   }
@@ -27,7 +27,7 @@ arma::mat which_rowMax(const arma::mat& X) {
   arma::uword  row;
   arma::uword  col;
   
-  for (int i=0; i<X.n_rows; i++) {
+  for (unsigned int i=0; i<X.n_rows; i++) {
     X.row(i).max(row,col);
     A(i) = col+1;
   }
@@ -39,7 +39,7 @@ arma::mat which_rowMax2(const arma::mat& X) {
   arma::ucolvec I = index_max(X,1);
   
   arma::mat A = arma::zeros<arma::mat>(X.n_rows,1);
-  for (int i=0; i<X.n_rows; i++) {
+  for (unsigned int i=0; i<X.n_rows; i++) {
     A(i) = I(i)+1;
   }
   return(A);

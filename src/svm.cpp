@@ -1837,7 +1837,7 @@ static void solve_c_svc_b(
   double *minus_ones = new double[l];
   schar *y = new schar[l];
   double *upbound = new double[l];
-  int ubound = 1;
+
   int i;
   
   for(i=0;i<l;i++)

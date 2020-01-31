@@ -110,7 +110,7 @@ class Delta { /* used in line search */
    int index;
    int s;
 };
-inline bool operator<(const Delta& a , const Delta& b) { return (a.delta < b.delta);};
+inline bool operator<(const Delta& a , const Delta& b) { return (a.delta < b.delta);}
 
 void initialize(struct vector_double *A, int k, double a);
 /* initializes a vector_double to be of length k, all elements set to a */

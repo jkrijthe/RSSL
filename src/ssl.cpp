@@ -70,6 +70,7 @@ void ssl_train(struct data *Data,
     default:
       ;
     }
+  if (Options->verbose) { Rcpp::Rcout << "Optimality:" << optimality << endl; }
   return;
 }
 int CGLS(const struct data *Data,
@@ -1131,7 +1132,9 @@ void ssl_predict(char *inputs_file_name, const struct vector_double *Weights, st
 	    if(c=='\n') goto out2;
 	  } while(isspace(c));
 	  ungetc(c,fpin);
-	  fscanf(fpin,"%d:%lf",&colind,&val);
+	  int ret;
+	  ret = fscanf(fpin,"%d:%lf",&colind,&val);
+	  if (ret==-1) { Rcpp::Rcout << "EOF" << endl; }
 	  colind--;
 	  if(colind<n)
 	    t+=val*w[colind];
