@@ -8,20 +8,20 @@
 summary.CrossValidation <- function(object, measure=NULL,...) {
   results <- object$results
   if (!is.null(measure)) {
-    results <- results %>% filter_(quote(Measure) %in% measure) 
+    results <- results %>% dplyr::filter(.data$Measure %in% measure) 
   }
   if ("Dataset" %in% names(object$results)) {
     results %>% 
-      dplyr::group_by(Measure,Classifier,Dataset) %>% 
-      dplyr::summarize(Value=quote(mean(value))) %>% 
+      dplyr::group_by(.data$Measure,.data$Classifier,.data$Dataset) %>% 
+      dplyr::summarize(Value=mean(.data$value)) %>% 
       dplyr::ungroup() %>%
-      group_by(Measure)
+      group_by(.data$Measure)
   } else {
     results %>% 
-      dplyr::group_by(Measure,Classifier) %>% 
-      dplyr::summarize(Value=mean(value)) %>% 
+      dplyr::group_by(.data$Measure,.data$Classifier) %>% 
+      dplyr::summarize(Value=mean(.data$value)) %>% 
       dplyr::ungroup() %>% 
-      tidyr::spread(Measure,Value)
+      tidyr::spread(.data$Measure,.data$Value)
   }
 }
 

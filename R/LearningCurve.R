@@ -344,14 +344,14 @@ plot.LearningCurve <- function(x, y, ...) {
   if ("Dataset" %in% names(x$results)) {
     
     plot_frame <-  x$results %>% 
-      dplyr::group_by(!!dplyr::sym(x_label), Classifier, Measure, Dataset) %>%
-      summarize(Mean=mean(value,na.rm=TRUE),SE=stderror(value)) %>%
+      dplyr::group_by(!!dplyr::sym(x_label), .data$Classifier, .data$Measure, .data$Dataset) %>%
+      summarize(Mean=mean(.data$value,na.rm=TRUE),SE=stderror(.data$value)) %>%
       ungroup()
     facet_used <- facet_wrap(~ Dataset + Measure,scales="free",ncol=length(unique(plot_frame$Measure)))
   } else {
     plot_frame <-  x$results %>% 
-      dplyr::group_by(!!dplyr::sym(x_label), Classifier, Measure) %>%
-      dplyr::summarize(Mean=mean(value,na.rm=TRUE),SE=stderror(value)) %>% 
+      dplyr::group_by(!!dplyr::sym(x_label), .data$Classifier, .data$Measure) %>%
+      dplyr::summarize(Mean=mean(.data$value,na.rm=TRUE),SE=stderror(.data$value)) %>% 
       dplyr::ungroup()
     facet_used <- facet_wrap(~Measure,scales="free")
   }
