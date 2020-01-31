@@ -30,7 +30,7 @@ S4 object of class LeastSquaresClassifier with the following slots:
 \item{theta}{weight vector}
 \item{classnames}{the names of the classes}
 \item{modelform}{formula object of the model used in regression}
-\item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
+\item{scaling}{a scaling object containing the parameters of the z-transforms applied to the data}
 }
 \description{
 Classifier that minimizes the quadratic loss or, equivalently, least squares regression applied to a numeric encoding of the class labels as target. Note this method minimizes quadratic loss, not the truncated quadratic loss. Optionally, L2 regularization can be applied by setting the \code{lambda} parameter.

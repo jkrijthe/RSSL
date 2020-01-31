@@ -21,7 +21,7 @@ TSVM(X, y, X_u, C, Cstar, kernel = kernlab::vanilladot(),
 
 \item{kernel}{kernlab::kernel to use}
 
-\item{balancing_constraint}{logical; Whether a balancing constraint should be enfored that causes the fraction of objects assigned to each label in the unlabeled data to be similar to the label fraction in the labeled data.}
+\item{balancing_constraint}{logical; Whether a balancing constraint should be enforced that causes the fraction of objects assigned to each label in the unlabeled data to be similar to the label fraction in the labeled data.}
 
 \item{s}{numeric; parameter controlling the loss function of the unlabeled objects (generally values between -1 and 0)}
 

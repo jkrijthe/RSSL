@@ -137,7 +137,7 @@ StatClassifier <-
 #'   )
 #' }   
 #' @param mapping aes; aesthetic mapping
-#' @param data data.frame; data to be diplayed
+#' @param data data.frame; data to be displayed
 #' @param inherit.aes logical; If FALSE, overrides the default aesthetics
 #' @param breaks double; decision value for which to plot the boundary
 #' @param precision integer; grid size to sketch classification boundary

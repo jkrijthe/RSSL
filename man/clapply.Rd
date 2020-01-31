@@ -9,7 +9,7 @@ clapply(X, FUN, ..., mc.cores = getOption("mc.cores", 2L))
 \arguments{
 \item{X}{vector}
 
-\item{FUN}{function to be aplpied to the elements of X}
+\item{FUN}{function to be applied to the elements of X}
 
 \item{...}{optional arguments passed to FUN}
 

@@ -22,7 +22,7 @@ setClass("KernelLeastSquaresClassifier",
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}
 #' \item{modelform}{formula object of the model used in regression}
-#' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
+#' \item{scaling}{a scaling object containing the parameters of the z-transforms applied to the data}
 #' 
 #' @example inst/examples/example-KernelLeastSquaresClassifier.R
 #' @export

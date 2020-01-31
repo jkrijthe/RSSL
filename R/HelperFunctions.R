@@ -21,7 +21,7 @@ stderror <- function(x) sqrt(var(x,na.rm=TRUE)/length(na.omit(x)))
 
 #' Use mclapply conditional on not being in RStudio
 #' @param X vector
-#' @param FUN function to be aplpied to the elements of X
+#' @param FUN function to be applied to the elements of X
 #' @param ... optional arguments passed to FUN
 #' @param mc.cores number of cores to use
 #' @export

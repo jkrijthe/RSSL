@@ -11,7 +11,7 @@ stat_classifier(mapping = NULL, data = NULL, show.legend = NA,
 \arguments{
 \item{mapping}{aes; aesthetic mapping}
 
-\item{data}{data.frame; data to be diplayed}
+\item{data}{data.frame; data to be displayed}
 
 \item{show.legend}{logical; Whether this layer should be included in the legend}
 

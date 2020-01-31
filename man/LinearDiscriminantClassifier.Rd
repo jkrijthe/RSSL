@@ -14,7 +14,7 @@ LinearDiscriminantClassifier(X, y, method = "closedform", prior = NULL,
 
 \item{method}{the method to use. Either "closedform" for the fast closed form solution or "ml" for explicit maximum likelihood maximization}
 
-\item{prior}{A matrix with class prior probabilites. If NULL, this will be estimated from the data}
+\item{prior}{A matrix with class prior probabilities. If NULL, this will be estimated from the data}
 
 \item{scale}{logical; If TRUE, apply a z-transform to the design matrix X before running the regression}
 

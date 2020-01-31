@@ -38,7 +38,7 @@ CrossValidationSSL(X, y, ...)
 
 \item{leaveout}{either "labeled" or "test", see details}
 
-\item{n_labeled}{Number of labeled examples, used in both leavout modes}
+\item{n_labeled}{Number of labeled examples, used in both leaveout modes}
 
 \item{prop_unlabeled}{numeric; proportion of unlabeled objects}
 

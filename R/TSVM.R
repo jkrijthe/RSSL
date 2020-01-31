@@ -15,7 +15,7 @@ setClass("TSVM",
 #' @param s numeric; parameter controlling the loss function of the unlabeled objects (generally values between -1 and 0)
 #' @param scale If TRUE, apply a z-transform to all observations in X and X_u before running the regression
 #' @param verbose logical; print debugging messages, only works for vanilladot() kernel (default: FALSE)
-#' @param balancing_constraint logical; Whether a balancing constraint should be enfored that causes the fraction of objects assigned to each label in the unlabeled data to be similar to the label fraction in the labeled data.
+#' @param balancing_constraint logical; Whether a balancing constraint should be enforced that causes the fraction of objects assigned to each label in the unlabeled data to be similar to the label fraction in the labeled data.
 #' @param max_iter integer; Maximum number of iterations
 #' @inheritParams BaseClassifier
 #' @family RSSL classifiers

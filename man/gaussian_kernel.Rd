@@ -2,14 +2,14 @@
 % Please edit documentation in R/WellSVM.R
 \name{gaussian_kernel}
 \alias{gaussian_kernel}
-\title{calculated the guassian kernel matrix}
+\title{calculated the gaussian kernel matrix}
 \usage{
 gaussian_kernel(x, gamma, x_test = NULL)
 }
 \arguments{
 \item{x}{A d x n training data matrix}
 
-\item{gamma}{kernel paramater}
+\item{gamma}{kernel parameter}
 
 \item{x_test}{A d x m testing data matrix}
 }
@@ -17,5 +17,5 @@ gaussian_kernel(x, gamma, x_test = NULL)
 k - A n x m kernel matrix and dis_mat - A n x m distance matrix
 }
 \description{
-calculated the guassian kernel matrix
+calculated the gaussian kernel matrix
 }

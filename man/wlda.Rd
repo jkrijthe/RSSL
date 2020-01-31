@@ -9,7 +9,7 @@ wlda(a, w)
 \arguments{
 \item{a}{is the data set}
 
-\item{w}{is an indicator matrix for the K classes or, potantially, a weight matrix in which the fraction with which a sample belongs to a particular class is indicated}
+\item{w}{is an indicator matrix for the K classes or, potentially, a weight matrix in which the fraction with which a sample belongs to a particular class is indicated}
 }
 \value{
 m contains the means, p contains the class priors, iW contains the INVERTED within covariance matrix

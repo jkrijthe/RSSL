@@ -27,7 +27,7 @@ S4 object of class LeastSquaresClassifier with the following slots:
 \item{theta}{weight vector}
 \item{classnames}{the names of the classes}
 \item{modelform}{formula object of the model used in regression}
-\item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
+\item{scaling}{a scaling object containing the parameters of the z-transforms applied to the data}
 }
 \description{
 Use least squares regression as a classification technique using a numeric encoding of classes as targets. Note this method minimizes quadratic loss, not the truncated quadratic loss.

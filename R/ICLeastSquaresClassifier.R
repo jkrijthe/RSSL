@@ -37,7 +37,7 @@ setClass("ICLeastSquaresClassifier",
 #' \item{theta}{weight vector}
 #' \item{classnames}{the names of the classes}
 #' \item{modelform}{formula object of the model used in regression}
-#' \item{scaling}{a scaling object containing the paramters of the z-transforms applied to the data}
+#' \item{scaling}{a scaling object containing the parameters of the z-transforms applied to the data}
 #' \item{optimization}{the object returned by the optim function}
 #' \item{unlabels}{the labels assigned to the unlabeled objects}
 #' 

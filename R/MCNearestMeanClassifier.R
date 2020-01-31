@@ -15,10 +15,6 @@ setClass("MCNearestMeanClassifier",
 #' @param update_sigma logical; Whether the estimate of the variance should be updated after the means have been updated using the unlabeled data
 #' @param prior matrix; Class priors for the classes
 #' @inheritParams BaseClassifier
-#' @return S4  object; a list consisting of
-#' \item{means}{the approximation of piel}
-#' \item{prior}{the number of trials}
-#' \item{sigma}{the number of hits}
 #' 
 #' @export
 MCNearestMeanClassifier <- function(X, y, X_u, update_sigma=FALSE, prior=NULL, x_center=FALSE, scale=FALSE) {

@@ -13,7 +13,7 @@ setClass("LinearDiscriminantClassifier",
 #' @param X Design matrix, intercept term is added within the function
 #' @param y Vector or factor with class assignments
 #' @param method the method to use. Either "closedform" for the fast closed form solution or "ml" for explicit maximum likelihood maximization
-#' @param prior A matrix with class prior probabilites. If NULL, this will be estimated from the data
+#' @param prior A matrix with class prior probabilities. If NULL, this will be estimated from the data
 #' @param scale logical; If TRUE, apply a z-transform to the design matrix X before running the regression
 #' @param x_center logical; Whether the feature vectors should be centered
 #' 

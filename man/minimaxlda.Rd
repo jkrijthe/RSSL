@@ -9,7 +9,7 @@ minimaxlda(a, w, u, iter)
 \arguments{
 \item{a}{is the data set}
 
-\item{w}{is an indicator matrix for the K classes of a or, potantially, a weight matrix in which the fraction with which a sample belongs to a particular class is indicated}
+\item{w}{is an indicator matrix for the K classes of a or, potentially, a weight matrix in which the fraction with which a sample belongs to a particular class is indicated}
 
 \item{u}{is a bunch of unlabeled data}
 

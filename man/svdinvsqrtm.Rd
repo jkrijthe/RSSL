@@ -2,7 +2,7 @@
 % Please edit documentation in R/MCPLDA.R
 \name{svdinvsqrtm}
 \alias{svdinvsqrtm}
-\title{Taking the inverse of the square root of the matrix using the singular value decompisition}
+\title{Taking the inverse of the square root of the matrix using the singular value decomposition}
 \usage{
 svdinvsqrtm(X)
 }
@@ -13,5 +13,5 @@ svdinvsqrtm(X)
 Y matrix; inverse of the square root of the input matrix
 }
 \description{
-Taking the inverse of the square root of the matrix using the singular value decompisition
+Taking the inverse of the square root of the matrix using the singular value decomposition
 }

@@ -10,7 +10,7 @@ setClass("QuadraticDiscriminantClassifier",
 #'
 #' @family RSSL classifiers
 #'
-#' @param prior A matrix with class prior probabilites. If NULL, this will be estimated from the data
+#' @param prior A matrix with class prior probabilities. If NULL, this will be estimated from the data
 #' @inheritParams BaseClassifier
 #' @return S4 object of class LeastSquaresClassifier with the following slots:
 #' \item{modelform}{weight vector}

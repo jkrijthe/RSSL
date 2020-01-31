@@ -45,7 +45,7 @@ svdsqrtm <- function(X) {
   return(Y)
 }
 
-#' Taking the inverse of the square root of the matrix using the singular value decompisition
+#' Taking the inverse of the square root of the matrix using the singular value decomposition
 #' @param X matrix; square input matrix
 #' @return Y matrix; inverse of the square root of the input matrix
 svdinvsqrtm <- function(X) {
@@ -159,7 +159,7 @@ wlda_error <- function(m,p,iW,a,w) {
 
 #' Implements weighted likelihood estimation for LDA
 #' @param a is the data set
-#' @param w is an indicator matrix for the K classes or, potantially, a weight matrix in which the fraction with which a sample belongs to a particular class is indicated
+#' @param w is an indicator matrix for the K classes or, potentially, a weight matrix in which the fraction with which a sample belongs to a particular class is indicated
 #' @return m contains the means, p contains the class priors, iW contains the INVERTED within covariance matrix
 wlda <- function(a,w) {
   
@@ -220,7 +220,7 @@ projection_simplex <- function(y) {
 
 #' Implements weighted likelihood estimation for LDA
 #' @param a is the data set
-#' @param w is an indicator matrix for the K classes of a or, potantially, a weight matrix in which the fraction with which a sample belongs to a particular class is indicated
+#' @param w is an indicator matrix for the K classes of a or, potentially, a weight matrix in which the fraction with which a sample belongs to a particular class is indicated
 #' @param u is a bunch of unlabeled data
 #' @param iter decides on the amount of time we spend on minimaxing the stuff
 #' @return m contains the means, p contains the class priors, iW contains the INVERTED within covariance matrix, uw returns the weights for the unlabeled data, i returns the number of iterations used

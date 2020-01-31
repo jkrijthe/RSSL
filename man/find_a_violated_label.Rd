@@ -17,7 +17,7 @@ find_a_violated_label(alpha, K, y, ind_y, lr, y_init)
 
 \item{lr}{positive ratio}
 
-\item{y_init}{label intitialization}
+\item{y_init}{label initialization}
 }
 \description{
 Find a violated label

@@ -11,7 +11,7 @@ QuadraticDiscriminantClassifier(X, y, prior = NULL, scale = FALSE, ...)
 
 \item{y}{factor or integer vector; Label vector}
 
-\item{prior}{A matrix with class prior probabilites. If NULL, this will be estimated from the data}
+\item{prior}{A matrix with class prior probabilities. If NULL, this will be estimated from the data}
 
 \item{scale}{logical; Should the features be normalized? (default: FALSE)}
 

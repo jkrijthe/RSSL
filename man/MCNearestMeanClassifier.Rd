@@ -22,12 +22,6 @@ MCNearestMeanClassifier(X, y, X_u, update_sigma = FALSE, prior = NULL,
 
 \item{scale}{logical; Should the features be normalized? (default: FALSE)}
 }
-\value{
-S4  object; a list consisting of
-\item{means}{the approximation of piel}
-\item{prior}{the number of trials}
-\item{sigma}{the number of hits}
-}
 \description{
 Update the means based on the moment constraints as defined in Loog (2010). The means estimated using the labeled data are updated by making sure their weighted mean corresponds to the overall mean on all (labeled and unlabeled) data. Optionally, the estimated variance of the classes can be re-estimated after this update is applied by setting update_sigma to \code{TRUE}. To get the true nearest mean classifier, rather than estimate the class priors, set them to equal priors using, for instance \code{prior=matrix(0.5,2)}.
 }

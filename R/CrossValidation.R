@@ -149,7 +149,7 @@ CrossValidationSSL.list <- function(X,y, ...,verbose=FALSE, mc.cores=1) {
 #' @param repeats integer; Number of repeated assignments to folds
 #' @param verbose logical; Controls the verbosity of the output
 #' @param leaveout either "labeled" or "test", see details
-#' @param n_labeled Number of labeled examples, used in both leavout modes
+#' @param n_labeled Number of labeled examples, used in both leaveout modes
 #' @param pre_scale logical; Whether the features should be scaled before the dataset is used
 #' @param pre_pca logical; Whether the features should be preprocessed using a PCA step
 #' @param n_min integer; Minimum number of labeled objects per class
