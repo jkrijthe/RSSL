@@ -13,7 +13,6 @@ test_that("LearningCurveSSL does not return error",{
   )
   lc <- LearningCurveSSL(X,y,classifiers=classifiers,
                            measures=measures,n_l=10,repeats=3)
-  
   expect_silent(plot(lc))
   expect_output(print(lc))
   

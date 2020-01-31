@@ -12,16 +12,16 @@ summary.CrossValidation <- function(object, measure=NULL,...) {
   }
   if ("Dataset" %in% names(object$results)) {
     results %>% 
-      group_by_("Measure","Classifier","Dataset") %>% 
-      summarize(Value=quote(mean(value))) %>% 
-      ungroup %>%
-      group_by_("Measure")
+      dplyr::group_by(Measure,Classifier,Dataset) %>% 
+      dplyr::summarize(Value=quote(mean(value))) %>% 
+      dplyr::ungroup() %>%
+      group_by(Measure)
   } else {
     results %>% 
-      group_by_("Measure","Classifier") %>% 
-      summarize(Value=quote(mean(value))) %>% 
-      ungroup %>% 
-      tidyr::spread_("Measure","Value")
+      dplyr::group_by(Measure,Classifier) %>% 
+      dplyr::summarize(Value=mean(value)) %>% 
+      dplyr::ungroup() %>% 
+      tidyr::spread(Measure,Value)
   }
 }
 

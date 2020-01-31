@@ -337,28 +337,27 @@ plot.LearningCurve <- function(x, y, ...) {
   
   # Extract metadata from the first experiment
   #m<-measurement
-  x_label <- paste0("`",names(x$results)[[2]],"`")
+  x_label <- names(x$results)[[2]]
   #y_label <- dimnames(data[[1]]$results)[[4]][m]
   
   # Generate the dataset for plotting
   if ("Dataset" %in% names(x$results)) {
     
     plot_frame <-  x$results %>% 
-      
-      dplyr::group_by_(x_label, quote(Classifier), quote(Measure), quote(Dataset)) %>%
-      summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=~stderror(value)) %>%
-      ungroup
+      dplyr::group_by(!!dplyr::sym(x_label), Classifier, Measure, Dataset) %>%
+      summarize(Mean=mean(value,na.rm=TRUE),SE=stderror(value)) %>%
+      ungroup()
     facet_used <- facet_wrap(~ Dataset + Measure,scales="free",ncol=length(unique(plot_frame$Measure)))
   } else {
     plot_frame <-  x$results %>% 
-      dplyr::group_by_(x_label, quote(Classifier), quote(Measure)) %>%
-      summarize_(Mean=quote(mean(value,na.rm=TRUE)),SE=~stderror(value)) %>% 
-      ungroup
+      dplyr::group_by(!!dplyr::sym(x_label), Classifier, Measure) %>%
+      dplyr::summarize(Mean=mean(value,na.rm=TRUE),SE=stderror(value)) %>% 
+      dplyr::ungroup()
     facet_used <- facet_wrap(~Measure,scales="free")
   }
   
   p <- plot_frame %>% 
-    ggplot(aes_string(x=x_label,y="Mean",color="Classifier",shape="Classifier")) +
+    ggplot(aes_string(x=paste0("`",x_label,"`"),y="Mean",color="Classifier",shape="Classifier")) +
     geom_point(size=1, na.rm=TRUE) +
     geom_line(aes_string(linetype="Classifier"), na.rm=TRUE) +
     geom_ribbon(aes_string(ymax="Mean+1*SE",ymin="Mean-1*SE",fill="Classifier"),size=0,alpha=0.3, na.rm=TRUE) +
