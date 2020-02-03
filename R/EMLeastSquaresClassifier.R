@@ -22,7 +22,6 @@ setClass("EMLeastSquaresClassifier",
 #' @param save_all logical; saves all classifiers trained during block gradient descent
 #' @references Krijthe, J.H. & Loog, M., 2016. Optimistic Semi-supervised Least Squares Classification. In International Conference on Pattern Recognition (To Appear).
 #' @inheritParams BaseClassifier
-#' @param ... Additional Parameters, Not used
 #' @family RSSL classifiers
 #' @examples
 #' library(dplyr)

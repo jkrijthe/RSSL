@@ -40,8 +40,6 @@ ICLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
 \item{y_scale}{logical; whether the target vector should be centered}
 
 \item{use_Xu_for_scaling}{logical; whether the unlabeled objects should be used to determine the mean and scaling for the normalization}
-
-\item{...}{additional arguments}
 }
 \value{
 S4 object of class ICLeastSquaresClassifier with the following slots:

@@ -30,7 +30,6 @@ setClass("ICLeastSquaresClassifier",
 #' @param projection One of "supervised", "semisupervised" or "euclidean"
 #' @param lambda_prior numeric; prior on the deviation from the supervised mean y
 #' @param trueprob numeric; true mean y for all data
-#' @param ... additional arguments
 #' @inheritParams BaseClassifier
 #' 
 #' @return S4 object of class ICLeastSquaresClassifier with the following slots:

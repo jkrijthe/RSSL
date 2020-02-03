@@ -44,8 +44,6 @@ EMLeastSquaresClassifier(X, y, X_u, x_center = FALSE, scale = FALSE,
 \item{save_all}{logical; saves all classifiers trained during block gradient descent}
 
 \item{max_iter}{integer; maximum number of iterations}
-
-\item{...}{Additional Parameters, Not used}
 }
 \description{
 As studied in Krijthe & Loog (2016), minimizes the total loss of the labeled and unlabeled objects by finding the weight vector and labels that minimize the total loss. The algorithm proceeds similar to EM, by subsequently applying a weight update and a soft labeling of the unlabeled objects. This is repeated until convergence.

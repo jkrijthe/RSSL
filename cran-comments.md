@@ -1,4 +1,4 @@
-Fixes some problems that surfaced by using -D_FORTIFY_SOURCE=2 in devel. Also fixes some issues with deprecated functions from the dplyr package.
+Fixes some problems that surfaced by using -D_FORTIFY_SOURCE=2 in devel, and documentation issues were unused parameters were documented. Also fixes some issues with deprecated functions from the dplyr package.
 
 ## Test environments
 * local OS X install, R 3.6
