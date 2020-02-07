@@ -1,22 +1,38 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-[![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL) [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master) [![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.r-project.org/package=RSSL)
+[![Travis-CI Build
+Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL)
+[![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master)
+[![CRAN mirror
+downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.r-project.org/package=RSSL)
 
 R Semi-Supervised Learning package
 ==================================
 
-This R package provides implementations of several semi-supervised learning methods, in particular, our own work involving constraint based semi-supervised learning.
-
-The package is still under development. Therefore, function names and interfaces are subject to change.
+This R package provides implementations of several semi-supervised
+learning methods, in particular, our own work involving constraint based
+semi-supervised learning.
 
 To cite the package, use either of these two references:
 
--   Krijthe, J.H. & Loog, M. (2015). Implicitly Constrained Semi-Supervised Least Squares Classification. In E. Fromont, T. de Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances in Intelligent Data Analysis XIV (Lecture Notes in Computer Science Volume 9385). Saint Etienne. France, pp. 158-169.
--   Jesse H. Krijthe (2016). RSSL: Implementations of Semi-Supervised Learning Approaches for Classification, URL: <https://github.com/jkrijthe/RSSL>
+-   Krijthe, J. H. (2016). RSSL: R package for Semi-supervised Learning.
+    In B. Kerautret, M. Colom, & P. Monasse (Eds.), Reproducible
+    Research in Pattern Recognition. RRPR 2016. Lecture Notes in
+    Computer Science, vol 10214. (pp. 104–115). Springer International
+    Publishing.
+    <a href="https://doi.org/10.1007/978-3-319-56414-2_8" class="uri">https://doi.org/10.1007/978-3-319-56414-2_8</a>.
+    arxiv:
+    <a href="http://arxiv.org/abs/1612.07993" class="uri">http://arxiv.org/abs/1612.07993</a>
+-   Krijthe, J.H. & Loog, M. (2015). Implicitly Constrained
+    Semi-Supervised Least Squares Classification. In E. Fromont, T. de
+    Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances
+    in Intelligent Data Analysis XIV (Lecture Notes in Computer Science
+    Volume 9385). Saint Etienne. France, pp. 158-169.
 
 Installation Instructions
 =========================
 
-This package available on CRAN. The easiest way to install the package is to use:
+This package available on CRAN. The easiest way to install the package
+is to use:
 
 ``` r
 install.packages("RSSL")
@@ -38,7 +54,8 @@ After installation, load the package as usual:
 library(RSSL)
 ```
 
-The following code generates a simple dataset, trains a supervised and two semi-supervised classifiers and evaluates their performance:
+The following code generates a simple dataset, trains a supervised and
+two semi-supervised classifiers and evaluates their performance:
 
 ``` r
 library(dplyr,warn.conflicts = FALSE)
@@ -82,4 +99,5 @@ mean(predict(g_self,df)!=df$Class)
 Acknowledgement
 ===============
 
-Work on this package was supported by Project 23 of the Dutch national program COMMIT.
+Work on this package was supported by Project 23 of the Dutch national
+program COMMIT.
