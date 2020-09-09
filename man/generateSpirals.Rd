@@ -19,12 +19,13 @@ data <- generateSpirals(100,sigma=0.1)
 #plot3D::scatter3D(data$x,data$y,data$z,col="black")
 }
 \seealso{
-Other RSSL datasets: \code{\link{generate2ClassGaussian}},
-  \code{\link{generateABA}},
-  \code{\link{generateCrescentMoon}},
-  \code{\link{generateFourClusters}},
-  \code{\link{generateParallelPlanes}},
-  \code{\link{generateSlicedCookie}},
-  \code{\link{generateTwoCircles}}
+Other RSSL datasets: 
+\code{\link{generate2ClassGaussian}()},
+\code{\link{generateABA}()},
+\code{\link{generateCrescentMoon}()},
+\code{\link{generateFourClusters}()},
+\code{\link{generateParallelPlanes}()},
+\code{\link{generateSlicedCookie}()},
+\code{\link{generateTwoCircles}()}
 }
 \concept{RSSL datasets}

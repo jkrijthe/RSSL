@@ -21,12 +21,13 @@ data <- generateFourClusters(1000,distance=6,expected=TRUE)
 plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 \seealso{
-Other RSSL datasets: \code{\link{generate2ClassGaussian}},
-  \code{\link{generateABA}},
-  \code{\link{generateCrescentMoon}},
-  \code{\link{generateParallelPlanes}},
-  \code{\link{generateSlicedCookie}},
-  \code{\link{generateSpirals}},
-  \code{\link{generateTwoCircles}}
+Other RSSL datasets: 
+\code{\link{generate2ClassGaussian}()},
+\code{\link{generateABA}()},
+\code{\link{generateCrescentMoon}()},
+\code{\link{generateParallelPlanes}()},
+\code{\link{generateSlicedCookie}()},
+\code{\link{generateSpirals}()},
+\code{\link{generateTwoCircles}()}
 }
 \concept{RSSL datasets}

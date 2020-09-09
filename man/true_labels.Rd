@@ -13,13 +13,14 @@ true_labels(df)
 Access the true labels when they are stored as an attribute in a data frame
 }
 \seealso{
-Other RSSL utilities: \code{\link{LearningCurveSSL}},
-  \code{\link{SSLDataFrameToMatrices}},
-  \code{\link{add_missinglabels_mar}},
-  \code{\link{df_to_matrices}},
-  \code{\link{measure_accuracy}},
-  \code{\link{missing_labels}},
-  \code{\link{split_dataset_ssl}},
-  \code{\link{split_random}}
+Other RSSL utilities: 
+\code{\link{LearningCurveSSL}()},
+\code{\link{SSLDataFrameToMatrices}()},
+\code{\link{add_missinglabels_mar}()},
+\code{\link{df_to_matrices}()},
+\code{\link{measure_accuracy}()},
+\code{\link{missing_labels}()},
+\code{\link{split_dataset_ssl}()},
+\code{\link{split_random}()}
 }
 \concept{RSSL utilities}

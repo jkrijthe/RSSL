@@ -5,10 +5,9 @@
 \title{Implicitly Constrained Least Squares Classifier}
 \usage{
 ICLeastSquaresClassifier(X, y, X_u = NULL, lambda1 = 0, lambda2 = 0,
-  intercept = TRUE, x_center = FALSE, scale = FALSE,
-  method = "LBFGS", projection = "supervised", lambda_prior = 0,
-  trueprob = NULL, eps = 1e-09, y_scale = FALSE,
-  use_Xu_for_scaling = TRUE)
+  intercept = TRUE, x_center = FALSE, scale = FALSE, method = "LBFGS",
+  projection = "supervised", lambda_prior = 0, trueprob = NULL,
+  eps = 1e-09, y_scale = FALSE, use_Xu_for_scaling = TRUE)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -81,27 +80,32 @@ Krijthe, J.H. & Loog, M., 2015. Implicitly Constrained Semi-Supervised Least Squ
 Krijthe, J.H. & Loog, M., 2016. Projected Estimators for Robust Semi-supervised Classification. arXiv preprint arXiv:1602.07865.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
-  \code{\link{EMLinearDiscriminantClassifier}},
-  \code{\link{GRFClassifier}},
-  \code{\link{ICLinearDiscriminantClassifier}},
-  \code{\link{KernelLeastSquaresClassifier}},
-  \code{\link{LaplacianKernelLeastSquaresClassifier}},
-  \code{\link{LaplacianSVM}},
-  \code{\link{LeastSquaresClassifier}},
-  \code{\link{LinearDiscriminantClassifier}},
-  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
-  \code{\link{LogisticLossClassifier}},
-  \code{\link{LogisticRegression}},
-  \code{\link{MCLinearDiscriminantClassifier}},
-  \code{\link{MCNearestMeanClassifier}},
-  \code{\link{MCPLDA}},
-  \code{\link{MajorityClassClassifier}},
-  \code{\link{NearestMeanClassifier}},
-  \code{\link{QuadraticDiscriminantClassifier}},
-  \code{\link{S4VM}}, \code{\link{SVM}},
-  \code{\link{SelfLearning}}, \code{\link{TSVM}},
-  \code{\link{USMLeastSquaresClassifier}},
-  \code{\link{WellSVM}}, \code{\link{svmlin}}
+Other RSSL classifiers: 
+\code{\link{EMLeastSquaresClassifier}},
+\code{\link{EMLinearDiscriminantClassifier}},
+\code{\link{GRFClassifier}},
+\code{\link{ICLinearDiscriminantClassifier}},
+\code{\link{KernelLeastSquaresClassifier}},
+\code{\link{LaplacianKernelLeastSquaresClassifier}()},
+\code{\link{LaplacianSVM}},
+\code{\link{LeastSquaresClassifier}},
+\code{\link{LinearDiscriminantClassifier}},
+\code{\link{LinearSVM}},
+\code{\link{LinearTSVM}()},
+\code{\link{LogisticLossClassifier}},
+\code{\link{LogisticRegression}},
+\code{\link{MCLinearDiscriminantClassifier}},
+\code{\link{MCNearestMeanClassifier}},
+\code{\link{MCPLDA}},
+\code{\link{MajorityClassClassifier}},
+\code{\link{NearestMeanClassifier}},
+\code{\link{QuadraticDiscriminantClassifier}},
+\code{\link{S4VM}},
+\code{\link{SVM}},
+\code{\link{SelfLearning}},
+\code{\link{TSVM}},
+\code{\link{USMLeastSquaresClassifier}},
+\code{\link{WellSVM}},
+\code{\link{svmlin}()}
 }
 \concept{RSSL classifiers}

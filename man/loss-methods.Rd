@@ -28,8 +28,7 @@ loss(object, ...)
 
 \S4method{loss}{LogisticRegression}(object, newdata, y = NULL)
 
-\S4method{loss}{KernelLeastSquaresClassifier}(object, newdata, y = NULL,
-  ...)
+\S4method{loss}{KernelLeastSquaresClassifier}(object, newdata, y = NULL, ...)
 
 \S4method{loss}{LinearSVM}(object, newdata, y = NULL)
 
@@ -41,8 +40,7 @@ loss(object, ...)
 
 \S4method{loss}{SelfLearning}(object, newdata, y = NULL, ...)
 
-\S4method{loss}{USMLeastSquaresClassifier}(object, newdata, y = NULL,
-  ...)
+\S4method{loss}{USMLeastSquaresClassifier}(object, newdata, y = NULL, ...)
 
 \S4method{loss}{svmlinClassifier}(object, newdata, y = NULL)
 }

@@ -4,8 +4,8 @@
 \alias{SelfLearning}
 \title{Self-Learning approach to Semi-supervised Learning}
 \usage{
-SelfLearning(X, y, X_u = NULL, method, prob = FALSE,
-  cautious = FALSE, max_iter = 100, ...)
+SelfLearning(X, y, X_u = NULL, method, prob = FALSE, cautious = FALSE,
+  max_iter = 100, ...)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}
@@ -42,28 +42,32 @@ McLachlan, G.J., 1975. Iterative Reclassification Procedure for Constructing an 
 Yarowsky, D., 1995. Unsupervised word sense disambiguation rivaling supervised methods. Proceedings of the 33rd annual meeting on Association for Computational Linguistics, pp.189-196.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
-  \code{\link{EMLinearDiscriminantClassifier}},
-  \code{\link{GRFClassifier}},
-  \code{\link{ICLeastSquaresClassifier}},
-  \code{\link{ICLinearDiscriminantClassifier}},
-  \code{\link{KernelLeastSquaresClassifier}},
-  \code{\link{LaplacianKernelLeastSquaresClassifier}},
-  \code{\link{LaplacianSVM}},
-  \code{\link{LeastSquaresClassifier}},
-  \code{\link{LinearDiscriminantClassifier}},
-  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
-  \code{\link{LogisticLossClassifier}},
-  \code{\link{LogisticRegression}},
-  \code{\link{MCLinearDiscriminantClassifier}},
-  \code{\link{MCNearestMeanClassifier}},
-  \code{\link{MCPLDA}},
-  \code{\link{MajorityClassClassifier}},
-  \code{\link{NearestMeanClassifier}},
-  \code{\link{QuadraticDiscriminantClassifier}},
-  \code{\link{S4VM}}, \code{\link{SVM}},
-  \code{\link{TSVM}},
-  \code{\link{USMLeastSquaresClassifier}},
-  \code{\link{WellSVM}}, \code{\link{svmlin}}
+Other RSSL classifiers: 
+\code{\link{EMLeastSquaresClassifier}},
+\code{\link{EMLinearDiscriminantClassifier}},
+\code{\link{GRFClassifier}},
+\code{\link{ICLeastSquaresClassifier}},
+\code{\link{ICLinearDiscriminantClassifier}},
+\code{\link{KernelLeastSquaresClassifier}},
+\code{\link{LaplacianKernelLeastSquaresClassifier}()},
+\code{\link{LaplacianSVM}},
+\code{\link{LeastSquaresClassifier}},
+\code{\link{LinearDiscriminantClassifier}},
+\code{\link{LinearSVM}},
+\code{\link{LinearTSVM}()},
+\code{\link{LogisticLossClassifier}},
+\code{\link{LogisticRegression}},
+\code{\link{MCLinearDiscriminantClassifier}},
+\code{\link{MCNearestMeanClassifier}},
+\code{\link{MCPLDA}},
+\code{\link{MajorityClassClassifier}},
+\code{\link{NearestMeanClassifier}},
+\code{\link{QuadraticDiscriminantClassifier}},
+\code{\link{S4VM}},
+\code{\link{SVM}},
+\code{\link{TSVM}},
+\code{\link{USMLeastSquaresClassifier}},
+\code{\link{WellSVM}},
+\code{\link{svmlin}()}
 }
 \concept{RSSL classifiers}

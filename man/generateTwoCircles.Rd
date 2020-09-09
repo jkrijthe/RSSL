@@ -15,12 +15,13 @@ generateTwoCircles(n = 100, noise_var = 0.2)
 One circle circumscribes the other
 }
 \seealso{
-Other RSSL datasets: \code{\link{generate2ClassGaussian}},
-  \code{\link{generateABA}},
-  \code{\link{generateCrescentMoon}},
-  \code{\link{generateFourClusters}},
-  \code{\link{generateParallelPlanes}},
-  \code{\link{generateSlicedCookie}},
-  \code{\link{generateSpirals}}
+Other RSSL datasets: 
+\code{\link{generate2ClassGaussian}()},
+\code{\link{generateABA}()},
+\code{\link{generateCrescentMoon}()},
+\code{\link{generateFourClusters}()},
+\code{\link{generateParallelPlanes}()},
+\code{\link{generateSlicedCookie}()},
+\code{\link{generateSpirals}()}
 }
 \concept{RSSL datasets}

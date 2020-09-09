@@ -17,12 +17,14 @@ add_missinglabels_mar(df, formula = NULL, prob = 0.1)
 Original labels are saved in attribute \code{y_true}
 }
 \seealso{
-Other RSSL utilities: \code{\link{LearningCurveSSL}},
-  \code{\link{SSLDataFrameToMatrices}},
-  \code{\link{df_to_matrices}},
-  \code{\link{measure_accuracy}},
-  \code{\link{missing_labels}},
-  \code{\link{split_dataset_ssl}},
-  \code{\link{split_random}}, \code{\link{true_labels}}
+Other RSSL utilities: 
+\code{\link{LearningCurveSSL}()},
+\code{\link{SSLDataFrameToMatrices}()},
+\code{\link{df_to_matrices}()},
+\code{\link{measure_accuracy}()},
+\code{\link{missing_labels}()},
+\code{\link{split_dataset_ssl}()},
+\code{\link{split_random}()},
+\code{\link{true_labels}()}
 }
 \concept{RSSL utilities}

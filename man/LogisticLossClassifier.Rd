@@ -4,8 +4,8 @@
 \alias{LogisticLossClassifier}
 \title{Logistic Loss Classifier}
 \usage{
-LogisticLossClassifier(X, y, lambda = 0, intercept = TRUE,
-  scale = FALSE, init = NA, x_center = FALSE, ...)
+LogisticLossClassifier(X, y, lambda = 0, intercept = TRUE, scale = FALSE,
+  init = NA, x_center = FALSE, ...)
 }
 \arguments{
 \item{X}{Design matrix, intercept term is added within the function}
@@ -33,27 +33,32 @@ S4 object with the following slots
 Find the linear classifier which minimizing the logistic loss on the training set, optionally using L2 regularization.
 }
 \seealso{
-Other RSSL classifiers: \code{\link{EMLeastSquaresClassifier}},
-  \code{\link{EMLinearDiscriminantClassifier}},
-  \code{\link{GRFClassifier}},
-  \code{\link{ICLeastSquaresClassifier}},
-  \code{\link{ICLinearDiscriminantClassifier}},
-  \code{\link{KernelLeastSquaresClassifier}},
-  \code{\link{LaplacianKernelLeastSquaresClassifier}},
-  \code{\link{LaplacianSVM}},
-  \code{\link{LeastSquaresClassifier}},
-  \code{\link{LinearDiscriminantClassifier}},
-  \code{\link{LinearSVM}}, \code{\link{LinearTSVM}},
-  \code{\link{LogisticRegression}},
-  \code{\link{MCLinearDiscriminantClassifier}},
-  \code{\link{MCNearestMeanClassifier}},
-  \code{\link{MCPLDA}},
-  \code{\link{MajorityClassClassifier}},
-  \code{\link{NearestMeanClassifier}},
-  \code{\link{QuadraticDiscriminantClassifier}},
-  \code{\link{S4VM}}, \code{\link{SVM}},
-  \code{\link{SelfLearning}}, \code{\link{TSVM}},
-  \code{\link{USMLeastSquaresClassifier}},
-  \code{\link{WellSVM}}, \code{\link{svmlin}}
+Other RSSL classifiers: 
+\code{\link{EMLeastSquaresClassifier}},
+\code{\link{EMLinearDiscriminantClassifier}},
+\code{\link{GRFClassifier}},
+\code{\link{ICLeastSquaresClassifier}},
+\code{\link{ICLinearDiscriminantClassifier}},
+\code{\link{KernelLeastSquaresClassifier}},
+\code{\link{LaplacianKernelLeastSquaresClassifier}()},
+\code{\link{LaplacianSVM}},
+\code{\link{LeastSquaresClassifier}},
+\code{\link{LinearDiscriminantClassifier}},
+\code{\link{LinearSVM}},
+\code{\link{LinearTSVM}()},
+\code{\link{LogisticRegression}},
+\code{\link{MCLinearDiscriminantClassifier}},
+\code{\link{MCNearestMeanClassifier}},
+\code{\link{MCPLDA}},
+\code{\link{MajorityClassClassifier}},
+\code{\link{NearestMeanClassifier}},
+\code{\link{QuadraticDiscriminantClassifier}},
+\code{\link{S4VM}},
+\code{\link{SVM}},
+\code{\link{SelfLearning}},
+\code{\link{TSVM}},
+\code{\link{USMLeastSquaresClassifier}},
+\code{\link{WellSVM}},
+\code{\link{svmlin}()}
 }
 \concept{RSSL classifiers}

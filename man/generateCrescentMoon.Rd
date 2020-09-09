@@ -21,12 +21,13 @@ data<-generateCrescentMoon(150,2,1)
 plot(data$X1,data$X2,col=data$Class,asp=1)
 }
 \seealso{
-Other RSSL datasets: \code{\link{generate2ClassGaussian}},
-  \code{\link{generateABA}},
-  \code{\link{generateFourClusters}},
-  \code{\link{generateParallelPlanes}},
-  \code{\link{generateSlicedCookie}},
-  \code{\link{generateSpirals}},
-  \code{\link{generateTwoCircles}}
+Other RSSL datasets: 
+\code{\link{generate2ClassGaussian}()},
+\code{\link{generateABA}()},
+\code{\link{generateFourClusters}()},
+\code{\link{generateParallelPlanes}()},
+\code{\link{generateSlicedCookie}()},
+\code{\link{generateSpirals}()},
+\code{\link{generateTwoCircles}()}
 }
 \concept{RSSL datasets}

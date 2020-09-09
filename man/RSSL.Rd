@@ -3,13 +3,12 @@
 \docType{package}
 \name{RSSL}
 \alias{RSSL}
-\alias{RSSL-package}
 \title{R Semi-Supervised Learning Package}
 \description{
 RSSL provides implementations for semi-supervised classifiers, as well as some functions to aid in the evaluation of these procedures.
 }
 \details{
-Most functions take a \code{formula} and \code{data.frame} or a \code{matrix} and \code{factor} as input and output a trained \code{Classifier object}, whose class is the class of a specific type of classifier model. \code{predict} can then be used to generate predictions for new objects, \code{decisionvalues} returns the decision values for new objects and \code{loss} outputs the loss used by the classifier evaluated on a set of new objects.
+Most functions take a \code{formula} and \code{data.frame} or a \code{matrix} and \code{factor} as input and output a trained \code{Classifier object}, whose class is the class of a specific type of classifier model. \code{predict} can then be used to generate predictions for new objects, \code{decisionvalues} returns the decision values for new objects and \code{loss} outputs the loss used by the classifier evaluated on a set of new objects. 
 
 For a complete list of functions, use library(help = "RSSL").
 }

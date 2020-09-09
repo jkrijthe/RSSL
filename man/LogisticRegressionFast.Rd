@@ -4,8 +4,8 @@
 \alias{LogisticRegressionFast}
 \title{Logistic Regression implementation that uses R's glm}
 \usage{
-LogisticRegressionFast(X, y, lambda = 0, intercept = TRUE,
-  scale = FALSE, init = NA, x_center = FALSE)
+LogisticRegressionFast(X, y, lambda = 0, intercept = TRUE, scale = FALSE,
+  init = NA, x_center = FALSE)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}

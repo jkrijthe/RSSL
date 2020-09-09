@@ -4,8 +4,7 @@
 \alias{generate2ClassGaussian}
 \title{Generate data from 2 Gaussian distributed classes}
 \usage{
-generate2ClassGaussian(n = 10000, d = 100, var = 1,
-  expected = TRUE)
+generate2ClassGaussian(n = 10000, d = 100, var = 1, expected = TRUE)
 }
 \arguments{
 \item{n}{integer; Number of examples to generate}
@@ -24,12 +23,13 @@ data <- generate2ClassGaussian(n=1000,d=2,expected=FALSE)
 plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 \seealso{
-Other RSSL datasets: \code{\link{generateABA}},
-  \code{\link{generateCrescentMoon}},
-  \code{\link{generateFourClusters}},
-  \code{\link{generateParallelPlanes}},
-  \code{\link{generateSlicedCookie}},
-  \code{\link{generateSpirals}},
-  \code{\link{generateTwoCircles}}
+Other RSSL datasets: 
+\code{\link{generateABA}()},
+\code{\link{generateCrescentMoon}()},
+\code{\link{generateFourClusters}()},
+\code{\link{generateParallelPlanes}()},
+\code{\link{generateSlicedCookie}()},
+\code{\link{generateSpirals}()},
+\code{\link{generateTwoCircles}()}
 }
 \concept{RSSL datasets}

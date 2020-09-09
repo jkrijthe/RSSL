@@ -5,8 +5,8 @@
 \title{Plot RSSL classifier boundaries}
 \usage{
 stat_classifier(mapping = NULL, data = NULL, show.legend = NA,
-  inherit.aes = TRUE, breaks = 0, precision = 50,
-  brute_force = FALSE, classifiers = classifiers, ...)
+  inherit.aes = TRUE, breaks = 0, precision = 50, brute_force = FALSE,
+  classifiers = classifiers, ...)
 }
 \arguments{
 \item{mapping}{aes; aesthetic mapping}

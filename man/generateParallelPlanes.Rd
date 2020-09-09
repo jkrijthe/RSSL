@@ -24,12 +24,13 @@ ggplot(df, aes(x=x,y=y,color=Class,shape=Class)) +
 
 }
 \seealso{
-Other RSSL datasets: \code{\link{generate2ClassGaussian}},
-  \code{\link{generateABA}},
-  \code{\link{generateCrescentMoon}},
-  \code{\link{generateFourClusters}},
-  \code{\link{generateSlicedCookie}},
-  \code{\link{generateSpirals}},
-  \code{\link{generateTwoCircles}}
+Other RSSL datasets: 
+\code{\link{generate2ClassGaussian}()},
+\code{\link{generateABA}()},
+\code{\link{generateCrescentMoon}()},
+\code{\link{generateFourClusters}()},
+\code{\link{generateSlicedCookie}()},
+\code{\link{generateSpirals}()},
+\code{\link{generateTwoCircles}()}
 }
 \concept{RSSL datasets}

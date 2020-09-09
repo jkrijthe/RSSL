@@ -22,12 +22,14 @@ list object with the following objects:
 Given a formula object and a data.frame, extract the design matrix X for the labeled observations, X_u for the unlabeled observations and y for the labels of the labeled observations. Note: always removes the intercept
 }
 \seealso{
-Other RSSL utilities: \code{\link{LearningCurveSSL}},
-  \code{\link{add_missinglabels_mar}},
-  \code{\link{df_to_matrices}},
-  \code{\link{measure_accuracy}},
-  \code{\link{missing_labels}},
-  \code{\link{split_dataset_ssl}},
-  \code{\link{split_random}}, \code{\link{true_labels}}
+Other RSSL utilities: 
+\code{\link{LearningCurveSSL}()},
+\code{\link{add_missinglabels_mar}()},
+\code{\link{df_to_matrices}()},
+\code{\link{measure_accuracy}()},
+\code{\link{missing_labels}()},
+\code{\link{split_dataset_ssl}()},
+\code{\link{split_random}()},
+\code{\link{true_labels}()}
 }
 \concept{RSSL utilities}

@@ -15,12 +15,14 @@ df_to_matrices(df, formula = NULL)
 Convert data.frame with missing labels to matrices
 }
 \seealso{
-Other RSSL utilities: \code{\link{LearningCurveSSL}},
-  \code{\link{SSLDataFrameToMatrices}},
-  \code{\link{add_missinglabels_mar}},
-  \code{\link{measure_accuracy}},
-  \code{\link{missing_labels}},
-  \code{\link{split_dataset_ssl}},
-  \code{\link{split_random}}, \code{\link{true_labels}}
+Other RSSL utilities: 
+\code{\link{LearningCurveSSL}()},
+\code{\link{SSLDataFrameToMatrices}()},
+\code{\link{add_missinglabels_mar}()},
+\code{\link{measure_accuracy}()},
+\code{\link{missing_labels}()},
+\code{\link{split_dataset_ssl}()},
+\code{\link{split_random}()},
+\code{\link{true_labels}()}
 }
 \concept{RSSL utilities}

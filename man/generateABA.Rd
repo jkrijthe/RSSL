@@ -21,12 +21,13 @@ data <- generateABA(n=1000,d=2,var=1)
 plot(data[,1],data[,2],col=data$Class,asp=1)
 }
 \seealso{
-Other RSSL datasets: \code{\link{generate2ClassGaussian}},
-  \code{\link{generateCrescentMoon}},
-  \code{\link{generateFourClusters}},
-  \code{\link{generateParallelPlanes}},
-  \code{\link{generateSlicedCookie}},
-  \code{\link{generateSpirals}},
-  \code{\link{generateTwoCircles}}
+Other RSSL datasets: 
+\code{\link{generate2ClassGaussian}()},
+\code{\link{generateCrescentMoon}()},
+\code{\link{generateFourClusters}()},
+\code{\link{generateParallelPlanes}()},
+\code{\link{generateSlicedCookie}()},
+\code{\link{generateSpirals}()},
+\code{\link{generateTwoCircles}()}
 }
 \concept{RSSL datasets}

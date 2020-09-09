@@ -4,7 +4,6 @@
 %   R/KernelLeastSquaresClassifier.R, R/LinearSVM.R, R/LogisticLossClassifier.R,
 %   R/MajorityClassClassifier.R, R/SVM.R, R/SelfLearning.R,
 %   R/USMLeastSquaresClassifier.R, R/WellSVM.R, R/svmlin.R
-\docType{methods}
 \name{rssl-predict}
 \alias{rssl-predict}
 \alias{predict,LeastSquaresClassifier-method}

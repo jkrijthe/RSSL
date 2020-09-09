@@ -5,9 +5,9 @@
 \title{Kernelized Implicitly Constrained Least Squares Classification}
 \usage{
 KernelICLeastSquaresClassifier(X, y, X_u, lambda = 0,
-  kernel = vanilladot(), x_center = TRUE, scale = TRUE,
-  y_scale = TRUE, lambda_prior = 0, classprior = 0,
-  method = "LBFGS", projection = "semisupervised")
+  kernel = vanilladot(), x_center = TRUE, scale = TRUE, y_scale = TRUE,
+  lambda_prior = 0, classprior = 0, method = "LBFGS",
+  projection = "semisupervised")
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}

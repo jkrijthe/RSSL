@@ -19,12 +19,14 @@ split_dataset_ssl(X, y, frac_train = 0.8, frac_ssl = 0.8)
 Create Train, Test and Unlabeled Set
 }
 \seealso{
-Other RSSL utilities: \code{\link{LearningCurveSSL}},
-  \code{\link{SSLDataFrameToMatrices}},
-  \code{\link{add_missinglabels_mar}},
-  \code{\link{df_to_matrices}},
-  \code{\link{measure_accuracy}},
-  \code{\link{missing_labels}}, \code{\link{split_random}},
-  \code{\link{true_labels}}
+Other RSSL utilities: 
+\code{\link{LearningCurveSSL}()},
+\code{\link{SSLDataFrameToMatrices}()},
+\code{\link{add_missinglabels_mar}()},
+\code{\link{df_to_matrices}()},
+\code{\link{measure_accuracy}()},
+\code{\link{missing_labels}()},
+\code{\link{split_random}()},
+\code{\link{true_labels}()}
 }
 \concept{RSSL utilities}
