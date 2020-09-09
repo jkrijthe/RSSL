@@ -59,11 +59,10 @@ arma::mat rowwise_addition(arma::mat A, arma::rowvec x)
 }
 
 // [[Rcpp::export]]
-arma::mat factor_to_dummy_cpp(Rcpp::IntegerVector y,int c) {
-  // Rcpp::IntegerVector xc(ci);
+arma::mat factor_to_dummy_cpp(Rcpp::IntegerVector y, int c) {
+
   Rcpp::IntegerVector xy(y);
   
-  //int c = xc[0];
   int n = xy.length();
   arma::mat Y = arma::zeros<arma::mat>(n,c);
   

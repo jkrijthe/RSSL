@@ -21,7 +21,7 @@ To cite the package, use either of these two references:
     Publishing.
     <a href="https://doi.org/10.1007/978-3-319-56414-2_8" class="uri">https://doi.org/10.1007/978-3-319-56414-2_8</a>.
     arxiv:
-    <a href="http://arxiv.org/abs/1612.07993" class="uri">http://arxiv.org/abs/1612.07993</a>
+    <a href="https://arxiv.org/abs/1612.07993" class="uri">https://arxiv.org/abs/1612.07993</a>
 -   Krijthe, J.H. & Loog, M. (2015). Implicitly Constrained
     Semi-Supervised Least Squares Classification. In E. Fromont, T. de
     Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances
