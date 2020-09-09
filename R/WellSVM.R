@@ -479,7 +479,7 @@ WellSVM_SSL <- function(K0,y,opt,yinit=NULL) {
     # if the objective decrease is less than a threshold, stop
     if ( obj < 1.001*bestobj ) {
       flag <- 0 
-      return;
+      break
     }
 
     if (nk == 1) {   # for the first iteration
