@@ -31,8 +31,8 @@ Description: A collection of implementations of semi-supervised classifiers
     the Transductive SVM, Manifold regularization, Maximum Contrastive Pessimistic
     Likelihood estimation, S4VM and WellSVM.
 License: GPL (>= 2)
-URL: https://www.github.com/jkrijthe/RSSL
-BugReports: https://www.github.com/jkrijthe/RSSL
+URL: https://github.com/jkrijthe/RSSL
+BugReports: https://github.com/jkrijthe/RSSL
 Roxygen: list(old_usage = TRUE)
 Collate:
     'Generics.R'
