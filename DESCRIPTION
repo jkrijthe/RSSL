@@ -1,5 +1,5 @@
 Package: RSSL
-Version: 0.9.2
+Version: 0.9.3
 Title: Implementations of Semi-Supervised Learning Approaches for Classification
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
