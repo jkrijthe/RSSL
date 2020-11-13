@@ -157,7 +157,6 @@ setMethod("posterior", signature(object="LogisticRegression"), function(object,n
   expscore <- exp(cbind(rep(0,nrow(X)), X %*% w))
   posteriors <- expscore/rowSums(expscore)
   
-  posteriors <- exp(posteriors)
   colnames(posteriors) <- object@classnames
   return(posteriors)
 })
