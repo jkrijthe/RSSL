@@ -1,5 +1,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
+[![CRAN
+status](https://www.r-pkg.org/badges/version/RSSL)](https://CRAN.R-project.org/package=RSSL)
 [![Travis-CI Build
 Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL)
 [![R build
@@ -7,8 +9,8 @@ status](https://github.com/jkrijthe/RSSL/workflows/R-CMD-check/badge.svg)](https
 [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master)
 [![CRAN mirror
 downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.r-project.org/package=RSSL)
-<!-- badges: end -->
 
+<!-- badges: end -->
 R Semi-Supervised Learning package
 ==================================
 
