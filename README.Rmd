@@ -13,9 +13,12 @@ knitr::opts_chunk$set(
   fig.path = "README-"
 )
 ```
+<!-- badges: start -->
 [![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL)
+[![R build status](https://github.com/jkrijthe/RSSL/workflows/R-CMD-check/badge.svg)](https://github.com/jkrijthe/RSSL/actions)
 [![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master)
 [![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.r-project.org/package=RSSL)
+<!-- badges: end -->
 
 # R Semi-Supervised Learning package
 This R package provides implementations of several semi-supervised learning methods, in particular, our own work involving constraint based semi-supervised learning. 
