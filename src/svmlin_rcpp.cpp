@@ -98,11 +98,11 @@ List svmlin_rcpp(S4 X,
 
   // TODO: load correct costs for unlabeled data.
   if (Options->verbose) {
-    Rcout << "  Input Data Matrix Statistics:" << endl;
-    Rcout << "      Examples: " << Data->m << endl;
-    Rcout << "      Features: " << Data->n << " (including bias feature)" << endl;
-    Rcout << "      Non-zeros:  " << Data->nz << " (including bias features)" << endl;
-    Rcout << "      Average sparsity: " << Data->nz*1.0/Data->m << " non-zero features per example." << endl;
+    Rcout << "  Input Data Matrix Statistics:" << std::endl;
+    Rcout << "      Examples: " << Data->m << std::endl;
+    Rcout << "      Features: " << Data->n << " (including bias feature)" << std::endl;
+    Rcout << "      Non-zeros:  " << Data->nz << " (including bias features)" << std::endl;
+    Rcout << "      Average sparsity: " << Data->nz*1.0/Data->m << " non-zero features per example." << std::endl;
   }
     //   for (int i = 0; i<((DoubleVector)X.slot("x")).length();i++) {
 //     Rprintf("val: %f \n",Data->val[i]);

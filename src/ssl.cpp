@@ -31,8 +31,6 @@
 #define LOG2(x) 1.4426950408889634*log(x)
 // for compatibility issues, not using log2
 
-using namespace std;
-
 void ssl_train(struct data *Data,
 	       struct options *Options,
 	       struct vector_double *Weights,
@@ -48,29 +46,29 @@ void ssl_train(struct data *Data,
   switch(Options->algo)
     {
     case -1:
-      if (Options->verbose) { Rcpp::Rcout << "Regularized Least Squares Regression (CGLS)\n" << endl; }
+      if (Options->verbose) { Rcpp::Rcout << "Regularized Least Squares Regression (CGLS)\n" << std::endl; }
       optimality=CGLS(Data,Options,Subset,Weights,Outputs);
       break;
     case RLS:
-      if (Options->verbose) { Rcpp::Rcout << "Regularized Least Squares Classification (CGLS)\n" << endl; }
+      if (Options->verbose) { Rcpp::Rcout << "Regularized Least Squares Classification (CGLS)\n" << std::endl; }
       optimality=CGLS(Data,Options,Subset,Weights,Outputs);
       break;
     case SVM:
-      if (Options->verbose) { Rcpp::Rcout << "Modified Finite Newton L2-SVM (L2-SVM-MFN)\n" << endl; }
+      if (Options->verbose) { Rcpp::Rcout << "Modified Finite Newton L2-SVM (L2-SVM-MFN)\n" << std::endl; }
       optimality=L2_SVM_MFN(Data,Options,Weights,Outputs,0);
       break;
     case TSVM:
-      if (Options->verbose) { Rcpp::Rcout << "Transductive L2-SVM (TSVM)\n" << endl; }
+      if (Options->verbose) { Rcpp::Rcout << "Transductive L2-SVM (TSVM)\n" << std::endl; }
       optimality=TSVM_MFN(Data,Options,Weights,Outputs);
       break;
     case DA_SVM:
-      if (Options->verbose) { Rcpp::Rcout << "Deterministic Annealing Semi-supervised L2-SVM (DAS3VM)\n" << endl; }
+      if (Options->verbose) { Rcpp::Rcout << "Deterministic Annealing Semi-supervised L2-SVM (DAS3VM)\n" << std::endl; }
       optimality=DA_S3VM(Data,Options,Weights,Outputs);
       break;
     default:
       ;
     }
-  if (Options->verbose) { Rcpp::Rcout << "Optimality:" << optimality << endl; }
+  if (Options->verbose) { Rcpp::Rcout << "Optimality:" << optimality << std::endl; }
   return;
 }
 int CGLS(const struct data *Data,
@@ -80,7 +78,7 @@ int CGLS(const struct data *Data,
 	 struct vector_double *Outputs)
 {
   if(VERBOSE_CGLS)
-    if (Options->verbose) { Rcpp::Rcout << "CGLS starting..." << endl; }
+    if (Options->verbose) { Rcpp::Rcout << "CGLS starting..." << std::endl; }
   /* Disassemble the structures */
   timer tictoc;
   tictoc.restart();
@@ -192,9 +190,9 @@ int CGLS(const struct data *Data,
 	}
     }
   if(VERBOSE_CGLS)
-    if (Options->verbose) { Rcpp::Rcout << "...Done." << endl; }
+    if (Options->verbose) { Rcpp::Rcout << "...Done." << std::endl; }
   tictoc.stop();
-    if (Options->verbose) { Rcpp::Rcout << "CGLS converged in " << cgiter << " iteration(s) and " << tictoc.time() << " seconds." << endl; }
+    if (Options->verbose) { Rcpp::Rcout << "CGLS converged in " << cgiter << " iteration(s) and " << tictoc.time() << " seconds." << std::endl; }
   delete[] z;
   delete[] q;
   delete[] r;
@@ -271,7 +269,7 @@ int L2_SVM_MFN(const struct data *Data,
   while(iter<MFNITERMAX)
     {
       iter++;
-    if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN Iteration# " << iter << " (" << active << " active examples, " << " objective_value = " << F << ")" << endl; }
+    if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN Iteration# " << iter << " (" << active << " active examples, " << " objective_value = " << F << ")" << std::endl; }
       for(int i=n; i-- ;)
 	w_bar[i]=w[i];
       for(int i=m; i-- ;)
@@ -303,7 +301,7 @@ int L2_SVM_MFN(const struct data *Data,
 	    {
 	      epsilon=EPSILON;
 	      Options->epsilon=EPSILON;
-	      if (Options->verbose) { Rcpp::Rcout << "  epsilon = " << BIG_EPSILON << " case converged (speedup heuristic 2). Continuing with epsilon=" <<  EPSILON << endl; }
+	      if (Options->verbose) { Rcpp::Rcout << "  epsilon = " << BIG_EPSILON << " case converged (speedup heuristic 2). Continuing with epsilon=" <<  EPSILON << std::endl; }
 	      continue;
 	    }
 	  else
@@ -319,13 +317,13 @@ int L2_SVM_MFN(const struct data *Data,
 	       delete[] Weights_bar;
 	       delete[] Outputs_bar;
 	       tictoc.stop();
-	       if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged (optimality) in " << iter << " iteration(s) and "<< tictoc.time() << " seconds. \n" << endl; }
+	       if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged (optimality) in " << iter << " iteration(s) and "<< tictoc.time() << " seconds. \n" << std::endl; }
 	       return 1;
 	    }
 	}
       if (Options->verbose) { Rcpp::Rcout << " " ; }
       delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m);
-      if (Options->verbose) { Rcpp::Rcout << "LINE_SEARCH delta = " << delta << endl; }
+      if (Options->verbose) { Rcpp::Rcout << "LINE_SEARCH delta = " << delta << std::endl; }
       F_old=F;
       F=0.0;
       for(int i=n; i-- ;){
@@ -354,7 +352,7 @@ int L2_SVM_MFN(const struct data *Data,
       ActiveSubset->d=active;
       if(fabs(F-F_old)<RELATIVE_STOP_EPS*fabs(F_old))
 	{
-        if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged (rel. criterion) in " << iter << " iterations and "<< tictoc.time() << " seconds. \n" << endl; }
+        if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged (rel. criterion) in " << iter << " iterations and "<< tictoc.time() << " seconds. \n" << std::endl; }
 	  return 2;
 	}
     }
@@ -365,7 +363,7 @@ int L2_SVM_MFN(const struct data *Data,
   delete[] Weights_bar;
   delete[] Outputs_bar;
   tictoc.stop();
-  if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged (max iter exceeded) in " << iter << " iterations and "<< tictoc.time() << " seconds. \n" << endl; }
+  if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged (max iter exceeded) in " << iter << " iterations and "<< tictoc.time() << " seconds. \n" << std::endl; }
   return 0;
 }
 
@@ -431,7 +429,7 @@ double line_search(double *w,
 	     }
 	 }
      }
-   sort(deltas,deltas+p);
+   std::sort(deltas,deltas+p);
    double delta_prime=0.0;
    for(int i=0;i<p;i++)
      {
@@ -457,7 +455,7 @@ int TSVM_MFN(const struct data *Data,
   struct data *Data_Labeled = new data[1];
   struct vector_double *Outputs_Labeled = new vector_double[1];
   initialize(Outputs_Labeled,Data->l,0.0);
-  if (Options->verbose) { Rcpp::Rcout << "Initializing weights, unknown labels" << endl; }
+  if (Options->verbose) { Rcpp::Rcout << "Initializing weights, unknown labels" << std::endl; }
   GetLabeledData(Data_Labeled,Data); /* gets labeled data and sets C=1/l */
   L2_SVM_MFN(Data_Labeled, Options, Weights,Outputs_Labeled,0);
   //Clear(Data_Labeled);
@@ -488,7 +486,7 @@ int TSVM_MFN(const struct data *Data,
 	  p++;
 	}
     }
-  nth_element(ou,ou+int((1-Options->R)*Data->u-1),ou+Data->u);
+  std::nth_element(ou,ou+int((1-Options->R)*Data->u-1),ou+Data->u);
   double thresh=*(ou+int((1-Options->R)*Data->u)-1);
   delete [] ou;
   for(int i=0;i<Data->u;i++)
@@ -513,10 +511,10 @@ int TSVM_MFN(const struct data *Data,
 	s=switch_labels(Data->Y,Outputs->vec,JU,Data->u,Options->S);
 	if(s==0) break;
 	iter2++;
-	if (Options->verbose) { Rcpp::Rcout << "****** lambda_0 = " << lambda_0 << " iteration = " << iter2 << " ************************************"  << endl; }
-	if (Options->verbose) { Rcpp::Rcout << "Optimizing unknown labels. switched " << s << " labels." << endl; }
+	if (Options->verbose) { Rcpp::Rcout << "****** lambda_0 = " << lambda_0 << " iteration = " << iter2 << " ************************************"  << std::endl; }
+	if (Options->verbose) { Rcpp::Rcout << "Optimizing unknown labels. switched " << s << " labels." << std::endl; }
 	num_switches+=s;
-	if (Options->verbose) { Rcpp::Rcout << "Optimizing weights" << endl; }
+	if (Options->verbose) { Rcpp::Rcout << "Optimizing weights" << std::endl; }
 	L2_SVM_MFN(Data,Options,Weights,Outputs,1);
       }
       if(last_round==1) break;
@@ -524,18 +522,18 @@ int TSVM_MFN(const struct data *Data,
       if(lambda_0 >= Options->lambda_u) {lambda_0 = Options->lambda_u; last_round=1;}
       for(int i=0;i<Data->u;i++)
 	Data->C[JU[i]]=lambda_0*1.0/Data->u;
-      if (Options->verbose) { Rcpp::Rcout << endl << "****** lambda0 increased to " << lambda_0*100/Options->lambda_u << "%" << " of lambda_u = " << Options->lambda_u << " ************************" << endl; }
-      if (Options->verbose) { Rcpp::Rcout << "Optimizing weights" << endl; }
+      if (Options->verbose) { Rcpp::Rcout << std::endl << "****** lambda0 increased to " << lambda_0*100/Options->lambda_u << "%" << " of lambda_u = " << Options->lambda_u << " ************************" << std::endl; }
+      if (Options->verbose) { Rcpp::Rcout << "Optimizing weights" << std::endl; }
       L2_SVM_MFN(Data,Options,Weights,Outputs,1);
     }
-  if (Options->verbose) { Rcpp::Rcout <<  "Total Number of Switches = " << num_switches << endl; }
+  if (Options->verbose) { Rcpp::Rcout <<  "Total Number of Switches = " << num_switches << std::endl; }
   /* reset labels */
   for(int i=0;i<Data->u;i++) Data->Y[JU[i]] = 0.0;
   double F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
-  if (Options->verbose) { Rcpp::Rcout << "Objective Value = " << F << endl; }
+  if (Options->verbose) { Rcpp::Rcout << "Objective Value = " << F << std::endl; }
   delete [] JU;
   tictoc.stop();
-  if (Options->verbose) { Rcpp::Rcout << "Transductive L2_SVM_MFN took " << tictoc.time() << " seconds." << endl; }
+  if (Options->verbose) { Rcpp::Rcout << "Transductive L2_SVM_MFN took " << tictoc.time() << " seconds." << std::endl; }
   return num_switches;
 }
 int switch_labels(double* Y, double* o, int* JU, int u, int S)
@@ -567,8 +565,8 @@ int switch_labels(double* Y, double* o, int* JU, int u, int S)
 	  negative[n].s=0;
 	  n++;};
     }
-  sort(positive,positive+npos);
-  sort(negative,negative+nneg);
+  std::sort(positive,positive+npos);
+  std::sort(negative,negative+nneg);
   int s=-1;
   //  cout << "Switching Labels: ";
   while(1)
@@ -580,7 +578,7 @@ int switch_labels(double* Y, double* o, int* JU, int u, int S)
       Y[negative[s].index]= 1.0;
       //  cout << positive[s].index << " " << negative[s].index << "...";
     }
-  // cout << "...switched " << s  << " labels." << endl;
+  // cout << "...switched " << s  << " labels." << std::endl;
   delete [] positive;
   delete [] negative;
   return s;
@@ -605,7 +603,7 @@ int DA_S3VM(struct data *Data,
   double *o = Outputs->vec;
   double kl_divergence = 1.0;
   /*initialize */
-  if (Options->verbose) { Rcpp::Rcout << "Initializing weights, p" << endl; }
+  if (Options->verbose) { Rcpp::Rcout << "Initializing weights, p" << std::endl; }
   for(int i=0;i<Data->u; i++)
     p[i] = Options->R;
   /* record which examples are unlabeled */
@@ -640,7 +638,7 @@ int DA_S3VM(struct data *Data,
 	  if (Options->verbose) { Rcpp::Rcout << "Optimizing p. " ; }
 	  optimize_p(g,Data->u,T,Options->R,p);
 	  kl_divergence=KL(p,q,Data->u);
-	  if (Options->verbose) { Rcpp::Rcout << "Optimizing weights" << endl; }
+	  if (Options->verbose) { Rcpp::Rcout << "Optimizing weights" << std::endl; }
 	  optimize_w(Data,p,Options,Weights,Outputs,1);
 	  F = transductive_cost(norm_square(Weights),Data->Y,Outputs->vec,Outputs->d,Options->lambda,Options->lambda_u);
 	  if(F < F_min)
@@ -651,10 +649,10 @@ int DA_S3VM(struct data *Data,
 	      for(int i=0;i<Outputs->d;i++)
 		o_min[i]=o[i];
 	    }
-	  if (Options->verbose) { Rcpp::Rcout << "***** outer_iter = " << iter1 << "  T = " << T << "  inner_iter = " << iter2 << "  kl = "<< kl_divergence <<"  cost = "<<F<<" *****"<<endl; }
+	  if (Options->verbose) { Rcpp::Rcout << "***** outer_iter = " << iter1 << "  T = " << T << "  inner_iter = " << iter2 << "  kl = "<< kl_divergence <<"  cost = "<<F<<" *****"<<std::endl; }
 	}
       H = entropy(p,Data->u);
-      if (Options->verbose) { Rcpp::Rcout << "***** Finished outer_iter = " << iter1 << "T = " << T << " Entropy = " << H <<endl; }
+      if (Options->verbose) { Rcpp::Rcout << "***** Finished outer_iter = " << iter1 << "T = " << T << " Entropy = " << H <<std::endl; }
       T = T/DA_ANNEALING_RATE;
     }
   for(int i=0;i<Weights->d;i++)
@@ -669,8 +667,8 @@ int DA_S3VM(struct data *Data,
   delete [] w_min;
   delete [] o_min;
   tictoc.stop();
-  if (Options->verbose) { Rcpp::Rcout << endl << "(min) Objective Value = " << F_min << endl; }
-  if (Options->verbose) { Rcpp::Rcout << "DA-SVM took " << tictoc.time() << " seconds." << endl; }
+  if (Options->verbose) { Rcpp::Rcout << std::endl << "(min) Objective Value = " << F_min << std::endl; }
+  if (Options->verbose) { Rcpp::Rcout << "DA-SVM took " << tictoc.time() << " seconds." << std::endl; }
   return 1;
 }
 int optimize_w(const struct data *Data,
@@ -795,7 +793,7 @@ int optimize_w(const struct data *Data,
   while(iter<MFNITERMAX)
     {
       iter++;
-      if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN Iteration# " << iter << " (" << active << " active examples, " << " objective_value = " << F << ")" << endl; }
+      if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN Iteration# " << iter << " (" << active << " active examples, " << " objective_value = " << F << ")" << std::endl; }
       for(int i=n; i-- ;)
 	w_bar[i]=w[i];
 
@@ -845,7 +843,7 @@ int optimize_w(const struct data *Data,
 	    {
 	      epsilon=EPSILON;
 	      Options->epsilon=EPSILON;
-	      if (Options->verbose) { Rcpp::Rcout << "  epsilon = " << BIG_EPSILON << " case converged (speedup heuristic 2). Continuing with epsilon=" <<  EPSILON << endl; }
+	      if (Options->verbose) { Rcpp::Rcout << "  epsilon = " << BIG_EPSILON << " case converged (speedup heuristic 2). Continuing with epsilon=" <<  EPSILON << std::endl; }
 	      continue;
 	    }
 	  else
@@ -870,13 +868,13 @@ int optimize_w(const struct data *Data,
 	       delete[] C;
 	       delete[] labeled_indices;
 	       tictoc.stop();
-	       if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged in " << iter << " iteration(s) and "<< tictoc.time() << " seconds. \n" << endl; }
+	       if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged in " << iter << " iteration(s) and "<< tictoc.time() << " seconds. \n" << std::endl; }
 	       return 1;
 	    }
 	}
 
       delta=line_search(w,w_bar,lambda,o,o_bar,Y,C,n,m+u);
-      if (Options->verbose) { Rcpp::Rcout << " LINE_SEARCH delta = " << delta << endl; }
+      if (Options->verbose) { Rcpp::Rcout << " LINE_SEARCH delta = " << delta << std::endl; }
       F_old=F;
       F=0.0;
       for(int i=0;i<n;i++) {w[i]+=delta*(w_bar[i]-w[i]);  F+=w[i]*w[i];}
@@ -956,7 +954,7 @@ int optimize_w(const struct data *Data,
   delete[] Y;
   delete[] C;
   tictoc.stop();
-  if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged in " << iter << " iterations and "<< tictoc.time() << " seconds. \n" << endl;}
+  if (Options->verbose) { Rcpp::Rcout << "L2_SVM_MFN converged in " << iter << " iterations and "<< tictoc.time() << " seconds. \n" << std::endl;}
   return 0;
 }
 void optimize_p(const double* g, int u, double T, double r, double* p)
@@ -1026,7 +1024,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
 	break;
     }
   if(fabs(Bnu)>epsilon)
-    Rcpp::Rcout << "Warning (Root): root not found to required precision" << endl;
+    Rcpp::Rcout << "Warning (Root): root not found to required precision" << std::endl;
 
   for(int i=0;i<u;i++)
     {
@@ -1034,7 +1032,7 @@ void optimize_p(const double* g, int u, double T, double r, double* p)
       if(std::isinf(s)) p[i]=0.0;
       else p[i]=1.0/(1.0+s);
     }
-  //Rcpp::Rcout << " root (nu) = " << nu << " B(nu) = " << Bnu << endl;
+  //Rcpp::Rcout << " root (nu) = " << nu << " B(nu) = " << Bnu << std::endl;
 }
 double transductive_cost(double normWeights,double *Y, double *Outputs, int m, double lambda,double lambda_u)
 {
@@ -1134,7 +1132,7 @@ void ssl_predict(char *inputs_file_name, const struct vector_double *Weights, st
 	  ungetc(c,fpin);
 	  int ret;
 	  ret = fscanf(fpin,"%d:%lf",&colind,&val);
-	  if (ret==-1) { Rcpp::Rcout << "EOF" << endl; }
+	  if (ret==-1) { Rcpp::Rcout << "EOF" << std::endl; }
 	  colind--;
 	  if(colind<n)
 	    t+=val*w[colind];
@@ -1150,7 +1148,7 @@ void ssl_evaluate(struct vector_double *Outputs, struct vector_double *TrueLabel
   double accuracy=0.0;
   for(int i=0;i<Outputs->d;i++)
     accuracy+=(Outputs->vec[i]*TrueLabels->vec[i])>0;
-  Rcpp::Rcout << "Accuracy = " << accuracy*100.0/Outputs->d << " %" << endl;
+  Rcpp::Rcout << "Accuracy = " << accuracy*100.0/Outputs->d << " %" << std::endl;
 }
 
 /********************** UTILITIES ********************/

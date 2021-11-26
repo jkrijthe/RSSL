@@ -22,8 +22,6 @@
 #include <vector>
 #include <ctime>
 
-using namespace std;
-
 /* OPTIMIZATION CONSTANTS */
 #define CGITERMAX 10000 /* maximum number of CGLS iterations */
 #define SMALL_CGITERMAX 10 /* for heuristic 1 in reference [2] */
@@ -92,7 +90,7 @@ class timer { /* to output run time */
 protected:
   double start, finish;
 public:
-  vector<double> times;
+  std::vector<double> times;
   void record() {
     times.push_back(time());
   }
