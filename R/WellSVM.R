@@ -5,7 +5,7 @@ setClass("WellSVM",
          prototype(name="WellSVM"), 
          contains="Classifier")
 
-#' WellSVM for Semi-superivsed Learning
+#' WellSVM for Semi-supervised Learning
 #' 
 #' WellSVM is a minimax relaxation of the mixed integer programming problem of finding the optimal labels for the unlabeled data in the SVM objective function. This implementation is a translation of the Matlab implementation of Li (2013) into R.
 #' 

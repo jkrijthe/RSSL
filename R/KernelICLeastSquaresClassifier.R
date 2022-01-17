@@ -11,7 +11,7 @@ setClass("KernelICLeastSquaresClassifier",
 #' @param lambda_prior numeric; regularization parameter for the posterior deviation from the prior
 #' @param projection character; The projection used. One of c("supervised","semisupervised")
 #' @param method character; Estimation method. One of c("LBFGS")
-#' @param classprior The classprior used to compare the estimated responsilibities to
+#' @param classprior The classprior used to compare the estimated responsibilities to
 #' @inheritParams BaseClassifier
 #' @export
 KernelICLeastSquaresClassifier <- function(X, y, X_u, lambda=0, kernel=vanilladot(), x_center=TRUE, scale=TRUE, y_scale=TRUE, lambda_prior=0, classprior=0, method="LBFGS", projection="semisupervised") {

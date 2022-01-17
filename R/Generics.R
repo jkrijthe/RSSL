@@ -1,4 +1,4 @@
-#' Responsilibities assigned to the unlabeled objects
+#' Responsibilities assigned to the unlabeled objects
 #' 
 #' @param object Classifier; Trained Classifier
 #' @param ... additional parameters

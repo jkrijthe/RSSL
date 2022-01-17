@@ -2,7 +2,7 @@
 % Please edit documentation in R/WellSVM.R
 \name{WellSVM}
 \alias{WellSVM}
-\title{WellSVM for Semi-superivsed Learning}
+\title{WellSVM for Semi-supervised Learning}
 \usage{
 WellSVM(X, y, X_u, C1 = 1, C2 = 0.1, gamma = 1, x_center = TRUE,
   scale = FALSE, use_Xu_for_scaling = FALSE, max_iter = 20)

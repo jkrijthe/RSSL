@@ -1,8 +1,8 @@
-Fixes a bug in the calculation of posteriors for one of the models.
+Updates C++ code to be compatible with C++17.
 
 ## Test environments
-* local OS X install, R 4.0
-* ubuntu 16.04 (on travis-ci), R-oldrel, R-devel, R-release
+* local OS X install, R 4.1.2
+* Github Actions: MacOS-release, windows-release, ubuntu (devel, release)
 * win-builder (devel)
 
 ## Local R CMD check results

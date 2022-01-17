@@ -28,7 +28,7 @@ KernelICLeastSquaresClassifier(X, y, X_u, lambda = 0,
 
 \item{lambda_prior}{numeric; regularization parameter for the posterior deviation from the prior}
 
-\item{classprior}{The classprior used to compare the estimated responsilibities to}
+\item{classprior}{The classprior used to compare the estimated responsibilities to}
 
 \item{method}{character; Estimation method. One of c("LBFGS")}
 

@@ -30,7 +30,7 @@ measure_error <- function(trained_classifier,
   1-mean(y_test==predict(trained_classifier, X_test))
 }
 
-#' @describeIn evaluation-measures Avererage Loss on test objects
+#' @describeIn evaluation-measures Average Loss on test objects
 #' @export
 measure_losstest <- function(trained_classifier, 
                              X_l=NULL, y_l=NULL, 

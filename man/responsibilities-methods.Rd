@@ -3,7 +3,7 @@
 \docType{methods}
 \name{responsibilities}
 \alias{responsibilities}
-\title{Responsilibities assigned to the unlabeled objects}
+\title{Responsibilities assigned to the unlabeled objects}
 \usage{
 responsibilities(object, ...)
 }
@@ -16,5 +16,5 @@ responsibilities(object, ...)
 numeric; responsibilities on the unlabeled objects
 }
 \description{
-Responsilibities assigned to the unlabeled objects
+Responsibilities assigned to the unlabeled objects
 }

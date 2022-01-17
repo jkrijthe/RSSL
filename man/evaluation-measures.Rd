@@ -45,7 +45,7 @@ Classification accuracy on test set and other performance measure that can be us
 \itemize{
 \item \code{measure_error}: Classification error on test set
 
-\item \code{measure_losstest}: Avererage Loss on test objects
+\item \code{measure_losstest}: Average Loss on test objects
 
 \item \code{measure_losslab}: Average loss on labeled objects
 
