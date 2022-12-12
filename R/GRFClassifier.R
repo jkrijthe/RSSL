@@ -14,7 +14,7 @@ setClass("GRFClassifier",
 #' @param adjacency_sigma double; width of the rbf adjacency matrix
 #' @param adjacency_k integer; number of neighbours for the nearest neighbour adjacency matrix
 #' @param adjacency_distance character; distance metric for nearest neighbour adjacency matrix
-#' @param class_mass_normalization logical; Should the Class Mass Normalization heuristic be applied? (default: TRUE)
+#' @param class_mass_normalization logical; Should the Class Mass Normalization heuristic be applied? (default: FALSE)
 #' @references Zhu, X., Ghahramani, Z. & Lafferty, J., 2003. Semi-supervised learning using gaussian fields and harmonic functions. In Proceedings of the 20th International Conference on Machine Learning. pp. 912-919.
 #' @inheritParams BaseClassifier
 #' @example inst/examples/example-GRFClassifier.R
@@ -23,7 +23,7 @@ setClass("GRFClassifier",
 GRFClassifier<-function(X,y,X_u,
                         adjacency="nn", adjacency_distance="euclidean",
                         adjacency_k=6, adjacency_sigma=0.1,
-                        class_mass_normalization=TRUE,
+                        class_mass_normalization=FALSE,
                         scale=FALSE,x_center=FALSE) {
 
   mv <- PreProcessing(X=X,y=y,X_u=X_u,scale=scale,intercept=FALSE,x_center=x_center)
@@ -47,9 +47,9 @@ GRFClassifier<-function(X,y,X_u,
   responsibilities <- harmonic_f$fu
   
   if (class_mass_normalization) {
-    class_ind <- which_rowMax(responsibilities)
-  } else {
     class_ind <- which_rowMax(harmonic_f$fu_cmn)
+  } else {
+    class_ind <- which_rowMax(responsibilities)
   }
   
   predictions <- factor(class_ind,levels=1:ncol(Y),labels=classnames)

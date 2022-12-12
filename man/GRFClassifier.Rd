@@ -6,7 +6,7 @@
 \usage{
 GRFClassifier(X, y, X_u, adjacency = "nn",
   adjacency_distance = "euclidean", adjacency_k = 6,
-  adjacency_sigma = 0.1, class_mass_normalization = TRUE, scale = FALSE,
+  adjacency_sigma = 0.1, class_mass_normalization = FALSE, scale = FALSE,
   x_center = FALSE)
 }
 \arguments{
@@ -24,7 +24,7 @@ GRFClassifier(X, y, X_u, adjacency = "nn",
 
 \item{adjacency_sigma}{double; width of the rbf adjacency matrix}
 
-\item{class_mass_normalization}{logical; Should the Class Mass Normalization heuristic be applied? (default: TRUE)}
+\item{class_mass_normalization}{logical; Should the Class Mass Normalization heuristic be applied? (default: FALSE)}
 
 \item{scale}{logical; Should the features be normalized? (default: FALSE)}
 
