@@ -1,4 +1,4 @@
-citHeader("This package started as an implementation of the experiments in the first reference below, while the second is a more general reference to the package itself. Also see the references to specific methods mentioned in the documentation.")
+citHeader("This package started as an implementation of the experiments in the second reference below, while the first is a more general reference to the package itself. Also see the references to specific methods mentioned in the documentation.")
 
 citEntry(
   entry="inproceedings",
