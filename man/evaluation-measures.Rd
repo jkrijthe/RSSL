@@ -43,15 +43,15 @@ Classification accuracy on test set and other performance measure that can be us
 }
 \section{Functions}{
 \itemize{
-\item \code{measure_error}: Classification error on test set
+\item \code{measure_error()}: Classification error on test set
 
-\item \code{measure_losstest}: Average Loss on test objects
+\item \code{measure_losstest()}: Average Loss on test objects
 
-\item \code{measure_losslab}: Average loss on labeled objects
+\item \code{measure_losslab()}: Average loss on labeled objects
 
-\item \code{measure_losstrain}: Average loss on labeled and unlabeled objects
+\item \code{measure_losstrain()}: Average loss on labeled and unlabeled objects
+
 }}
-
 \seealso{
 Other RSSL utilities: 
 \code{\link{LearningCurveSSL}()},

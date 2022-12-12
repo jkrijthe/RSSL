@@ -4,7 +4,8 @@
 \alias{EMNearestMeanClassifier}
 \title{Semi-Supervised Nearest Mean Classifier using Expectation Maximization}
 \usage{
-EMNearestMeanClassifier(X, y, X_u, method = "EM", scale = FALSE, eps = 1e-04)
+EMNearestMeanClassifier(X, y, X_u, method = "EM", scale = FALSE,
+  eps = 1e-04)
 }
 \arguments{
 \item{X}{matrix; Design matrix for labeled data}

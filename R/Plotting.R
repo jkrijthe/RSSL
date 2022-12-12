@@ -45,7 +45,7 @@ geom_linearclassifier <- function(...,show_guide=TRUE) {
                       ) 
   }))
   boundaries$Classifier <- factor(names(classifiers),levels=names(classifiers),ordered=TRUE)
-  geom_abline(aes_string(intercept="intercept",slope="slope",linetype="Classifier"),
+  geom_abline(aes(intercept=.data$intercept,slope=.data$slope,linetype=.data$Classifier),
               data=boundaries,show.legend = show_guide)
 }
 

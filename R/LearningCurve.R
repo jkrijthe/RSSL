@@ -357,16 +357,16 @@ plot.LearningCurve <- function(x, y, ...) {
   }
   
   p <- plot_frame %>% 
-    ggplot(aes_string(x=paste0("`",x_label,"`"),y="Mean",color="Classifier",shape="Classifier")) +
+    ggplot(aes(x=!!dplyr::sym(x_label),y=.data$Mean,color=.data$Classifier,shape=.data$Classifier)) +
     geom_point(size=1, na.rm=TRUE) +
-    geom_line(aes_string(linetype="Classifier"), na.rm=TRUE) +
-    geom_ribbon(aes_string(ymax="Mean+1*SE",ymin="Mean-1*SE",fill="Classifier"),size=0,alpha=0.3, na.rm=TRUE) +
+    geom_line(aes(linetype=.data$Classifier), na.rm=TRUE) +
+    geom_ribbon(aes(ymax=.data$Mean+1*.data$SE,ymin=.data$Mean-1*.data$SE,fill=.data$Classifier),linewidth=0,alpha=0.3, na.rm=TRUE) +
     #geom_errorbar(aes(ymax=Mean+2*SE,ymin=Mean-2*SE,fill=Classifier),width=0.1) +
     theme_classic() +
     facet_used +
     ylab("") +
     theme(legend.position="bottom",
-          strip.background=element_rect(size = 0),
+          strip.background=element_rect(linewidth = 0),
           axis.title.y=element_text(angle = 0,size=rel(0.8)),
           axis.title.x=element_text(size=rel(0.8)),
           axis.text.y=element_text(size=rel(0.8)),

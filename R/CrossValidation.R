@@ -307,14 +307,14 @@ CrossValidationSSL.matrix <- function(X, y, classifiers, measures=list("Error"=m
 plot.CrossValidation <-function(x,y,...) {
   if ("Dataset" %in% names(x$results)) {
     x$results %>% 
-      ggplot(aes_string(x="Classifier",y="value",color="Classifier")) + 
+      ggplot(aes(x=.data$Classifier,y=.data$value,color=.data$Classifier)) + 
       geom_boxplot() +
       facet_wrap(~Measure+Dataset,scales="free") +
       theme(legend.position="bottom") +
       scale_color_discrete(name="Repeat")
   } else {
     x$results %>% 
-    ggplot(aes_string(x="Classifier",y="value",color="factor(repeats)")) + 
+    ggplot(aes(x=.data$Classifier,y=.data$value,color=factor(.data$repeats))) + 
       geom_boxplot() +
       facet_wrap(~Measure,scales="free") +
       theme(legend.position="bottom") +
