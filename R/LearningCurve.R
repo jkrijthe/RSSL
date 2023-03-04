@@ -329,9 +329,9 @@ plot.LearningCurve <- function(x, y, ...) {
   data <- x
   
   # Check for input object
-  if (class(data)=="LearningCurve") { 
+  if (isa(data,"LearningCurve")) { 
     data <- list(data)
-  } else if (!(is.list(data) & all(lapply(data,class)=="LearningCurve"))) {
+  } else if (!(is.list(data) & all(lapply(data,isa,"LearningCurve")))) {
     stop("Input object should be LearningCurve of list of LearningCurve objects.")
   }
   
