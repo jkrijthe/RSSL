@@ -61,7 +61,7 @@ PreProcessing <- function(X,y,X_u=NULL,scale=FALSE,intercept=FALSE,x_center=FALS
     out <- PreProcessing(problem$X,problem$y,problem$X_u,scale=scale,intercept=intercept,x_center=x_center)
     out$modelform <- modelform
     return(out)
-  } else if ((is.matrix(X) || is.data.frame(X) || isa(X,"dgCMatrix")) && (is.factor(y))) {
+  } else if ((is.matrix(X) || is.data.frame(X) || is(X,"dgCMatrix")) && (is.factor(y))) {
     
     modelform <- NULL
     
@@ -146,7 +146,7 @@ PreProcessingPredict<-function(modelform,newdata,y=NULL,classnames=NULL,scaling=
     X <- X[, colnames(X) != "(Intercept)",drop=FALSE]
     return(PreProcessingPredict(NULL,X,y,classnames=classnames,scaling=scaling,intercept=intercept))
   } else {
-    if (!(is.matrix(newdata) || is.data.frame(newdata) || isa(X,"dgCMatrix"))) { stop("Training data and Testing data don't match.")}
+    if (!(is.matrix(newdata) || is.data.frame(newdata) || is(newdata,"dgCMatrix"))) { stop("Training data and Testing data don't match.")}
     if (is.data.frame(newdata)) {
       if (intercept) {
         X <- model.matrix(~.,newdata)
