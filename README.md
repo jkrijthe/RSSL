@@ -1,18 +1,19 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
+
 [![CRAN
 status](https://www.r-pkg.org/badges/version/RSSL)](https://CRAN.R-project.org/package=RSSL)
 [![Travis-CI Build
 Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL)
 [![R build
 status](https://github.com/jkrijthe/RSSL/workflows/R-CMD-check/badge.svg)](https://github.com/jkrijthe/RSSL/actions)
-[![codecov.io](https://codecov.io/github/jkrijthe/RSSL/coverage.svg?branch=master)](https://codecov.io/github/jkrijthe/RSSL?branch=master)
 [![CRAN mirror
 downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.r-project.org/package=RSSL)
-
+[![Codecov test
+coverage](https://codecov.io/gh/jkrijthe/RSSL/branch/master/graph/badge.svg)](https://app.codecov.io/gh/jkrijthe/RSSL?branch=master)
 <!-- badges: end -->
-R Semi-Supervised Learning package
-==================================
+
+# R Semi-Supervised Learning package
 
 This R package provides implementations of several semi-supervised
 learning methods, in particular, our own work involving constraint based
@@ -24,18 +25,15 @@ To cite the package, use either of these two references:
     In B. Kerautret, M. Colom, & P. Monasse (Eds.), Reproducible
     Research in Pattern Recognition. RRPR 2016. Lecture Notes in
     Computer Science, vol 10214. (pp. 104–115). Springer International
-    Publishing.
-    <a href="https://doi.org/10.1007/978-3-319-56414-2_8" class="uri">https://doi.org/10.1007/978-3-319-56414-2_8</a>.
-    arxiv:
-    <a href="https://arxiv.org/abs/1612.07993" class="uri">https://arxiv.org/abs/1612.07993</a>
+    Publishing. <https://doi.org/10.1007/978-3-319-56414-2_8>. arxiv:
+    <https://arxiv.org/abs/1612.07993>
 -   Krijthe, J.H. & Loog, M. (2015). Implicitly Constrained
     Semi-Supervised Least Squares Classification. In E. Fromont, T. de
-    Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances
+    Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances
     in Intelligent Data Analysis XIV (Lecture Notes in Computer Science
     Volume 9385). Saint Etienne. France, pp. 158-169.
 
-Installation Instructions
-=========================
+# Installation Instructions
 
 This package available on CRAN. The easiest way to install the package
 is to use:
@@ -51,8 +49,7 @@ library(devtools)
 install_github("jkrijthe/RSSL")
 ```
 
-Usage
-=====
+# Usage
 
 After installation, load the package as usual:
 
@@ -102,8 +99,7 @@ mean(predict(g_nm,df)!=df$Class)
 mean(predict(g_self,df)!=df$Class)
 ```
 
-Acknowledgement
-===============
+# Acknowledgement
 
 Work on this package was supported by Project 23 of the Dutch national
 program COMMIT.

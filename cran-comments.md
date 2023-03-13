@@ -1,7 +1,7 @@
-Updates C++ code to be compatible with C++17.
+Fixes compiler warnings in the current R-devel
 
 ## Test environments
-* local OS X install, R 4.1.2
+* local OS X install, R 4.2.2
 * Github Actions: MacOS-release, windows-release, ubuntu (devel, release)
 * win-builder (devel)
 

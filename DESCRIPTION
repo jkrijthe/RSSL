@@ -24,7 +24,8 @@ Suggests:
     rmarkdown,
     SparseM,
     numDeriv,
-    LiblineaR
+    LiblineaR,
+    covr
 Description: A collection of implementations of semi-supervised classifiers
     and methods to evaluate their performance. The package includes implementations
     of, among others, Implicitly Constrained Learning, Moment Constrained Learning,
