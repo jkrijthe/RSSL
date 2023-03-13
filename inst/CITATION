@@ -1,7 +1,5 @@
-citHeader("This package started as an implementation of the experiments in the second reference below, while the first is a more general reference to the package itself. Also see the references to specific methods mentioned in the documentation.")
-
-citEntry(
-  entry="inproceedings",
+bibentry(
+  bibtype="InProceedings",
   title="RSSL: R package for Semi-supervised Learning",
   pages="104-115",
   year="2016",
@@ -10,8 +8,8 @@ citEntry(
   textVersion="Krijthe, J. H. (2016). RSSL: R package for Semi-supervised Learning. In B. Kerautret, M. Colom, & P. Monasse (Eds.), Reproducible Research in Pattern Recognition. RRPR 2016. Lecture Notes in Computer Science, vol 10214. (pp. 104-115). Springer International Publishing."
 )
 
-citEntry(
-  entry="inproceedings",
+bibentry(
+  bibtype="InProceedings",
   title=" Implicitly Constrained Semi-Supervised Least Squares Classification",
   pages="158-169",
   year="2015",
