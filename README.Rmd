@@ -15,8 +15,7 @@ knitr::opts_chunk$set(
 ```
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/RSSL)](https://CRAN.R-project.org/package=RSSL)
-[![Travis-CI Build Status](https://travis-ci.org/jkrijthe/RSSL.png?branch=master)](https://travis-ci.org/jkrijthe/RSSL)
-[![R build status](https://github.com/jkrijthe/RSSL/workflows/R-CMD-check/badge.svg)](https://github.com/jkrijthe/RSSL/actions)
+[![R-CMD-check](https://github.com/jkrijthe/RSSL/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jkrijthe/RSSL/actions/workflows/R-CMD-check.yaml)
 [![CRAN mirror downloads](http://cranlogs.r-pkg.org/badges/RSSL)](https://cran.r-project.org/package=RSSL)
 [![Codecov test coverage](https://codecov.io/gh/jkrijthe/RSSL/branch/master/graph/badge.svg)](https://app.codecov.io/gh/jkrijthe/RSSL?branch=master)
 <!-- badges: end -->
