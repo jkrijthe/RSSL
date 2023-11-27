@@ -68,7 +68,7 @@ Collate:
     'Measures.R'
     'Plotting.R'
     'QuadraticDiscriminantClassifier.R'
-    'RSSL.R'
+    'RSSL-package.R'
     'RcppExports.R'
     'S4VM.R'
     'SVM.R'
