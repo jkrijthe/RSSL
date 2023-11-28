@@ -192,13 +192,13 @@ wlda <- function(a,w) {
   return(list(m=m,p=p,iW=iW))
 }
 
-#' project an n-dim vector y to the simplex Dn
+#' Project an n-dim vector y to the simplex Dn
 #' 
-#' Dn = { x : x n-dim, 1 >= x >= 0, sum(x) = 1}
+#' Where \eqn{Dn = \{ 0 <= x <= 1, sum(x) = 1\}}. 
 #' R translation of Loog's version of Xiaojing Ye's initial implementation.
-#' The algorithm works row-wise
+#' The algorithm works row-wise.
 #'
-#' @references Algorithm is explained as in http://arxiv.org/abs/1101.6081
+#' @references Algorithm is explained in http://arxiv.org/abs/1101.6081
 #' @param y matrix with vectors to be projected onto the simplex
 #' @return projection of y onto the simplex    
 projection_simplex <- function(y) {

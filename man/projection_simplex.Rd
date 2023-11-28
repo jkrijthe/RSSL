@@ -2,7 +2,7 @@
 % Please edit documentation in R/MCPLDA.R
 \name{projection_simplex}
 \alias{projection_simplex}
-\title{project an n-dim vector y to the simplex Dn}
+\title{Project an n-dim vector y to the simplex Dn}
 \usage{
 projection_simplex(y)
 }
@@ -13,10 +13,10 @@ projection_simplex(y)
 projection of y onto the simplex
 }
 \description{
-Dn = { x : x n-dim, 1 >= x >= 0, sum(x) = 1}
+Where \eqn{Dn = \{ 0 <= x <= 1, sum(x) = 1\}}. 
 R translation of Loog's version of Xiaojing Ye's initial implementation.
-The algorithm works row-wise
+The algorithm works row-wise.
 }
 \references{
-Algorithm is explained as in http://arxiv.org/abs/1101.6081
+Algorithm is explained in http://arxiv.org/abs/1101.6081
 }

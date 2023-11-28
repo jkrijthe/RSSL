@@ -18,17 +18,17 @@ semi-supervised learning.
 
 To cite the package, use either of these two references:
 
--   Krijthe, J. H. (2016). RSSL: R package for Semi-supervised Learning.
-    In B. Kerautret, M. Colom, & P. Monasse (Eds.), Reproducible
-    Research in Pattern Recognition. RRPR 2016. Lecture Notes in
-    Computer Science, vol 10214. (pp. 104–115). Springer International
-    Publishing. <https://doi.org/10.1007/978-3-319-56414-2_8>. arxiv:
-    <https://arxiv.org/abs/1612.07993>
--   Krijthe, J.H. & Loog, M. (2015). Implicitly Constrained
-    Semi-Supervised Least Squares Classification. In E. Fromont, T. de
-    Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances
-    in Intelligent Data Analysis XIV (Lecture Notes in Computer Science
-    Volume 9385). Saint Etienne. France, pp. 158-169.
+- Krijthe, J. H. (2016). RSSL: R package for Semi-supervised Learning.
+  In B. Kerautret, M. Colom, & P. Monasse (Eds.), Reproducible Research
+  in Pattern Recognition. RRPR 2016. Lecture Notes in Computer Science,
+  vol 10214. (pp. 104–115). Springer International Publishing.
+  <https://doi.org/10.1007/978-3-319-56414-2_8>. arxiv:
+  <https://arxiv.org/abs/1612.07993>
+- Krijthe, J.H. & Loog, M. (2015). Implicitly Constrained
+  Semi-Supervised Least Squares Classification. In E. Fromont, T. de
+  Bie, & M. van Leeuwen, eds. 14th International Symposium on Advances
+  in Intelligent Data Analysis XIV (Lecture Notes in Computer Science
+  Volume 9385). Saint Etienne. France, pp. 158-169.
 
 # Installation Instructions
 
@@ -83,7 +83,7 @@ df %>%
                   "Semi-supervised"=g_self)
 ```
 
-![](tools/example-1.png)
+![](tools/example-1.png)<!-- -->
 
 ``` r
 
