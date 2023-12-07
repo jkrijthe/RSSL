@@ -47,7 +47,7 @@ static void print_string_stdout(const char *s)
     fputs(s,stdout);
     fflush(stdout);
     */
-    Rprintf(s);
+    Rprintf("%s",s);
 }
 static void (*svm_print_string) (const char *) = &print_string_stdout;
 // MOD switch off info
