@@ -24,11 +24,10 @@ arma::colvec rowMax2(const arma::mat& X) {
 arma::mat which_rowMax(const arma::mat& X) {
   arma::mat A = arma::zeros<arma::mat>(X.n_rows,1);
   
-  arma::uword  row;
   arma::uword  col;
   
   for (unsigned int i=0; i<X.n_rows; i++) {
-    X.row(i).max(row,col);
+    col = X.row(i).index_max();
     A(i) = col+1;
   }
   return(A);

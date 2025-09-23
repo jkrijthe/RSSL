@@ -1,9 +1,8 @@
-Fixes compiler warnings in the current R-devel
+Fixes compiler warnings from deprecated functions.
 
 ## Test environments
-* local OS X install, R 4.2.2
+* local OS X install
 * Github Actions: MacOS-release, windows-release, ubuntu (devel, release)
-* win-builder (devel)
 
 ## Local R CMD check results
 0 errors | 0 warnings | 0 notes
