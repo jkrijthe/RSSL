@@ -1,5 +1,5 @@
 Package: RSSL
-Version: 0.9.7
+Version: 0.9.8
 Title: Implementations of Semi-Supervised Learning Approaches for Classification
 Authors@R: c(person("Jesse", "Krijthe", role = c("aut", "cre"),
     email = "jkrijthe@gmail.com"))
@@ -33,7 +33,7 @@ Description: A collection of implementations of semi-supervised classifiers
     Likelihood estimation, S4VM and WellSVM.
 License: GPL (>= 2)
 URL: https://github.com/jkrijthe/RSSL
-BugReports: https://github.com/jkrijthe/RSSL
+BugReports: https://github.com/jkrijthe/RSSL/issues
 Roxygen: list(old_usage = TRUE)
 Collate:
     'Generics.R'
