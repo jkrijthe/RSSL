@@ -4,6 +4,7 @@ svmd <-
 function (x, ...)
     UseMethod ("svmd")
 
+#' @export
 svmd.formula <-
 function (formula, data = NULL, ..., subset, na.action = na.omit, scale = TRUE)
 {

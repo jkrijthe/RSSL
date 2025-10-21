@@ -12,7 +12,7 @@ A collection of implementations of semi-supervised classifiers and methods to ev
 Useful links:
 \itemize{
   \item \url{https://github.com/jkrijthe/RSSL}
-  \item Report bugs at \url{https://github.com/jkrijthe/RSSL}
+  \item Report bugs at \url{https://github.com/jkrijthe/RSSL/issues}
 }
 
 }
